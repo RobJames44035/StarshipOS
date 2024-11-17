@@ -11,3 +11,7 @@
 /starship-kernel/kernel/kernel
 /starship-kernel/kernel/kernel.o
 /starship-kernel/starship/starship
+/starship_kernel/build/
+/grub/build/
+/jvm/build/
+/maven.log

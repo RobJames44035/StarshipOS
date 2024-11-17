@@ -8,6 +8,8 @@
     <version>0.1</version>
   </parent>
 
+<!--  /home/rajames/PROJECTS/StarshipOS/jvm -->
+<!--  git submodule add https://github.com/openjdk/jdk.git subprojects/linux -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -15,21 +17,11 @@
   <artifactId>jvm</artifactId>
 
   <dependencies>
-    <!-- Add your dependencies here -->
+
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
-        <configuration>
-          <source>19</source>
-          <target>19</target>
-        </configuration>
-      </plugin>
-    </plugins>
+
   </build>
 </project>
 

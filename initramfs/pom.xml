@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://www.mvnrepository.com/xsd/mvn-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.starship</groupId>
@@ -7,38 +7,40 @@
         <version>0.1</version>
     </parent>
 
-    <artifactId>busybox</artifactId>
+    <artifactId>initramfs</artifactId>
     <packaging>pom</packaging>
 
-    <name>busybox</name>
-    <url/>
+    <name>initramfs</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <busybox.build.dir>${basedir}/busybox/build</busybox.build.dir>
+        <initramfs.image>${project.basedir}/build/initramfs</initramfs.image>
+        <initramfs.commands.dir>${basedir}/scripts</initramfs.commands.dir>
     </properties>
 
     <build>
         <plugins>
+            <!-- Plugin to run custom tasks -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-binutils</id>
-                        <phase>generate-sources</phase>
-<!--                        <phase>package</phase>-->
+                        <id>create-image</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
                             <executable>bash</executable>
                             <arguments>
-                                <argument>-c</argument>
-                                <argument>scripts/build_busybox.sh</argument>
+                                <argument>scripts/create_image.sh</argument>
+                                <argument>${initramfs.image}</argument>
+                                <argument>${busybox.build.dir}</argument>
                             </arguments>
                         </configuration>
-
                     </execution>
                 </executions>
             </plugin>
