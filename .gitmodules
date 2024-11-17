@@ -1,3 +1,0 @@
-; [submodule "starship/starship_kernel"]
-; 	path = starship/starship_kernel
-; 	url = https://github.com/torvalds/linux.git

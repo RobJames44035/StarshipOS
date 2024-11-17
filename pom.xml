@@ -35,7 +35,7 @@
 
     <modules>
         <module>busybox</module>
-        <module>starship</module>
+<!--        <module>starship</module>-->
         <module>initramfs</module>
 
     <!--
