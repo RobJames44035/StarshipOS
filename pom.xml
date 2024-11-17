@@ -35,15 +35,13 @@
 
     <modules>
         <module>busybox</module>
-<!--        <module>starship</module>-->
         <module>initramfs</module>
-
-    <!--
+<!--
+        <module>starship</module>
         <module>grub</module>
         <module>jvm</module>
         <module>live_cd</module>
-    -->
-
+-->
     </modules>
 
     <build>
