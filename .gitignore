@@ -16,3 +16,4 @@
 /jvm/build/
 /maven.log
 /busybox/build/
+/initramfs/build/
