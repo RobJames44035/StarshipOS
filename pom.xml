@@ -9,17 +9,41 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <root.basedir>${basedir}</root.basedir>
+
+        <binutils.build.dir>${root.basedir}/binutils/build</binutils.build.dir>
+        <binutils.scripts.dir>${root.basedir}/binutils/scripts</binutils.scripts.dir>
+
+        <live_cd.build.dir>${root.basedir}/live_cd/build</live_cd.build.dir>
+        <live_cd.scripts.dir>${root.basedir}/live_cd/scripts</live_cd.scripts.dir>
+
+        <gcc_elf.build.dir>${root.basedir}/gcc_elf/build</gcc_elf.build.dir>
+        <gcc_elf.scripts.dir>${root.basedir}/gcc_elf/scripts</gcc_elf.scripts.dir>
+
+        <starship_kernel.build.dir>${root.basedir}/starship_kernel/build</starship_kernel.build.dir>
+        <starship_kernel.scripts.dir>${root.basedir}/starship_kernel/scripts</starship_kernel.scripts.dir>
+
+        <jvm.build.dir>${root.basedir}/jvm/build</jvm.build.dir>
+        <jvm.scripts.dir>${root.basedir}/jvm/scripts</jvm.scripts.dir>
+
+        <initramfs.build.dir>${root.basedir}/initramfs/build</initramfs.build.dir>
+        <initramfs.scripts.dir>${root.basedir}/initramfs/scripts</initramfs.scripts.dir>
+
+        <grub.build.dir>${root.basedir}/grub/build</grub.build.dir>
+        <grub.scripts.dir>${root.basedir}/grub/scripts</grub.scripts.dir>
     </properties>
 
     <modules>
         <module>busybox</module>
+<!--        <module>starship</module>-->
         <module>initramfs</module>
-        <module>starship</module>
-<!--
+
+    <!--
         <module>grub</module>
         <module>jvm</module>
         <module>live_cd</module>
--->
+    -->
+
     </modules>
 
     <build>

@@ -24,6 +24,7 @@
                     <execution>
                         <id>build-binutils</id>
                         <phase>generate-sources</phase>
+<!--                        <phase>package</phase>-->
                         <goals>
                             <goal>exec</goal>
                         </goals>
