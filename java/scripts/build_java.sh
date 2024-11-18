@@ -1,63 +1,53 @@
-#!/bin/bash
+#!/bin/sh
 # shellcheck disable=SC2164
 # shellcheck disable=SC2162
 
 # Constants
-JDK_URL="https://example.com/path/to/jdk-23.0.1.tar.gz"
-JDK_ARCHIVE="jdk-23.0.1.tar.gz"
-JDK_DIR="jdk-23.0.1"
-EXTRACTED_DIR="/home/rajames/PROJECTS/StarshipOS/$JDK_DIR"
-BOOT_JDK="/home/rajames/PROJECTS/StarshipOS/jdk-23.0.1"
-
+# shellcheck disable=SC2034
+JDK_URL=""
+JDK_ARCHIVE="openjdk-23.0.1_linux-x64_bin"
 echo "$PWD"
-echo "$CWD"
-read -p "This is a psuse. Hit a key!"
+
+#BOOT_JDK="/home/rajames/PROJECTS/StarshipOS/jdk-23.0.1"
 
 # Step 1: Download JDK archive if it does not exist
-if [ ! -f "$JDK_ARCHIVE" ]; then
+#if [ ! -f "$JDK_ARCHIVE" ]; then
   echo "Downloading JDK archive..."
-  wget "$JDK_URL" -O "$JDK_ARCHIVE"
-else
-  echo "JDK archive already exists."
+  wget --progress=bar "https://download.java.net/java/GA/jdk23.0.1/c28985cbf10d4e648e4004050f8781aa/11/GPL/openjdk-23.0.1_linux-x64_bin.tar.gz"
+  echo "Unpacking JDK archive..."
+  tar -xzfv "openjdk-23.0.1_linux-x64_bin.tar.gz"
+
+#else
 fi
-echo "$PWD"
-echo "$CWD"
-read -p "This is a psuse. Hit a key!"
 
 # Step 2: Unpack the archive if the directory does not exist
-if [ ! -d "$EXTRACTED_DIR" ]; then
-  echo "Unpacking JDK archive..."
-  tar -xzvf "$JDK_ARCHIVE" -C $JDK_DIR
-else
-  echo "JDK directory already exists."
-fi
-echo "$PWD"
-echo "$CWD"
-read -p "This is a psuse. Hit a key!"
+#if [ ! -d "$EXTRACTED_DIR" ]; then
+#  echo "Unpacking JDK archive..."
+#  mkdir -p $JDK_ARCHIVE
+#  tar -xzfv "openjdk-23.0.1_linux-x64_bin.tar.gz"
+#else
+#  echo "JDK directory already exists."
+#fi
 
 # Configuration and build
-if [ ! -d build ]; then
-  echo "Configuring build with boot JDK..."
-echo "$PWD"
-echo "$CWD"
-read -p "This is a pause. Hit a key!"
-  ./configure --with-boot-jdk="$BOOT_JDK"
-  cd ./jdk
-  echo "Cleaning previous builds if any..."
-  make clean
-  echo "Building JDK..."
-  make all
-echo "$PWD"
-echo "$CWD"
-read -p "This is a pause. Hit a key!"
-
-#  echo "Copying build to ../build directory..."
-#  cp ./jdk/build build
-fi
-
-echo "$PWD"
-echo "$CWD"
-read -p "This is a pause. Hit a key!"
+#if [ ! -d build ]; then
+#  echo "Configuring build with boot JDK..."
+#echo "$PWD"
+#echo "$CWD"
+#read -p "This is a pause. Hit a key!"
+#  ./configure --with-boot-jdk="$BOOT_JDK"
+#  cd ./jdk
+#  echo "Cleaning previous builds if any..."
+#  make clean
+#  echo "Building JDK..."
+#  make all
+#echo "$PWD"
+#echo "$CWD"
+#read -p "This is a pause. Hit a key!"
+#
+##  echo "Copying build to ../build directory..."
+##  cp ./jdk/build build
+#fi
 
 # Step 3: Clean up JDK archive and extracted directory
 #echo "Cleaning up JDK archive and unpacked files..."
@@ -65,6 +55,7 @@ read -p "This is a pause. Hit a key!"
 #rm -rf "$EXTRACTED_DIR"
 echo "$PWD"
 echo "$CWD"
+# shellcheck disable=SC3045
 read -p "This is a pause. Hit a key!"
 
 
