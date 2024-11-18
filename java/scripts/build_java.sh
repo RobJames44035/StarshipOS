@@ -4,21 +4,32 @@
 
 # Constants
 # shellcheck disable=SC2034
-JDK_URL=""
-JDK_ARCHIVE="openjdk-23.0.1_linux-x64_bin"
-echo "$PWD"
+#JDK_URL=""
+#JDK_ARCHIVE="openjdk-23.0.1_linux-x64_bin"
+#echo "$PWD"
 
 #BOOT_JDK="/home/rajames/PROJECTS/StarshipOS/jdk-23.0.1"
 
 # Step 1: Download JDK archive if it does not exist
-#if [ ! -f "$JDK_ARCHIVE" ]; then
+#if [ ! -f "openjdk-23.0.1_linux-x64_bin.tar.gz" ]; then
   echo "Downloading JDK archive..."
   wget --progress=bar "https://download.java.net/java/GA/jdk23.0.1/c28985cbf10d4e648e4004050f8781aa/11/GPL/openjdk-23.0.1_linux-x64_bin.tar.gz"
   echo "Unpacking JDK archive..."
-  tar -xzfv "openjdk-23.0.1_linux-x64_bin.tar.gz"
+  tar -xzf openjdk-23.0.1_linux-x64_bin.tar.gz
+  rm openjdk-23.0.1_linux-x64_bin.tar.gz
+  cd ./jdk
+  echo "Configuring build with boot JDK..."
+  echo "$PWD"
+  read -p "Configure build. Press any key to continue."
+  ./configure --with-boot-jdk="/home/rajames/PROJECTS/StarshipOS/java/jdk-23.0.1"
+  echo "Cleaning previous builds if any..."
+  make clean
+  echo "Building JDK..."
+  make images
 
+  rm -rfv jdk-23.0.1
 #else
-fi
+#fi
 
 # Step 2: Unpack the archive if the directory does not exist
 #if [ ! -d "$EXTRACTED_DIR" ]; then
@@ -32,9 +43,6 @@ fi
 # Configuration and build
 #if [ ! -d build ]; then
 #  echo "Configuring build with boot JDK..."
-#echo "$PWD"
-#echo "$CWD"
-#read -p "This is a pause. Hit a key!"
 #  ./configure --with-boot-jdk="$BOOT_JDK"
 #  cd ./jdk
 #  echo "Cleaning previous builds if any..."
