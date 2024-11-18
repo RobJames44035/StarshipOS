@@ -6,7 +6,7 @@ if [ ! -d build ]; then
   make
   cd ../
   mkdir -p ./build
-  cp ./starship_kernel/vmlinux ./build/starship
+  cp ./starship_kernel/arch/i386/boot/bzimage ./build/starship
   cd ./starship_kernel
   make clean
   cd ../
