@@ -38,6 +38,9 @@ read -p "This is a psuse. Hit a key!"
 # Configuration and build
 if [ ! -d build ]; then
   echo "Configuring build with boot JDK..."
+echo "$PWD"
+echo "$CWD"
+read -p "This is a pause. Hit a key!"
   ./configure --with-boot-jdk="$BOOT_JDK"
   cd ./jdk
   echo "Cleaning previous builds if any..."
@@ -46,7 +49,7 @@ if [ ! -d build ]; then
   make all
 echo "$PWD"
 echo "$CWD"
-read -p "This is a psuse. Hit a key!"
+read -p "This is a pause. Hit a key!"
 
 #  echo "Copying build to ../build directory..."
 #  cp ./jdk/build build
@@ -54,7 +57,7 @@ fi
 
 echo "$PWD"
 echo "$CWD"
-read -p "This is a psuse. Hit a key!"
+read -p "This is a pause. Hit a key!"
 
 # Step 3: Clean up JDK archive and extracted directory
 #echo "Cleaning up JDK archive and unpacked files..."
@@ -62,7 +65,7 @@ read -p "This is a psuse. Hit a key!"
 #rm -rf "$EXTRACTED_DIR"
 echo "$PWD"
 echo "$CWD"
-read -p "This is a psuse. Hit a key!"
+read -p "This is a pause. Hit a key!"
 
 
 echo "Build process complete."

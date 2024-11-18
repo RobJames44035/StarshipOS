@@ -19,3 +19,4 @@
 /initramfs/build/
 /.mvn/
 /java/jdk-23.0.1.tar.gz
+/starship/build/
