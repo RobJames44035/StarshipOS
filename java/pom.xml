@@ -26,7 +26,6 @@
                     <execution>
                         <id>build-java</id>
                         <phase>generate-sources</phase>
-<!--                        <phase>package</phase>-->
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -37,7 +36,6 @@
                                 <argument>scripts/build_java.sh</argument>
                             </arguments>
                         </configuration>
-
                     </execution>
                 </executions>
             </plugin>

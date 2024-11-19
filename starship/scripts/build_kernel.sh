@@ -4,7 +4,7 @@
 if [ ! -d build ]; then
   cd starship_kernel
   make clean
-  make
+  make -J 4
   cd ../
   mkdir -p build/boot
   cp starship_kernel/arch/x86/boot/bzImage build/boot/starship

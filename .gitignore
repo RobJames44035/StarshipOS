@@ -22,3 +22,4 @@
 /starship/build/
 /java/java-boot.log
 /scripts/maven.log
+/java/jdk/configure.log
