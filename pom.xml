@@ -18,12 +18,8 @@
         <module>starship</module>
         <module>initramfs</module>
         <module>java</module>
-
-    <!--
         <module>grub</module>
         <module>live_cd</module>
-    -->
-
     </modules>
 
     <build>

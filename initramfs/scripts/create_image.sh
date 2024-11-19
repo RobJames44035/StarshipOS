@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Include the ASCII art header
-#source ./scripts/generate_header.sh "initramfs"
-
 # Define the image path
 IMAGE_PATH="/home/rajames/PROJECTS/StarshipOS/initramfs/build/initramfs"
 
