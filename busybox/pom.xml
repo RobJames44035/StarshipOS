@@ -25,7 +25,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-binutils</id>
+                        <id>build-busybox</id>
                         <phase>generate-sources</phase>
 <!--                        <phase>package</phase>-->
                         <goals>

@@ -8,4 +8,5 @@ if [ ! -d build ]; then
   cd ../
   mkdir -p build/boot
   cp starship_kernel/arch/x86/boot/bzImage build/boot/starship
+  make clean
 fi

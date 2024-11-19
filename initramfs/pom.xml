@@ -28,7 +28,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>create-image</id>
+                        <id>build-initramfs</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>

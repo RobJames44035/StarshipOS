@@ -7,6 +7,7 @@
         <version>0.1</version>
     </parent>
 
+    <name>starship</name>
     <artifactId>starship</artifactId>
     <packaging>pom</packaging>
 
@@ -22,7 +23,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-binutils</id>
+                        <id>build-starship</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>

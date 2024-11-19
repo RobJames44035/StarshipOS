@@ -14,6 +14,8 @@
     <artifactId>live_cd</artifactId>
     <packaging>pom</packaging>
 
+    <name>live_cd</name>
+
     <build>
         <plugins>
             <plugin>
@@ -23,7 +25,7 @@
                 <executions>
 
                     <execution>
-                        <id>create-bootable-iso</id>
+                        <id>build-live_cd</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>

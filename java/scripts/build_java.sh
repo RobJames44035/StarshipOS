@@ -10,12 +10,12 @@ if [ ! -d build ]; then
   rm openjdk-23.0.1_linux-x64_bin.tar.gz
   cd ./jdk
   echo "Configuring build with boot JDK... $PWD"
-  ./configure --with-boot-jdk="/home/rajames/PROJECTS/StarshipOS/java/jdk-23.0.1" --with-jobs=4 #--with-conf-name="starship-os"
+  ./configure --with-boot-jdk="/home/rajames/PROJECTS/StarshipOS/java/jdk-23.0.1" --with-jobs=4 --with-debug-level=slowdebug
   echo "Cleaning previous builds if any..."
-  make clean
+  make CONF="starship-os" clean
   echo "Building JDK..."
-  make hotspot
-  make -J 4
+  make CONF="starship-os" hotspot
+  make CONF="starship-os" -J 4
 
   rm -rfv ../jdk-23.0.1
 fi
