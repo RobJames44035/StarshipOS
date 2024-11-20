@@ -1,29 +1,20 @@
 #!/bin/bash
 # shellcheck disable=SC2162
-
-BUILD_DIR=$1
-INITRAMFS_BUILD_DIR=$2
-ISO_ROOT_DIR=$BUILD_DIR/iso_root
-ISO_OUTPUT_DIR=$BUILD_DIR
 ISO_NAME="StarshipOS.iso"
 
-echo "\$1" "$1"
-echo "\$2" "$2"
-read -p "Pause..."
 
-# Create necessary directori
-mkdir -p "$ISO_ROOT_DIR"/boot/grub
-read -p "Pause..."
+# Create necessary directories
+mkdir -p /home/rajames/PROJECTS/StarshipOS/live_cd/build/boot/grub
 
 # Copy kernel into iso_root/boot
-cp -v "$BUILD_DIR"/starship "$ISO_ROOT_DIR"/boot
-read -p "Pause..."
+cp -v /home/rajames/PROJECTS/StarshipOS/starship/build/boot/starship /home/rajames/PROJECTS/StarshipOS/live_cd/build/boot
 
 # Copy initramfs image into iso_root/boot
-cp -v "$INITRAMFS_BUILD_DIR"/initramfs "$ISO_ROOT_DIR"/boot
-read -p "Pause..."
+cp -v /home/rajames/PROJECTS/StarshipOS/initramfs/build/initramfs_img.gz /home/rajames/PROJECTS/StarshipOS/live_cd/build/boot
 
+# Copy grub.cfg into iso_root/boot/grub.cfg
+cp -v /home/rajames/PROJECTS/StarshipOS/grub/build/boot/grub/grub.cfg /home/rajames/PROJECTS/StarshipOS/live_cd/build/boot/grub
 # Create the ISO image
-grub-mkrescue -o "$ISO_OUTPUT_DIR"/$ISO_NAME "$ISO_ROOT_DIR"
+grub-mkrescue -o "$ISO_OUTPUT_DIR"/$ISO_NAME /home/rajames/PROJECTS/StarshipOS/live_cd/build
 
 echo "Bootable ISO created successfully: $ISO_OUTPUT_DIR/$ISO_NAME"

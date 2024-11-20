@@ -37,8 +37,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>scripts/create_image.sh</argument>
-                                <argument>${initramfs.image}</argument>
-                                <argument>${busybox.build.dir}</argument>
+                                <argument>${root}</argument>
                             </arguments>
                         </configuration>
                     </execution>

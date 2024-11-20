@@ -53,8 +53,10 @@ if [ ! -d "$BUILD_DIR" ]; then
     configure_and_build_jdk
     echo "Removing BOOT_JDK directory..."
     rm -rf "$BOOT_JDK"
+mkdir -p ../build
+cp -r
+/home/rajames/PROJECTS/StarshipOS/java/jdk/build/linux-x86_64-server-release/jdk ../build/jdk
 else
     echo "$BUILD_DIR already exists. Skipping build."
 fi
-
 echo "Build Java complete."

@@ -1,4 +1,4 @@
-# Starship Operating System
+# Starship Operating System (StarshipOS)
 
 Welcome to the repository for **Starship Operating System**! This project aims to revolutionize traditional operating systems by integrating principles of object-oriented programming (OOP) deeply into the OS architecture, offering a modern way to manage files and memory.
 
@@ -43,32 +43,45 @@ README.md     ; This file
 ### Prerequisites
 
 - **Build Environment**: Ensure you have a Linux build environment with necessary tools such as GCC, Make, etc.
-- **Java Development Kit (JDK)**: Download and compile the source for Java JDK (version 11 as default).
+- **Java Development Kit (JDK)**: Download and compile the source for Java JDK (version 23 as default).
 
 ### Building the Project
 
-1. **Kernel Configuration**:
-   ```sh
-   cd kernel
-   make menuconfig   # Configure the kernel
-   make              # Compile the kernel
-   ```
+There are scripts to aid in building **StarshipOS**
+In the root directory there is s directory called "scripts".
+```build.sh```, this is what you are looking for to build **StarshipOS**.
+Sit back and relax while it runs its course.
 
-2. **Initramfs Preparation**:
-   ```sh
-   cd initramfs
-   find . | cpio -H newc -o | gzip > ../initramfs.cpio.gz
-   ```
+Each directory has a ``scripts``
 
-3. **Integrate and Boot**:
-   Update your bootloader (e.g., GRUB) to load the newly built kernel and initramfs.
+### Important point: when running maven, build artefacts are placed in the ``build`` directory in the sub project **AND
+NOWHERE ELSE**!!! [^1]
 
 ### Running `jshell`
 
-Upon booting, the `init` script will set up the environment and launch `jshell`. This provides an interactive Java environment immediately after the OS boots.
+Upon booting, the `init` script will set up the environment be launch `jshell`. This provides an interactive Java
+environment immediately after the OS boots.
+*(As of today, this does not happen yet.)*
 
 ## Technical Details
 
+We will spin **StarshipOS** from the initial linux kernel. **Busybox** will be available should ```jshell``` not start.
+
+1) **busybox** provides for different configurations. ``defconfig`` provides for just about everything but the kitchen
+   sink.
+   1) **busybox** may be reconfigured as needed using the Makefile in the busybox root directory (see ```make help```).
+
+2) **grub** simply is a container to hold the ```grub.cfg``` file.
+   1) **grub** fun fact: NO SHELL SCRIPT! The resources plugin takes care of that.
+
+3) **initramfs** is where the ram disk is assembled.
+   1) Look into the shell script for details.
+4) **java** This is where the Java23 JDK is built.
+   1) This JDK build is a minimal build with ``compiler1, compiler2 & zgc`` as the garbage collector.
+   2) As with any of these modules you can reconfigure the java build.
+5) **live_cd** is where the ISO image is built.
+6) **starship** is the linux kernel we will rely on for hardware interaction and housekeeping.
+   1) Again, this is a minimal build of the linux kernel and will probably be reconfigured as the project moves along.
 ### Object-Oriented Filesystem
 
 The filesystem treats each file and directory as an instance of a `PersistentObject`. Objects are cached in virtual memory for quick access and persisted to storage as needed based on their flags:
@@ -124,5 +137,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Thank you for your interest in **My Object-Oriented Operating System**. We’re excited to push the boundaries of traditional OS design and create something truly modern and innovative. If you have any questions or need further assistance, feel free to reach out via our [issue tracker](https://github.com/your-repo/issues).
+
+[^1] Why is this so important?
 
 Happy Coding!
