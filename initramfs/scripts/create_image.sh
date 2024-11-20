@@ -1,25 +1,65 @@
 #!/bin/bash
 
 # Define the image path
-IMAGE_PATH="/home/rajames/PROJECTS/StarshipOS/initramfs/build/initramfs"
+IMAGE_PATH="initramfs"
 
-echo "Create directory if it does not exist."
-initramfs_dir=$(dirname "$IMAGE_PATH")
-if [ ! -d "$initramfs_dir" ]; then
-    echo "Directory $initramfs_dir does not exist. Creating..."
-    mkdir -p "$initramfs_dir"
-fi
-
-echo "Execute the dd command."
-if [ -d "$initramfs_dir" ]; then
-    dd if=/dev/zero of=$IMAGE_PATH bs=1M count=10
-    # shellcheck disable=SC2181
-    if [ $? -eq 0 ]; then
-        echo "dd command executed successfully"
-    else
-        echo "dd command failed"
-    fi
+echo "Create image directory if it does not exist."
+if [ ! -d "$IMAGE_PATH" ]; then
+  echo "initramfs directory created."
+  mkdir -p "$IMAGE_PATH"
 else
-    echo "Failed to create directory $initramfs_dir"
-    exit 1
+  echo "initramfs directory exists."
+  rm -rfv "$IMAGE_PATH"
+  mkdir -p "$IMAGE_PATH"
 fi
+
+# Navigate to the initramfs directory
+cd "$IMAGE_PATH" || exit 1
+
+# Create the dev directory
+mkdir -p dev
+
+# Create essential device nodes
+echo "Creating essential device nodes..."
+sudo mknod -m 600 dev/console c 5 1
+sudo mknod -m 666 dev/null c 1 3
+
+# Create the linuxrc script
+echo "Creating linuxrc script..."
+cat << 'EOF' > linuxrc
+#!/bin/sh
+
+# Mount essential filesystem directories
+echo "Booting StarshipOS"
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t tmpfs none /tmp
+
+# Insert additional initialization logic here if needed
+
+# Switch to the real root filesystem
+exec /bin/sh
+EOF
+chmod +x linuxrc
+
+# Copy the busybox binary to the initramfs directory
+echo "Copying busybox to initramfs..."
+cp /home/rajames/PROJECTS/StarshipOS/busybox/build/bin/busybox/bin .
+
+# Create symlinks for all busybox provided commands
+echo "Creating symlinks for busybox utilities..."
+for cmd in $(./busybox --list); do
+    ln -sf busybox "$cmd"
+done
+echo "All symlinks created for Busybox utilities."
+
+# Populate the ramdisk by copying files to the initramfs directory before writing the image.
+read -p "initramfs ready to write. Press any key..."
+
+echo "Creating initramfs.gz..."
+find . | cpio -o --format=newc | gzip > ../initramfs.gz
+
+# Return to the original directory
+cd - || exit 1
+
+echo "Initramfs creation complete."

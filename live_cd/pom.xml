@@ -35,8 +35,8 @@
                             <workingDirectory>${basedir}</workingDirectory>
                             <arguments>
                                 <argument>scripts/create_bootable_iso.sh</argument>
-                                <argument>${live_cd.build.dir}</argument>
-                                <argument>${initramfs.build.dir}/../..</argument>
+                                <argument>./build</argument>
+                                <argument>/home/rajames/PROJECTS/StarshipOS/initramfs/build</argument>
                             </arguments>
                         </configuration>
                     </execution>

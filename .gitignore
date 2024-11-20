@@ -23,3 +23,5 @@
 /java/java-boot.log
 /scripts/maven.log
 /java/jdk/configure.log
+/live_cd/build/StarshipOS.iso
+/StarshipOS.iso
