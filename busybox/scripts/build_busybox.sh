@@ -15,34 +15,39 @@ function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
-log "Starting busybox build script."
+function log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
+function check_command() {
+    local cmd=$1
+    if ! command -v "$cmd" &> /dev/null; then
+        log "Error: $cmd is not installed."
+        exit 1
+    fi
+}
+
+log "Starting busybox build script"
+for cmd in wget tar make sudo; do
+    check_command "$cmd"
+done
+
 if [ ! -d build ]; then
   log "Creating build directory."
   mkdir -p $TARGET_DIR
   cd $TARGET_DIR
-
   log "Downloading busybox."
   wget $BUSYBOX_URL
-
   log "Downloading busybox."
   tar -xjvf $BUSYBOX_ARCHIVE
-
   log "Entering ./busybox-$BUSYBOX_VERSION."
   cd ./busybox-$BUSYBOX_VERSION
-
-  log "Creating the default (defconfig) configuration."
+  log "Making the default configuration."
   make defconfig
-
-  log "Running make (default target)."
   make
-
-  log "Running make CONFIG_PREFIX=../../../build install."
   make CONFIG_PREFIX=../../../build install
-
-  log "Applying proper file ownership and permissions."
   sudo chown root:root ../../../build/bin/busybox
   sudo chmod 4755 ../../../build/bin/busybox
 else
   log "Nothing to do."
 fi
-log "Finished busybox build script."
