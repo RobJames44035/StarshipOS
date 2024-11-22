@@ -17,29 +17,25 @@
 
     <build>
         <plugins>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>copy-boot-directory</id>
-                        <phase>process-resources</phase>
+                        <id>build-busybox</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/build</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src</directory>
-                                    <includes>
-                                        <include>boot/**</include>
-                                    </includes>
-                                </resource>
-                            </resources>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/build_grub_cfg.sh</argument>
+                            </arguments>
                         </configuration>
+
                     </execution>
                 </executions>
             </plugin>

@@ -11,14 +11,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <root>${project.basedir}</root>
+        <root>${basedir}</root>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
     <modules>
-        <module>busybox</module>
         <module>starship</module>
+        <module>busybox</module>
         <module>java</module>
         <module>system-bridge-cpp</module>
         <module>system-bridge-java</module>
