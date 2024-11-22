@@ -8,5 +8,6 @@ if [ ! -d build ]; then
   make
   cd ../
   mkdir -p build/boot
-  cp /home/rajames/PROJECTS/StarshipOS/starship/build/boot/bzImage /home/rajames/PROJECTS/StarshipOS/starship/build/boot/starship
+  # shellcheck disable=SC2046
+  cp $(pwd)/starship_kernel/arch/i386/boot/bzImage $(pwd)/build/boot/starship
 fi

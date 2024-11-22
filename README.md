@@ -132,12 +132,23 @@ Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) for more details
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project uses multiple licenses based on the component scope:
+
+- **GPLv2**: Applied to Linux-related files in the project.
+- **GPLv2-only**: Applied to Java files in the project.
+- **Apache License 2.0**: Applied to all other original code and files.
+
+For full license details, see the following files:
+
+- [LICENSE_GNU2.md](LICENSE_GNU2.md) for GPLv2.
+- [LICENSE_APACHE2.md](LICENSE_APACHE2.md) for Apache License 2.0.
+
+SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
 
 ---
 
 Thank you for your interest in **My Object-Oriented Operating System**. We’re excited to push the boundaries of traditional OS design and create something truly modern and innovative. If you have any questions or need further assistance, feel free to reach out via our [issue tracker](https://github.com/your-repo/issues).
 
-[^1] Why is this so important?
+[^1] Why is this so important? The module will not be built if the build directory exists.
 
 Happy Coding!
