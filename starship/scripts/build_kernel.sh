@@ -4,10 +4,9 @@
 if [ ! -d build ]; then
   cd ./starship_kernel
   make clean
-  make x86_64_defconfig
+  make tinyconfig
   make
   cd ../
   mkdir -p build/boot
-  cp starship_kernel/arch/x86_64/boot/bzImage build/boot/starship
-  make clean
+  cp /home/rajames/PROJECTS/StarshipOS/starship/build/boot/bzImage /home/rajames/PROJECTS/StarshipOS/starship/build/boot/starship
 fi

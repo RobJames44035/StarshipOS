@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -rfv ./busybox/build
-rm -rfv ./starship_kernel/build
+rm -rfv ./starship/build
 rm -rfv ./initramfs/build
 rm -rfv ./grub/build
 rm -rfv ./java/build
