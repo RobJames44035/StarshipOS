@@ -19,8 +19,7 @@ function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
-log "Starting ISO creation script."
-
+log "S tarting ISO creation script."+++
 if [ ! -d "$BUILD_DIR" ]; then
     # Create necessary directories
     log "Creating necessary directories..."
@@ -36,8 +35,7 @@ if [ ! -d "$BUILD_DIR" ]; then
 
     # Copy grub.cfg into iso_root/boot/grub
     log "Copying grub.cfg to ISO image..."
-    cp -v "$GRUB_CFG_SOURCE_PATH" "$GRUB_DIR/grub.cfg"
-
+    cp -v /home/rajames/PROJECTS/StarshipOS/grub/build/boot/grub.cfg "${ISO_IMAGE_DIR}/boot/grub/grub.cfg"
     # Create the ISO image
     log "Creating the ISO image..."
     mkdir -p "$BUILD_DIR"

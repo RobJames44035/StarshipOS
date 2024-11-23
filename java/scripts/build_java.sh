@@ -37,14 +37,9 @@ configure_and_build_jdk() {
     ./configure \
         --with-boot-jdk="$BOOT_JDK" \
         --with-jvm-variants=minimal \
-        --enable-jit \
         --enable-libffi-bundling \
-        --enable-hsdis-bundling \
         --with-jvm-features="compiler1,compiler2,zgc" \
         --enable-debug \
-        --enable-full-docs \
-        --enable-jvm-feature-cds \
-        --enable-jvm-feature-dtrace \
         --prefix="$PREFIX_DIR" \
         --exec-prefix="$EXEC_PREFIX_DIR" \
         --verbose
