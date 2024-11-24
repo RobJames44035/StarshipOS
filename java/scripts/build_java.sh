@@ -1,6 +1,8 @@
 #!/bin/bash
 # shellcheck disable=SC2164
 # shellcheck disable=SC2162
+# shellcheck disable=SC2046
+
 
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
@@ -47,7 +49,7 @@ configure_and_build_jdk() {
     log "Cleaning previous builds if any..."
     make CONF="linux-x86_64-server-release" clean
     log "Building JDK..."
-    make CONF="linux-x86_64-server-release" images
+    make JOBS=$(nproc) CONF="linux-x86_64-server-release" images
 
     log "Copying built JDK to build directory..."
     cp -r "$CURRENT_DIR/jdk/build/linux-x86_64-server-release/jdk" "$BUILD_DIR"

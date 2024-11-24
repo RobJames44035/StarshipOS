@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2164
+# shellcheck disable=SC2046
 
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
@@ -44,7 +45,7 @@ if [ ! -d build ]; then
   cd ./busybox-$BUSYBOX_VERSION
   log "Making the default configuration."
   make defconfig
-  make
+  make -j$(nproc)
   make CONFIG_PREFIX=../../../build install
   sudo chown root:root ../../../build/bin/busybox
   sudo chmod 4755 ../../../build/bin/busybox

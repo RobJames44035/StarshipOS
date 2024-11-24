@@ -30,8 +30,13 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Setting up tinyconfig..."
     make tinyconfig
 
+    # Ensure kernel is built with debugging information
+    log "Enabling debug information in .config..."
+    sed -i 's/CONFIG_DEBUG_INFO_NONE=y/# CONFIG_DEBUG_INFO_NONE is not set/' .config
+    echo "CONFIG_DEBUG_INFO_DWARF4=y" >> .config
+
     log "Building the kernel..."
-    make
+    make -j$(nproc)
 
     cd "$CURRENT_DIR"
     log "Creating directory structure for boot..."
