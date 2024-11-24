@@ -47,12 +47,12 @@ configure_and_build_jdk() {
         --verbose
 
     log "Cleaning previous builds if any..."
-    make CONF="linux-x86_64-server-release" clean
+    make  CONF="linux-x86_64-minimal-fastdebug" clean
     log "Building JDK..."
-    make JOBS=$(nproc) CONF="linux-x86_64-server-release" images
+    make  CONF="linux-x86_64-minimal-fastdebug"  JOBS=$(nproc) images
 
     log "Copying built JDK to build directory..."
-    cp -r "$CURRENT_DIR/jdk/build/linux-x86_64-server-release/jdk" "$BUILD_DIR"
+    cp -r "$CURRENT_DIR/jdk/build/linux-x86_64-minimal-fastdebug/jdk" "$BUILD_DIR"
     cd "$CURRENT_DIR"
 }
 
