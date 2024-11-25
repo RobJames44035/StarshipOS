@@ -1004,3 +1004,4 @@
 /starship/starship_kernel/tools/power/cpupower/po/zh_CN.po
 /starship/starship_kernel/Documentation/devicetree/bindings/input/zii,rave-sp-pwrbutton.yaml
 /starship/starship_kernel/Documentation/devicetree/bindings/watchdog/zii,rave-sp-wdt.yaml
+/java/jdk/config.log

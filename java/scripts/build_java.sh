@@ -44,16 +44,13 @@ configure_and_build_jdk() {
         --enable-debug \
         --prefix="$PREFIX_DIR" \
         --exec-prefix="$EXEC_PREFIX_DIR" \
+        --prefix="/home/rajames/PROJECTS/StarshipOS/java/build" \
         --verbose
 
     log "Cleaning previous builds if any..."
     make  CONF="linux-x86_64-minimal-fastdebug" clean
     log "Building JDK..."
-    make  CONF="linux-x86_64-minimal-fastdebug"  JOBS=$(nproc) images
-
-    log "Copying built JDK to build directory..."
-    cp -r "$CURRENT_DIR/jdk/build/linux-x86_64-minimal-fastdebug/jdk" "$BUILD_DIR"
-    cd "$CURRENT_DIR"
+    make  CONF="linux-x86_64-minimal-fastdebug" images
 }
 
 # Main script logic
@@ -65,8 +62,10 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Removing BOOT_JDK directory..."
     rm -rf "$BOOT_JDK"
     mkdir -p "$(dirname "$FINAL_BUILD_DIR")"
-    log "Copying final JDK build to $FINAL_BUILD_DIR..."
-    cp -r "${CURRENT_DIR}/jdk/build/linux-x86_64-server-release/jdk" "$FINAL_BUILD_DIR"
+
+    log "Copying built JDK to build directory..."
+    cp -r "$CURRENT_DIR/jdk/build/linux-x86_64-minimal-fastdebug/jdk/*" "$BUILD_DIR"
+    cd "$CURRENT_DIR"
 else
     log "Nothing to do."
 fi

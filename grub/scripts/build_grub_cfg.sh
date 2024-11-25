@@ -27,9 +27,9 @@ set default=0
 # Set the timeout before the default boot entry is selected
 set timeout=15
 
-menuentry "Starship" {
+menuentry "StarshipOS" {
   set root=(cd)
-  linux /boot/starship root=/dev/ram0 rw
+  linux /boot/starship root=/dev/ram0 rw console=ttyS0
   initrd /boot/initramfs.img
 }
 EOF
