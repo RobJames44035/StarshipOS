@@ -29,7 +29,7 @@ set timeout=15
 
 menuentry "StarshipOS" {
   set root=(cd)
-  linux /boot/starship root=/dev/ram0 rw console=ttyS0
+  linux /boot/starship root=/dev/ram0 rw console=ttyS0 debug
   initrd /boot/initramfs.img
 }
 EOF
