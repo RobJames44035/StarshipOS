@@ -17,11 +17,13 @@
 
     <modules>
         <module>starship</module>
-        <module>java</module>
         <module>busybox</module>
+        <module>java</module>
+
         <module>system-bridge-cpp</module>
         <module>system-bridge-java</module>
         <module>userland-java</module>
+
         <module>initramfs</module>
         <module>grub</module>
         <module>live_cd</module>
