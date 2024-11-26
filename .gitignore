@@ -1062,3 +1062,5 @@
 /java/jdk-23.0.1/release
 /java/jdk-23.0.1/lib/src.zip
 /java/jdk-23.0.1/lib/tzdb.dat
+/java/build/
+/jfx/build_output.log
