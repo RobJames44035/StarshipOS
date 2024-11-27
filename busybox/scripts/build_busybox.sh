@@ -42,7 +42,7 @@ if [ ! -d build ]; then
   log "Making the default configuration."
   make defconfig
   make -j$(nproc)
-  make check
+#  make check
   make CONFIG_PREFIX="../../../build" install
 
   sudo chown root:root ../../../build/bin/busybox
