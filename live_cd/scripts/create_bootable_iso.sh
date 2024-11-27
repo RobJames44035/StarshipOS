@@ -13,6 +13,7 @@ GRUB_DIR="${ISO_IMAGE_DIR}/boot/grub"
 KERNEL_SOURCE_PATH="${CURRENT_DIR}/../starship/build/boot/starship"
 INITRAMFS_SOURCE_PATH="${CURRENT_DIR}/../initramfs/build/initramfs.img"
 GRUB_CFG_SOURCE_PATH="${CURRENT_DIR}/../grub/build/boot/grub/grub.cfg"
+BUSYBOX_BUILD="${CURRENT_DIR}/../busybox/build/*"
 
 # Logging function
 function log() {
@@ -21,6 +22,7 @@ function log() {
 
 log "S tarting ISO creation script."+++
 if [ ! -d "$BUILD_DIR" ]; then
+
     # Create necessary directories
     log "Creating necessary directories..."
     mkdir -p "$GRUB_DIR"
@@ -33,13 +35,23 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Copying initramfs image to ISO image..."
     cp -v "$INITRAMFS_SOURCE_PATH" "${ISO_IMAGE_DIR}/boot/initramfs.img"
 
+    # Create BusyBox
+    log "Copying busybox ..."
+    cp -rv "${CURRENT_DIR}/../busybox/build/bin" "${ISO_IMAGE_DIR}"
+    cp -rv "${CURRENT_DIR}/../busybox/build/sbin" "${ISO_IMAGE_DIR}"
+    cp -rv "${CURRENT_DIR}/../busybox/build/usr" "${ISO_IMAGE_DIR}"
+    cp "${CURRENT_DIR}/../busybox/build/linuxrc" "${ISO_IMAGE_DIR}/linuxrc"
+
     # Copy grub.cfg into iso_root/boot/grub
     log "Copying grub.cfg to ISO image..."
     cp -v /home/rajames/PROJECTS/StarshipOS/grub/build/boot/grub.cfg "${ISO_IMAGE_DIR}/boot/grub/grub.cfg"
+
     # Create the ISO image
     log "Creating the ISO image..."
     mkdir -p "$BUILD_DIR"
-    sudo grub-mkrescue -o "${BUILD_DIR}/${ISO_NAME}" "$ISO_IMAGE_DIR"
+    sudo grub-mkrescue -o "${BUILD_DIR}/${ISO_NAME}" "${ISO_IMAGE_DIR}"
+
+    sudo grub-mkrescue -o "live_cd/build/StarshipOS.iso" "live_cd/build/iso-image"
 
     log "Bootable ISO created successfully: ${BUILD_DIR}/${ISO_NAME}"
 else

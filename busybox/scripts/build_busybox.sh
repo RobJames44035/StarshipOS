@@ -16,10 +16,6 @@ function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
-function log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-}
-
 function check_command() {
     local cmd=$1
     if ! command -v "$cmd" &> /dev/null; then
@@ -46,7 +42,9 @@ if [ ! -d build ]; then
   log "Making the default configuration."
   make defconfig
   make -j$(nproc)
-  make CONFIG_PREFIX=../../../build install
+  make check
+  make CONFIG_PREFIX="../../../build" install
+
   sudo chown root:root ../../../build/bin/busybox
   sudo chmod 4755 ../../../build/bin/busybox
 else
