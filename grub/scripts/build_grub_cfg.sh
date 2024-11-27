@@ -25,12 +25,12 @@ if [ ! -d "$BUILD_DIR" ]; then
 set default=0
 
 # Set the timeout before the default boot entry is selected
-set timeout=15
+set timeout=5
 
-menuentry "StarshipOS" {
-  set root=(cd)
-  linux /boot/starship root=/dev/ram0 rw console=ttyS0 debug
-  initrd /boot/initramfs.img
+menuentry "Starship" {
+set root=(cd)
+linux /boot/starship root=live:LABEL=StarshipOS rw console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
+initrd /boot/initramfs.img
 }
 EOF
     log "Successfully created GRUB configuration file."

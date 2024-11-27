@@ -10,7 +10,7 @@ CURRENT_DIR="${PWD}"
 KERNEL_DIR="${CURRENT_DIR}/starship_kernel"
 BUILD_DIR="${CURRENT_DIR}/build"
 BOOT_DIR="${BUILD_DIR}/boot"
-KERNEL_IMAGE_PATH="${KERNEL_DIR}/arch/i386/boot/bzImage"
+KERNEL_IMAGE_PATH="${KERNEL_DIR}/arch/x86_64/boot/bzImage"
 TARGET_KERNEL_PATH="${BOOT_DIR}/starship"
 
 # Logging function
@@ -25,27 +25,28 @@ if [ ! -d "$BUILD_DIR" ]; then
 
     cd "$KERNEL_DIR"
     log "Cleaning previous builds..."
-    make clean
+    sudo make clean
 
-    log "Setting up tinyconfig..."
-    make tinyconfig
+    log "Building the starship kernel..."
+    make -j$(nproc) bzImage
+    sudo make modules
+    sudo make modules_install
 
-    # Ensure kernel is built with debugging information
-    log "Enabling debug information in .config..."
-    sed -i 's/CONFIG_DEBUG_INFO_NONE=y/# CONFIG_DEBUG_INFO_NONE is not set/' .config
-    echo "CONFIG_DEBUG_INFO_DWARF4=y" >> .config
+# Step 3: Create a temporary directory for the live CD structure
+    LIVECD_PATH=$(pwd)/livecd
+    mkdir -p $LIVECD_PATH
 
-    log "Building the kernel..."
-    make -j$(nproc)
+# Step 4: Install modules into the temporary directory
+    export INSTALL_MOD_PATH=$LIVECD_PATH
+    make modules_install
 
-    cd "$CURRENT_DIR"
-    log "Creating directory structure for boot..."
-    mkdir -p "$BOOT_DIR"
+# Step 5: Create boot directory and copy bzImage
+  mkdir -p "$LIVECD_PATH"/boot
+  cp arch/x86/boot/bzImage "$LIVECD_PATH"/boot/starship
 
-    log "Copying kernel image to boot directory..."
-    cp "$KERNEL_IMAGE_PATH" "$TARGET_KERNEL_PATH"
+# Step 6: Create other necessary directories (example: /dev, /proc, /sys)
+  mkdir -p "$LIVECD_PATH"/{dev,proc,sys,run,etc,home,var,tmp,usr,bin,sbin}
 
-    log "Kernel build and setup completed successfully."
 else
     log "Build directory already exists. Skipping kernel build."
 fi

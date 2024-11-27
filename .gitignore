@@ -1065,3 +1065,6 @@
 /java/build/
 /jfx/build_output.log
 /starship-os.iml
+/live_cd/iso_creation.log
+/qemu_log.txt
+/qemu_serial.log
