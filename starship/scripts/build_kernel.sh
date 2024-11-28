@@ -30,11 +30,10 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Building the starship kernel..."
     make -j$(nproc) bzImage
     sudo make modules
-    sudo make modules_install
 
 # Step 3: Create a temporary directory for the live CD structure
-    LIVECD_PATH=$(pwd)/livecd
-    mkdir -p $LIVECD_PATH
+    LIVECD_PATH="/home/rajames/PROJECTS/StarshipOS/starship/build/live_cd"
+    mkdir -p "$LIVECD_PATH"
 
 # Step 4: Install modules into the temporary directory
     export INSTALL_MOD_PATH=$LIVECD_PATH
@@ -46,6 +45,13 @@ if [ ! -d "$BUILD_DIR" ]; then
 
 # Step 6: Create other necessary directories (example: /dev, /proc, /sys)
   mkdir -p "$LIVECD_PATH"/{dev,proc,sys,run,etc,home,var,tmp,usr,bin,sbin}
+
+# Step 7: move livecd to module build
+  LIVE_CD_FINAL="/home/rajames/PROJECTS/StarshipOS/live_cd/build/iso-image"
+  mkdir -p "$LIVE_CD_FINAL"
+
+  cp -rv "/home/rajames/PROJECTS/StarshipOS/starship/starship_kernel/live-cd" \
+   "/home/rajames/PROJECTS/StarshipOS/live_cd/build/iso-image"
 
 else
     log "Build directory already exists. Skipping kernel build."
