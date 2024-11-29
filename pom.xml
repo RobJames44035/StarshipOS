@@ -20,12 +20,12 @@
         <module>busybox</module>
         <module>java</module>
 
-        <module>system-bridge-cpp</module>
-        <module>system-bridge-java</module>
-        <module>userland-java</module>
+        <!--        <module>system-bridge-cpp</module>-->
+        <!--        <module>system-bridge-java</module>-->
+        <!--        <module>userland-java</module>-->
 
-        <module>initramfs</module>
         <module>grub</module>
+        <module>initramfs</module>
         <module>live_cd</module>
     </modules>
 

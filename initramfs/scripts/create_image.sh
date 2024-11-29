@@ -4,13 +4,14 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
+HOME="/home/rajames/PROJECTS/StarshipOS"
 BUILD_DIR="build"
 TARGET_DIR="target/initramfs_img"
 OUTPUT_IMAGE="target/initramfs.img"
 
 # Paths to your components
-BUSYBOX_SRC="/home/rajames/PROJECTS/StarshipOS/busybox/build/*"
-GRUB_SRC="/home/rajames/PROJECTS/StarshipOS/grub/build/*"
+BUSYBOX_SRC="$HOME/busybox/build/*"
+GRUB_SRC="/home/rajames/PROJECTS/StarshipOS/grub/build/"
 KERNEL_SRC="/home/rajames/PROJECTS/StarshipOS/starship/build/live_cd/boot/starship"  # Adjusted to point to your kernel
 JDK_SRC="/home/rajames/PROJECTS/StarshipOS/java/build/jdk/jdk"  # Adjust this to your JDK location
 JDK_TARGET_DIR="$TARGET_DIR/usr/lib/jvm"  # Target directory for JDK inside the initramfs
@@ -25,28 +26,16 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Creating target directory: $TARGET_DIR"
     mkdir -p "$TARGET_DIR"
 
-    log "Copying BusyBox build content to target directory."
-    cp -r $BUSYBOX_SRC "$TARGET_DIR"
-
-    log "Copying Grub build content to target directory."
-    cp -r $GRUB_SRC "$TARGET_DIR"
-
     log "Copying the kernel (starship) to target directory."
     mkdir -p "$TARGET_DIR/boot"
-    cp "$KERNEL_SRC" "$TARGET_DIR/boot/"
+    cp -rv $HOME/live_cd/build/iso-image/* "$TARGET_DIR"
 
-    log "Copying the rest of the live_cd filesystem to target directory."
-    cp -r /home/rajames/PROJECTS/StarshipOS/starship/build/live_cd/* "$TARGET_DIR/"
-
-    # Copying the kernel modules to the target directory
-    log "Copying kernel modules to target directory."
-    cp -r /home/rajames/PROJECTS/StarshipOS/starship/build/live_cd/lib/modules/* "$TARGET_DIR/lib/modules/"
-
+    log "Copying GRUB2 boot/grub.cfg"
+    cp $HOME/grub/build/boot/grub.cfg $HOME/initramfs/target/initramfs_img/boot/grub.cfg
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # Copy the JDK to the target directory
     log "Copying JDK to target directory."
-    mkdir -p "$JDK_TARGET_DIR"
-    cp -r "$JDK_SRC"/* "$JDK_TARGET_DIR"
+    cp -rv $HOME/java/build/jdk/jdk/* $HOME/initramfs/target/initramfs_img
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # Add any other content or files you want in your initramfs here

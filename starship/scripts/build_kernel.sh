@@ -7,7 +7,7 @@ set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
 HOME="/home/rajames/PROJECTS/StarshipOS"
-CURRENT_DIR="${PWD}"
+CURRENT_DIR="${HOME}/starship"
 KERNEL_DIR="${CURRENT_DIR}/starship_kernel"
 BUILD_DIR="${CURRENT_DIR}/build"
 BOOT_DIR="${BUILD_DIR}/boot"
@@ -35,6 +35,7 @@ if [ ! -d "$BUILD_DIR" ]; then
 # Step 3: Create a temporary directory for the live CD structure
     LIVECD_PATH="${HOME}/starship/build/live_cd"
     log "mkdir -p ${LIVECD_PATH}"
+
     mkdir -p "$LIVECD_PATH"
 
 # Step 4: Install modules into the temporary directory
@@ -49,15 +50,14 @@ if [ ! -d "$BUILD_DIR" ]; then
   log "cp arch/x86/boot/bzImage ${LIVECD_PATH}/boot/starship"
   cp "arch/x86/boot/bzImage" "${LIVECD_PATH}/boot/starship"
 
-# Step 6: Create other necessary directories (example: /dev, /proc, /sys)
-  log "mkdir -p ${LIVECD_PATH}/.........."
-  mkdir -p $LIVECD_PATH/{dev,proc,sys,run,etc,home,var,tmp,usr,bin,sbin}
+## Step 6: Create other necessary directories (example: /dev, /proc, /sys)
+#  log "mkdir -p ${LIVECD_PATH}/.........."
+#  mkdir -p $LIVECD_PATH/{dev,proc,sys,run,etc,home,var,tmp,usr,bin,sbin}
 
 # Step 7: move livecd to module build
-  LIVE_CD_FINAL=$HOME/live_cd/build/iso-image
-  mkdir -p $LIVE_CD_FINAL
+  mkdir -p $HOME/live_cd/build/iso-image
 
-  cp -v $HOME/starship/starship_kernel/live_cd $HOME/live_cd/build/iso-image
+  cp -rv $HOME/starship/build/live_cd/* $HOME/live_cd/build/iso-image
 
 else
     log "Nothing to do!"
