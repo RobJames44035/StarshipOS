@@ -47,14 +47,10 @@ if [ ! -d "$BUILD_DIR" ]; then
 # Step 5: Create boot directory and copy bzImage
   log "mkdir -p ${LIVECD_PATH}/boot"
   mkdir -p "${LIVECD_PATH}/boot"
+
   log "cp arch/x86/boot/bzImage ${LIVECD_PATH}/boot/starship"
   cp "arch/x86/boot/bzImage" "${LIVECD_PATH}/boot/starship"
 
-## Step 6: Create other necessary directories (example: /dev, /proc, /sys)
-#  log "mkdir -p ${LIVECD_PATH}/.........."
-#  mkdir -p $LIVECD_PATH/{dev,proc,sys,run,etc,home,var,tmp,usr,bin,sbin}
-
-# Step 7: move livecd to module build
   mkdir -p $HOME/live_cd/build/iso-image
 
   cp -rv $HOME/starship/build/live_cd/* $HOME/live_cd/build/iso-image

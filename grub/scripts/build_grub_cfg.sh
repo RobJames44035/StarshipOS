@@ -28,9 +28,9 @@ set default=0
 set timeout=5
 
 menuentry "Starship" {
-set root=(cd)
-linux /boot/starship root=live:LABEL=StarshipOS rw console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
-initrd /boot/initramfs.img
+  set root=(cd)
+  linux /boot/starship root=live:LABEL=StarshipOS rw console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
+  initrd /boot/initramfs.img
 }
 EOF
     log "Successfully created GRUB configuration file."
