@@ -1,3 +1,5 @@
+![StarshipOS](./StarshipOS.png)
+
 ## A Vision for Empowerment
 
 The **Starship Operating System** project is not just about technological innovation, but also about transformative
