@@ -7,9 +7,9 @@ set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
 HOME="/home/rajames/PROJECTS/StarshipOS"
-CURRENT_DIR="${HOME}/starship"
-KERNEL_DIR="${CURRENT_DIR}/starship_kernel"
-BUILD_DIR="${CURRENT_DIR}/build"
+STARSHIP_ROOT="${HOME}/starship"
+KERNEL_DIR="${STARSHIP_ROOT}/starship_kernel"
+BUILD_DIR="${STARSHIP_ROOT}/build"
 BOOT_DIR="${BUILD_DIR}/boot"
 #KERNEL_IMAGE_PATH="${KERNEL_DIR}/arch/x86_64/boot/bzImage"
 #TARGET_KERNEL_PATH="${BOOT_DIR}/starship"
@@ -27,6 +27,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     cd "$KERNEL_DIR"
     log "Cleaning previous builds in ${KERNEL_DIR}"
     sudo make clean
+    cp "$STARSHIP_ROOT/.config" "$KERNEL_DIR/.config"
 
     log "Building the starship kernel in ${KERNEL_DIR}"
     make -j$(nproc) bzImage

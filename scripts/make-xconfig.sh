@@ -6,11 +6,8 @@ set -u  # Treat unset variables as an error
 HOME=$PWD
 KERNEL_ROOT=$PWD/starship/starship_kernel
 
-function log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-}
-
 cd "$KERNEL_ROOT"
 make clean
 make xconfig
+cp "$KERNEL_ROOT/.config" "$HOME/.config"
 cd "$HOME"
