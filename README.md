@@ -1,4 +1,13 @@
-# Starship Operating System (StarshipOS)
+## A Vision for Empowerment
+
+The **Starship Operating System** project is not just about technological innovation, but also about transformative
+impact. With a strong belief in the untapped potential within the prison system, this project aspires to serve as an
+educational platform, providing inmates with access to valuable programming skills. This endeavor recognizes the
+importance of offering incarcerated individuals constructive outlets and opportunities to rebuild their lives. By
+teaching modern software development skills within a supportive environment, StarshipOS seeks to empower those who often
+feel voiceless, fostering rehabilitation and creating pathways to meaningful employment after release. This vision
+underscores a commitment to harnessing talent, encouraging change, and, ultimately, leaving a meaningful mark on the
+world.# Starship Operating System (StarshipOS)
 
 Welcome to the repository for **Starship Operating System**! This project aims to revolutionize traditional operating systems by integrating principles of object-oriented programming (OOP) deeply into the OS architecture, offering a modern way to manage files and memory.
 
