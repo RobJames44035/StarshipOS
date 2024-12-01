@@ -8,7 +8,7 @@ rm -rfv ./java/build
 rm -rfv ./system-bridge-cpp/build
 rm -rfv .system-bridge-java/build
 rm -rfv ./userland-java/build
-rm -rfv ./starship-sdk
+rm -rfv ./starship-sdk/build
 
 rm -rfv ./initramfs/build
 rm -rfv ./grub/build
