@@ -79,22 +79,6 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <!--                    <execution>-->
-                    <!--                    <id>uber-clean-execution</id>-->
-                    <!--                    <phase>clean</phase>-->
-                    <!--                    <goals>-->
-                    <!--                        <goal>exec</goal>-->
-                    <!--                    </goals>-->
-                    <!--                    <configuration>-->
-                    <!--                        <executable>bash</executable>-->
-                    <!--                        <arguments>-->
-                    <!--                            <argument>-c</argument>-->
-                    <!--                            <argument>scripts/uber-clean.sh</argument>-->
-                    <!--                            &lt;!&ndash;suppress UnresolvedMavenProperty &ndash;&gt;-->
-                    <!--                            <argument>${uberCleanModules}</argument> &lt;!&ndash; Pass maven property &ndash;&gt;-->
-                    <!--                        </arguments>-->
-                    <!--                    </configuration>-->
-                    <!--                    </execution>-->
                 </executions>
             </plugin>
         </plugins>
