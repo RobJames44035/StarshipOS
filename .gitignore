@@ -788,3 +788,15 @@
 /starship/starship_kernel/tools/power/cpupower/po/zh_CN.po
 /starship/starship_kernel/Documentation/devicetree/bindings/input/zii,rave-sp-pwrbutton.yaml
 /starship/starship_kernel/Documentation/devicetree/bindings/watchdog/zii,rave-sp-wdt.yaml
+/starship/starship_kernel/.tmp_vmlinux.kallsyms0.syms
+/starship/starship_kernel/.tmp_vmlinux0.kallsyms.S
+/starship/starship_kernel/.tmp_vmlinux1
+/starship/starship_kernel/.tmp_vmlinux1.kallsyms.S
+/starship/starship_kernel/.tmp_vmlinux1.map
+/starship/starship_kernel/.tmp_vmlinux1.syms
+/starship/starship_kernel/.tmp_vmlinux2
+/starship/starship_kernel/.tmp_vmlinux2.kallsyms.S
+/starship/starship_kernel/.tmp_vmlinux2.map
+/starship/starship_kernel/.tmp_vmlinux2.syms
+/starship/starship_kernel/.vmlinux.export.c
+/starship/starship_kernel/.vmlinux.objs
