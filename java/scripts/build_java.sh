@@ -46,8 +46,8 @@ configure_and_build_jdk() {
         --prefix="$PREFIX_DIR" \
         --exec-prefix="$EXEC_PREFIX_DIR"
 
-    log "Cleaning previous builds if any..."
-    make CONF="${CONFIGURATION}" clean
+#    log "Cleaning previous builds if any..."
+#    make CONF="${CONFIGURATION}" clean
     log "Building JDK..."
     make CONF="${CONFIGURATION}" images
     cd "$CURRENT_DIR"

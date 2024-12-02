@@ -25,8 +25,8 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Building kernel as build directory does not exist..."
 
     cd "$KERNEL_DIR"
-    log "Cleaning previous builds in ${KERNEL_DIR}"
-    sudo make clean
+#    log "Cleaning previous builds in ${KERNEL_DIR}"
+#    sudo make clean
     cp "$STARSHIP_ROOT/.config" "$KERNEL_DIR/.config"
 
     log "Building the starship kernel in ${KERNEL_DIR}"
