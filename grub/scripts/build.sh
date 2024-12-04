@@ -4,7 +4,7 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-BUILD_DIR="build/boot"
+BUILD_DIR="build/init_ram_fs/boot/grub"
 OUTPUT_FILE="$BUILD_DIR/grub.cfg"
 
 function log() {

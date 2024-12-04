@@ -800,3 +800,11 @@
 /starship/starship_kernel/.tmp_vmlinux2.syms
 /starship/starship_kernel/.vmlinux.export.c
 /starship/starship_kernel/.vmlinux.objs
+/busybox/busybox.iml
+/grub/grub.iml
+/java/java.iml
+/live_cd/live_cd.iml
+/starship/starship.iml
+/busybox/.wget-hsts
+/initramfs/initramfs.iml
+/initramfs/build/initramfs.img

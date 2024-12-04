@@ -23,8 +23,8 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-busybox</id>
-                        <phase>generate-sources</phase>
+                        <id>build-grub-cfg</id>
+                        <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -32,10 +32,9 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>scripts/build_grub_cfg.sh</argument>
+                                <argument>scripts/build.sh</argument>
                             </arguments>
                         </configuration>
-
                     </execution>
                 </executions>
             </plugin>

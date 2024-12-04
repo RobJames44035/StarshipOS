@@ -32,7 +32,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>scripts/build_kernel.sh</argument>
+                                <argument>scripts/build.sh</argument>
                             </arguments>
                         </configuration>
                     </execution>

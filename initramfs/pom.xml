@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.mvnrepository.com/xsd/mvn-4.0.0.xsd">
+>
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.starship</groupId>
@@ -29,15 +29,14 @@
                 <executions>
                     <execution>
                         <id>build-initramfs</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
                             <executable>bash</executable>
                             <arguments>
-                                <argument>scripts/create_image.sh</argument>
-                                <argument>${root}</argument>
+                                <argument>scripts/build.sh</argument>
                             </arguments>
                         </configuration>
                     </execution>

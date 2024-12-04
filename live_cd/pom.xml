@@ -34,9 +34,7 @@
                             <executable>bash</executable>
                             <workingDirectory>${basedir}</workingDirectory>
                             <arguments>
-                                <argument>scripts/create_bootable_iso.sh</argument>
-                                <argument>../build</argument>
-                                <argument>/home/rajames/PROJECTS/StarshipOS/initramfs/build</argument>
+                                <argument>scripts/build.sh</argument>
                             </arguments>
                         </configuration>
                     </execution>

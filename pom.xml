@@ -20,8 +20,7 @@
         <module>busybox</module>
         <module>java</module>
 
-        <module>system-bridge-cpp</module>
-        <module>system-bridge-java</module>
+        <module>system-bridge</module>
         <module>userland-java</module>
         <module>starship-sdk</module>
 
@@ -64,7 +63,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>conditional-build-gcc</id>
+                        <id>headers</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>exec</goal>

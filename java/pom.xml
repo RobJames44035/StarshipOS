@@ -25,7 +25,7 @@
                 <executions>
                     <execution>
                         <id>build-java</id>
-                        <phase>generate-sources</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -33,7 +33,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>scripts/build_java.sh</argument>
+                                <argument>scripts/build.sh</argument>
                             </arguments>
                         </configuration>
                     </execution>

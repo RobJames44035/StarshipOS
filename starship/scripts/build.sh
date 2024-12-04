@@ -22,22 +22,20 @@ function log() {
 log "Starting kernel build script."
 
 if [ ! -d "$BUILD_DIR" ]; then
-    log "Building kernel as build directory does not exist..."
+  log "Building kernel as build directory does not exist..."
 
-    cd "$KERNEL_DIR"
-#    log "Cleaning previous builds in ${KERNEL_DIR}"
-#    sudo make clean
-    cp "$STARSHIP_ROOT/.config" "$KERNEL_DIR/.config"
+  cd "$KERNEL_DIR"
+  cp "$STARSHIP_ROOT/.config" "$KERNEL_DIR/.config"
 
-    log "Building the starship kernel in ${KERNEL_DIR}"
-    make -j$(nproc) bzImage
-    sudo make modules
+  log "Building the starship kernel in ${KERNEL_DIR}"
+  make -j$(nproc) bzImage
+  sudo make modules
 
 # Step 3: Create a temporary directory for the live CD structure
-    LIVECD_PATH="${HOME}/starship/build/live_cd"
-    log "mkdir -p ${LIVECD_PATH}"
+  LIVECD_PATH="${HOME}/starship/build/init_ram_fs" # Really for the live cd
+  log "mkdir -p ${LIVECD_PATH}"
 
-    mkdir -p "$LIVECD_PATH"
+  mkdir -p "$LIVECD_PATH"
 
 # Step 4: Install modules into the temporary directory
     log "export INSTALL_MOD_PATH=${LIVECD_PATH}"

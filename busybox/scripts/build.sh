@@ -5,8 +5,9 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-BUILD_DIR="build"
-TARGET_DIR="target/src"
+HOME="$PWD"
+BUILD_DIR="$HOME/build"
+TARGET_DIR="$HOME/target"
 BUSYBOX_VERSION="1.35.0"
 BUSYBOX_ARCHIVE="busybox-${BUSYBOX_VERSION}.tar.bz2"
 BUSYBOX_URL="https://busybox.net/downloads/${BUSYBOX_ARCHIVE}"
@@ -31,22 +32,30 @@ done
 
 if [ ! -d build ]; then
   log "Creating build directory."
-  mkdir -p $TARGET_DIR
-  cd $TARGET_DIR
+  mkdir -p "$TARGET_DIR"
+  cd "$TARGET_DIR"
   log "Downloading busybox."
-  wget $BUSYBOX_URL
+  wget "$BUSYBOX_URL"
   log "Downloading busybox."
-  tar -xjvf $BUSYBOX_ARCHIVE
+  tar -xjvf "$BUSYBOX_ARCHIVE"
   log "Entering ./busybox-$BUSYBOX_VERSION."
-  cd ./busybox-$BUSYBOX_VERSION
-  log "Making the default configuration."
-  make defconfig
-  make -j$(nproc)
-#  make check
-  make CONFIG_PREFIX="../../../build" install
+  cd "./busybox-$BUSYBOX_VERSION"
 
-  sudo chown root:root ../../../build/bin/busybox
-  sudo chmod 4755 ../../../build/bin/busybox
+  log "Copying the default configuration."
+  cp "$HOME/.config" "./"
+
+  log "Compiling BusyBox..."
+  make -j$(nproc)
+
+  log "installing Busybox..."
+  make CONFIG_PREFIX="$HOME/build/init_ram_fs" install
+
+  log "Setting proper file permissions & ownership for BusyBox."
+  sudo chown root:root "$HOME/build/init_ram_fs/bin/busybox"
+  sudo chmod 4755 "$HOME/build/init_ram_fs/bin/busybox"
+
+  log "Removing unused artefacts to save space."
+  sudo rm -rfv "$TARGET_DIR"
 else
   log "Nothing to do."
 fi
