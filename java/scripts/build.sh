@@ -57,7 +57,7 @@ configure_and_build_jdk() {
 log "Starting JDK build script."
 
 if [ ! -d "$BUILD_DIR" ]; then
-    download_and_unpack_jdk
+#    download_and_unpack_jdk
     configure_and_build_jdk
 
     log "Removing BOOT_JDK directory..."
