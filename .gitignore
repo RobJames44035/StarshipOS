@@ -808,3 +808,14 @@
 /busybox/.wget-hsts
 /initramfs/initramfs.iml
 /initramfs/build/initramfs.img
+/busybox/busybox/.busybox_unstripped.cmd
+/busybox/busybox/busybox_unstripped
+/busybox/busybox/busybox_unstripped.map
+/busybox/busybox/busybox_unstripped.out
+/busybox/busybox/busybox
+/starship/.config.old
+/busybox/busybox/busybox.links
+*.o.cmd
+/.cache/
+/.config/
+/.local/

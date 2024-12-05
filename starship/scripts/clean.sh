@@ -7,10 +7,6 @@ THIS_DIR="$PWD"
 MAKE_DIR="$THIS_DIR/starship_kernel"
 
 function log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-}
-
-function error_log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1" >&2
 }
 
@@ -31,10 +27,6 @@ if [ -d "$MAKE_DIR" ]; then
         # Go back to the original directory
         cd "$THIS_DIR" || { error_log "Failed to switch back to $THIS_DIR"; exit 1; }
 
-        if [ "$UBER_CLEAN" = "true" ]; then
-            log "Performing uber-clean: Deleting build directory"
-            rm -rf build || { error_log "Failed to delete build directory"; exit 1; }
-        fi
 else
     error_log "The directory $MAKE_DIR does not exist."
     exit 1

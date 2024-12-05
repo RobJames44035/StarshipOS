@@ -10,7 +10,7 @@ HOME="/home/rajames/PROJECTS/StarshipOS"
 STARSHIP_ROOT="${HOME}/starship"
 KERNEL_DIR="${STARSHIP_ROOT}/starship_kernel"
 BUILD_DIR="${STARSHIP_ROOT}/build"
-LIVE_CD_PATH="$HOME/build/init_ram_fs" # Really for the live cd
+LIVE_CD_PATH="$HOME/starship/build/init_ram_fs" # Really for the live cd
 export INSTALL_MOD_PATH=$LIVE_CD_PATH
 
 # Logging function
@@ -23,20 +23,19 @@ log "Starting kernel build script."
 if [ ! -d "$BUILD_DIR" ]; then
   log "Building kernel because the build directory does not exist."
   cd "$KERNEL_DIR"
-  cp "$TARSHIP_ROOT/.config" "$KERNEL_DIR/.config"
-  make mrproper # Make it REALLY clean.
-#  make xconfig  # Let's call xconfig to tinker with the kernel, but mostly we just save and exit.
   log "Building the starship kernel in $KERNEL_DIR"
-  make -j$(nproc) bzImage
-  sudo make modules # Build kernel modules.
+
+  sudo make V=1 -j$(nproc) vmlinux
+  sudo make modules
+
   log "mkdir -p ${LIVE_CD_PATH}"
   mkdir -p "$LIVE_CD_PATH"
   log "make modules_install"
   make modules_install
 
   mkdir -p "${LIVE_CD_PATH}/boot"
-  log "cp arch/x86/boot/bzImage $LIVE_CD_PATH/boot/starship"
-  cp "arch/x86/boot/bzImage" "$LIVE_CD_PATH/boot/starship"
+  log "Copying kernel to ${LIVE_CD_PATH}/boot"
+  cp "arch/x86/boot/vmlinux" "$LIVE_CD_PATH/boot/starship"
 
 else
     log "Nothing to do!"

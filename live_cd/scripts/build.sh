@@ -18,7 +18,7 @@ if [ ! -d build ]; then
 
   # Copy the live_cd directory to the iso-assembly directory
   log "Copying initramfs to iso-assembly... /boot"
-c p -r "$HOME/initramfs/build/initramfs.img" "$HOME/live_cd/build/iso-assembly/boot"
+  cp -r "$HOME/initramfs/build/initramfs.img" "$HOME/live_cd/build/iso-assembly/boot"
 
   # Copy the kernel.
   log "Copying kernel to iso-assembly... /boot"
@@ -35,15 +35,14 @@ c p -r "$HOME/initramfs/build/initramfs.img" "$HOME/live_cd/build/iso-assembly/b
   log "Copying busybox /"
   log "/bin"
   cp -r "$HOME/busybox/build/init_ram_fs/bin" "$HOME/live_cd/build/iso-assembly"
-  log "/lib"
-  cp -r "$HOME/busybox/build/init_ram_fs/lib" "$HOME/live_cd/build/iso-assembly"
-  lo "/sbin"
+  log "/sbin"
   cp -r "$HOME/busybox/build/init_ram_fs/sbin" "$HOME/live_cd/build/iso-assembly"
   log "/usr"
   cp -r "$HOME/busybox/build/init_ram_fs/usr" "$HOME/live_cd/build/iso-assembly"
   log "/linuxrc"
   cp -r "$HOME/busybox/build/init_ram_fs/linuxrc" "$HOME/live_cd/build/iso-assembly"
 
+read -p "HI"
   sudo grub-mkrescue -o "$HOME/$ISO_NAME" "$HOME/live_cd/build/iso-assembly" 2>&1 | tee iso_creation.log || { log "ISO creation failed"; exit 1; }
 
   log "Bootable ISO created successfully in project root."
