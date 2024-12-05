@@ -25,7 +25,7 @@ if [ ! -d "$BUILD_DIR" ]; then
   cd "$KERNEL_DIR"
   log "Building the starship kernel in $KERNEL_DIR"
 
-  sudo make V=1 -j$(nproc) vmlinux
+  sudo make -j$(nproc) bzImage
   sudo make modules
 
   log "mkdir -p ${LIVE_CD_PATH}"
@@ -35,7 +35,7 @@ if [ ! -d "$BUILD_DIR" ]; then
 
   mkdir -p "${LIVE_CD_PATH}/boot"
   log "Copying kernel to ${LIVE_CD_PATH}/boot"
-  cp "arch/x86/boot/vmlinux" "$LIVE_CD_PATH/boot/starship"
+  cp "arch/x86/boot/bzImage" "$LIVE_CD_PATH/boot/starship"
 
 else
     log "Nothing to do!"

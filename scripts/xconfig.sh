@@ -7,7 +7,7 @@ HOME=$PWD
 KERNEL_ROOT=$PWD/starship/starship_kernel
 
 cd "$KERNEL_ROOT"
-make clean
+sudo make clean
 make xconfig
 cp "$KERNEL_ROOT/.config" "$HOME/.config"
 cd "$HOME"

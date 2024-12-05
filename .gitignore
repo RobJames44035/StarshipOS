@@ -819,3 +819,4 @@
 /.cache/
 /.config/
 /.local/
+/.dbus/
