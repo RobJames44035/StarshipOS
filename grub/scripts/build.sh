@@ -27,9 +27,9 @@ set default=0
 # Set the timeout before the default boot entry is selected
 set timeout=5
 
-menuentry "Starship" {
+menuentry "StarshipOS" {
   set root=(cd)
-  linux /boot/starship root=live:LABEL=StarshipOS rw console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
+  linux /boot/starship root=live console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
   initrd /boot/initramfs.img
 }
 EOF
