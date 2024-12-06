@@ -4,7 +4,7 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-ISO_NAME="StarshipOS.iso"
+ISO_NAME="StarshipOS-$1.iso"
 HOME="/home/rajames/PROJECTS/StarshipOS"
 
 # Logging function
@@ -42,10 +42,9 @@ if [ ! -d build ]; then
   log "/linuxrc"
   cp -r "$HOME/busybox/build/init_ram_fs/linuxrc" "$HOME/live_cd/build/iso-assembly"
 
-read -p "HI"
-  sudo grub-mkrescue -o "$HOME/$ISO_NAME" "$HOME/live_cd/build/iso-assembly" 2>&1 | tee iso_creation.log || { log "ISO creation failed"; exit 1; }
+  sudo grub-mkrescue -o "$HOME/live_cd/build/$ISO_NAME" "$HOME/live_cd/build/iso-assembly" 2>&1 | tee iso_creation.log || { log "ISO creation failed"; exit 1; }
 
-  log "Bootable ISO created successfully in project root."
+  log "Bootable ISO created successfully in $HOME/live_cd/build/$ISO_NAME."
 else
   log "Nothing to do."
 fi

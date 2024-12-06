@@ -840,3 +840,4 @@
 /busybox/busybox/applets/usage_pod
 /busybox/busybox/scripts/kconfig/zconf.tab.o
 /grub/build/
+/live_cd/build/
