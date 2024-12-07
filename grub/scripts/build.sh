@@ -29,7 +29,7 @@ set timeout=5
 
 menuentry "StarshipOS" {
   set root=(cd)
-  linux /boot/starship root=live console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug initcall_debug ignore_loglevel
+  linux /boot/starship root=live console=ttyS0,115200 loglevel=7 earlyprintk=serial,ttyS0,115200 debug
   initrd /boot/initramfs.img
 }
 EOF
