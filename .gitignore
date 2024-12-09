@@ -843,3 +843,6 @@
 /live_cd/build/
 /initramfs/build/
 /starship/build/
+/qcow2_image/build/
+/qcow2_image/qcow2_image.iml
+/qcow2_image/target/

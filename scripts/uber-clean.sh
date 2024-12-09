@@ -3,7 +3,7 @@ clear
 
 sudo rm -rfv ./starship/build
 #rm -rfv ./java/build
-rm -rfv ./busybox/build
+#rm -rfv ./busybox/build
 
 rm -rfv ./system-bridge/build
 rm -rfv ./userland-java/build

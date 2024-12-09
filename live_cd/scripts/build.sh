@@ -42,7 +42,7 @@ if [ ! -d build ]; then
   log "/linuxrc"
   cp -r "$HOME/busybox/build/init_ram_fs/linuxrc" "$HOME/live_cd/build/iso-assembly"
 
-  sudo grub-mkrescue -o "$HOME/live_cd/build/$ISO_NAME" "$HOME/live_cd/build/iso-assembly" 2>&1 | tee iso_creation.log || { log "ISO creation failed"; exit 1; }
+  sudo grub-mkrescue -boot_image "grub" -o "$HOME/live_cd/build/$ISO_NAME" "$HOME/live_cd/build/iso-assembly" 2>&1 | tee iso_creation.log || { log "ISO creation failed"; exit 1; }
 
   log "Bootable ISO created successfully in $HOME/live_cd/build/$ISO_NAME."
 else

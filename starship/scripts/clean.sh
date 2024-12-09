@@ -20,7 +20,7 @@ if [ -d "$MAKE_DIR" ]; then
         log "Cleaning with make clean in $MAKE_DIR"
 
         # Run make clean and log on error
-        make clean || { error_log "make clean failed"; exit 1; }
+        sudo make clean || { error_log "make clean failed"; exit 1; }
 
         log "Returning to $THIS_DIR"
 

@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.w3.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.starship</groupId>
+    <groupId>org.starship</groupId>
     <artifactId>starship-os</artifactId>
     <packaging>pom</packaging>
     <version>0.1.0-SNAPSHOT</version>
@@ -26,6 +26,7 @@
 
         <module>grub</module>
         <module>initramfs</module>
+        <module>qcow2_image</module>
         <module>live_cd</module>
     </modules>
 

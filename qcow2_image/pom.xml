@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.starship</groupId>
@@ -7,16 +7,13 @@
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>initramfs</artifactId>
+    <artifactId>qcow2_image</artifactId>
     <packaging>pom</packaging>
 
-    <name>initramfs</name>
+    <name>cow2_image</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <busybox.build.dir>${basedir}/busybox/build</busybox.build.dir>
-        <initramfs.image>${project.basedir}/build/initramfs</initramfs.image>
-        <initramfs.commands.dir>${basedir}/scripts</initramfs.commands.dir>
     </properties>
 
     <build>
@@ -28,7 +25,7 @@
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-initramfs</id>
+                        <id>build-hdd-img</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>

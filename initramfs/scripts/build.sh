@@ -41,12 +41,11 @@ if [ ! -d "$BUILD_DIR" ]; then
 
     log "Copying the $KERNEL_SRC (starship) to target directory $HOME/initramfs/build."
     cp -rv "$KERNEL_SRC" "$HOME/initramfs/build"
-#    mv "$HOME/initramfs/build/init_ram_fs" "$HOME/initramfs/build/init_ram_fs"
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # Copy the JDK to the target directory
-#    log "Copying JDK to target directory."
-#    cp -rv $HOME/java/build/jdk/jdk/* $HOME/initramfs/target/initramfs_img
+    log "Copying JDK to target directory."
+    cp -rv $HOME/java/build/jdk/jdk/* $HOME/initramfs/target/initramfs_img
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ++++++++++++++++++++++
     # Add any other content or files you want in your initramfs here
@@ -56,6 +55,8 @@ if [ ! -d "$BUILD_DIR" ]; then
     log "Adding init script."
     cat <<'EOF' > "$HOME/initramfs/build/init_ram_fs/linuxrc"
 #!/bin/sh
+
+echo "Starship getting ready for Warp."
 # Mount the proc and sys filesystems
 mount -t proc proc /proc
 mount -t sysfs sys /sys
@@ -69,6 +70,7 @@ mknod -m 666 /dev/null c 1 3
 # export PATH=$JAVA_HOME/bin:$PATH
 
 # Run BusyBox init
+echo Engines started!
 exec /bin/busybox init
 EOF
     chmod +x "$HOME/initramfs/build/init_ram_fs/linuxrc"
@@ -83,10 +85,6 @@ EOF
         cd "$HOME/initramfs/build/init_ram_fs"
         find . -print0 | cpio --null --create --verbose --format=newc | gzip --best
     ) > "$HOME/initramfs/build/$OUTPUT_IMAGE"
-
-#    log "Copying initramfs image to build directory."
-#    mkdir -p "$BUILD_DIR"
-#    cp "$OUTPUT_IMAGE" "$BUILD_DIR"
 
     log "initramfs.img has been created successfully."
 else
