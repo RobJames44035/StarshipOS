@@ -2,15 +2,15 @@
 clear
 
 sudo rm -rfv ./starship/build
-#rm -rfv ./java/build
-#rm -rfv ./busybox/build
+sudo rm -rfv ./java/build
+sudo rm -rfv ./busybox/build
 
-rm -rfv ./system-bridge/build
-rm -rfv ./userland-java/build
-rm -rfv ./starship-sdk/build
+sudo rm -rfv ./system-bridge/build
+sudo rm -rfv ./userland-java/build
+sudo rm -rfv ./starship-sdk/build
 
-rm -rfv ./initramfs/build
-rm -rfv ./grub/build
-rm -rfv ./live_cd/build
+sudo rm -rfv ./initramfs/build
+sudo rm -rfv ./grub/build
+sudo rm -rfv ./live_cd/build
 
 sudo mvn clean

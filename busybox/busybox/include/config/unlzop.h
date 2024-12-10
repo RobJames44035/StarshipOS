@@ -1,1 +1,1 @@
-#undef CONFIG_UNLZOP
+#define CONFIG_UNLZOP 1

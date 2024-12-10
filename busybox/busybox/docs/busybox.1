@@ -133,7 +133,7 @@
 .\" ========================================================================
 .\"
 .IX Title "BUSYBOX 1"
-.TH BUSYBOX 1 "2024-12-07" "version 1.35.0" "busybox"
+.TH BUSYBOX 1 "2024-12-09" "version 1.35.0" "busybox"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -220,12 +220,12 @@ been enabled, more detailed usage information will also be available.
 Currently available applets include:
 .PP
 .Vb 10
-\&        [, [[, acpid, add\-shell, addgroup, adduser, adjtimex, arch, arp,
-\&        arping, ascii, ash, awk, base32, base64, basename, bc, beep,
-\&        blkdiscard, blkid, blockdev, bootchartd, brctl, bunzip2, bzcat,
-\&        bzip2, cal, cat, chat, chattr, chgrp, chmod, chown, chpasswd, chpst,
-\&        chroot, chrt, chvt, cksum, clear, cmp, comm, conspy, cp, cpio,
-\&        crc32, crond, crontab, cryptpw, cttyhack, cut, date, dc, dd,
+\&        [, [[, acpid, add\-shell, addgroup, adduser, adjtimex, ar, arch, arp,
+\&        arping, ascii, ash, awk, base32, base64, basename, bbconfig, bc,
+\&        beep, blkdiscard, blkid, blockdev, bootchartd, brctl, bunzip2,
+\&        bzcat, bzip2, cal, cat, chat, chattr, chgrp, chmod, chown, chpasswd,
+\&        chpst, chroot, chrt, chvt, cksum, clear, cmp, comm, conspy, cp,
+\&        cpio, crc32, crond, crontab, cryptpw, cttyhack, cut, date, dc, dd,
 \&        deallocvt, delgroup, deluser, depmod, devmem, df, dhcprelay, diff,
 \&        dirname, dmesg, dnsd, dnsdomainname, dos2unix, dpkg, dpkg\-deb, du,
 \&        dumpkmap, dumpleases, echo, ed, egrep, eject, env, envdir,
@@ -241,19 +241,19 @@ Currently available applets include:
 \&        iproute, iprule, iptunnel, kbd_mode, kill, killall, killall5, klogd,
 \&        last, less, link, linux32, linux64, linuxrc, ln, loadfont, loadkmap,
 \&        logger, login, logname, logread, losetup, lpd, lpq, lpr, ls, lsattr,
-\&        lsmod, lsof, lspci, lsscsi, lsusb, lzcat, lzma, lzop, makedevs,
-\&        makemime, man, md5sum, mdev, mesg, microcom, mim, mkdir, mkdosfs,
-\&        mke2fs, mkfifo, mkfs.ext2, mkfs.minix, mkfs.vfat, mknod, mkpasswd,
-\&        mkswap, mktemp, modinfo, modprobe, more, mount, mountpoint, mpstat,
-\&        mt, mv, nameif, nanddump, nandwrite, nbd\-client, nc, netstat, nice,
-\&        nl, nmeter, nohup, nologin, nproc, nsenter, nslookup, ntpd, od,
-\&        openvt, partprobe, passwd, paste, patch, pgrep, pidof, ping, ping6,
-\&        pipe_progress, pivot_root, pkill, pmap, popmaildir, poweroff,
-\&        powertop, printenv, printf, ps, pscan, pstree, pwd, pwdx,
-\&        raidautorun, rdate, rdev, readahead, readlink, readprofile,
-\&        realpath, reboot, reformime, remove\-shell, renice, reset, resize,
-\&        resume, rev, rm, rmdir, rmmod, route, rpm, rpm2cpio, rtcwake,
-\&        run\-init, run\-parts, runlevel, runsv, runsvdir, rx, script,
+\&        lsmod, lsof, lspci, lsscsi, lsusb, lzcat, lzma, lzop, lzopcat,
+\&        makedevs, makemime, man, md5sum, mdev, mesg, microcom, mim, minips,
+\&        mkdir, mkdosfs, mke2fs, mkfifo, mkfs.ext2, mkfs.minix, mkfs.vfat,
+\&        mknod, mkpasswd, mkswap, mktemp, modinfo, modprobe, more, mount,
+\&        mountpoint, mpstat, mt, mv, nameif, nanddump, nandwrite, nbd\-client,
+\&        nc, netstat, nice, nl, nmeter, nohup, nologin, nproc, nsenter,
+\&        nslookup, ntpd, nuke, od, openvt, partprobe, passwd, paste, patch,
+\&        pgrep, pidof, ping, ping6, pipe_progress, pivot_root, pkill, pmap,
+\&        popmaildir, poweroff, powertop, printenv, printf, ps, pscan, pstree,
+\&        pwd, pwdx, raidautorun, rdate, rdev, readahead, readlink,
+\&        readprofile, realpath, reboot, reformime, remove\-shell, renice,
+\&        reset, resize, resume, rev, rm, rmdir, rmmod, route, rpm, rpm2cpio,
+\&        rtcwake, run\-init, run\-parts, runlevel, runsv, runsvdir, rx, script,
 \&        scriptreplay, sed, sendmail, seq, setarch, setconsole, setfattr,
 \&        setfont, setkeycodes, setlogcons, setpriv, setserial, setsid,
 \&        setuidgid, sh, sha1sum, sha256sum, sha3sum, sha512sum, showkey,
@@ -265,10 +265,10 @@ Currently available applets include:
 \&        traceroute, traceroute6, true, truncate, ts, tty, ttysize, tunctl,
 \&        ubiattach, ubidetach, ubimkvol, ubirename, ubirmvol, ubirsvol,
 \&        ubiupdatevol, udhcpc, udhcpc6, udhcpd, udpsvd, uevent, umount,
-\&        uname, unexpand, uniq, unix2dos, unlink, unlzma, unshare, unxz,
-\&        unzip, uptime, users, usleep, uudecode, uuencode, vconfig, vi,
-\&        vlock, volname, w, wall, watch, watchdog, wc, wget, which, who,
-\&        whoami, whois, xargs, xxd, xz, xzcat, yes, zcat, zcip
+\&        uname, uncompress, unexpand, uniq, unix2dos, unlink, unlzma, unlzop,
+\&        unshare, unxz, unzip, uptime, users, usleep, uudecode, uuencode,
+\&        vconfig, vi, vlock, volname, w, wall, watch, watchdog, wc, wget,
+\&        which, who, whoami, whois, xargs, xxd, xz, xzcat, yes, zcat, zcip
 .Ve
 .SH "COMMAND DESCRIPTIONS"
 .IX Header "COMMAND DESCRIPTIONS"
@@ -335,6 +335,20 @@ Read or set kernel time variables. See \fBadjtimex\fR\|(2)
 \&        \-t TICK Microseconds per tick, usually 10000
 \&                (positive \-t or \-f values make clock run faster)
 \&        \-p TCONST
+.Ve
+.IP "\fBar\fR" 4
+.IX Item "ar"
+ar x|p|t|r [\-ov] \s-1ARCHIVE\s0 [\s-1FILE\s0]...
+.Sp
+Extract or list FILEs from an ar archive, or create it
+.Sp
+.Vb 6
+\&        x       Extract
+\&        p       Extract to stdout
+\&        t       List
+\&        r       Create
+\&        \-o      Restore mtime
+\&        \-v      Verbose
 .Ve
 .IP "\fBarch\fR" 4
 .IX Item "arch"
@@ -427,6 +441,11 @@ Strip directory path and \s-1SUFFIX\s0 from \s-1FILE\s0
 \&        \-a              All arguments are FILEs
 \&        \-s SUFFIX       Remove SUFFIX (implies \-a)
 .Ve
+.IP "\fBbbconfig\fR" 4
+.IX Item "bbconfig"
+bbconfig
+.Sp
+Print the config file used by busybox build
 .IP "\fBbc\fR" 4
 .IX Item "bc"
 bc [\-sqlw] [\s-1FILE\s0]...
@@ -1645,7 +1664,7 @@ Open \s-1TTY,\s0 prompt for login name, then invoke /bin/login
 \&\s-1BAUD_RATE\s0 of 0 leaves it unchanged
 .IP "\fBgrep\fR" 4
 .IX Item "grep"
-grep [\-HhnlLoqvsrRiwFE] [\-m N] [\-A|B|C N] { \s-1PATTERN\s0 | \-e \s-1PATTERN...\s0 | \-f \s-1FILE...\s0 } [\s-1FILE\s0]...
+grep [\-HhnlLoqvsrRiwFEz] [\-m N] [\-A|B|C N] { \s-1PATTERN\s0 | \-e \s-1PATTERN...\s0 | \-f \s-1FILE...\s0 } [\s-1FILE\s0]...
 .Sp
 Search for \s-1PATTERN\s0 in FILEs (or stdin)
 .Sp
@@ -1667,6 +1686,7 @@ Search for \s-1PATTERN\s0 in FILEs (or stdin)
 \&        \-x      Match whole lines only
 \&        \-F      PATTERN is a literal (not regexp)
 \&        \-E      PATTERN is an extended regexp
+\&        \-z      NUL terminated input
 \&        \-m N    Match up to N times per file
 \&        \-A N    Print N lines of trailing context
 \&        \-B N    Print N lines of leading context
@@ -2544,6 +2564,14 @@ lzop [\-cfUvd123456789CF] [\s-1FILE\s0]...
 \&        \-F      Don\*(Aqt store or verify checksum
 \&        \-C      Also write checksum of compressed block
 .Ve
+.IP "\fBlzopcat\fR" 4
+.IX Item "lzopcat"
+lzopcat [\-vF] [\s-1FILE\s0]...
+.Sp
+.Vb 2
+\&        \-v      Verbose
+\&        \-F      Don\*(Aqt verify checksum
+.Ve
 .IP "\fBmakedevs\fR" 4
 .IX Item "makedevs"
 makedevs [\-d device_table] rootdir
@@ -2657,6 +2685,16 @@ Run a script from a Makefile-like specification file
 .Sp
 .Vb 1
 \&        \-f FILE         Spec file (default Mimfile)
+.Ve
+.IP "\fBminips\fR" 4
+.IX Item "minips"
+minips [\-o \s-1COL1\s0,COL2=HEADER] [\-T]
+.Sp
+Show list of processes
+.Sp
+.Vb 2
+\&        \-o COL1,COL2=HEADER     Select columns for display
+\&        \-T                      Show threads
 .Ve
 .IP "\fBmkdir\fR" 4
 .IX Item "mkdir"
@@ -3105,6 +3143,11 @@ ntpd [\-dnqNwl] [\-I \s-1IFACE\s0] [\-S \s-1PROG\s0] [\-k \s-1KEYFILE\s0] [\-p [
 \&        \-l      Also run as server on port 123
 \&        \-I IFACE Bind server to IFACE, implies \-l
 .Ve
+.IP "\fBnuke\fR" 4
+.IX Item "nuke"
+nuke \s-1DIR...\s0
+.Sp
+Remove DIRs
 .IP "\fBod\fR" 4
 .IX Item "od"
 od [\-abcdfhilovxs] [\-t \s-1TYPE\s0] [\-A \s-1RADIX\s0] [\-N \s-1SIZE\s0] [\-j \s-1SKIP\s0] [\-S \s-1MINSTR\s0] [\-w \s-1WIDTH\s0] [\s-1FILE\s0]...
@@ -4274,7 +4317,7 @@ With more than one \s-1FILE,\s0 precede each with a filename header.
 .Ve
 .IP "\fBtar\fR" 4
 .IX Item "tar"
-tar c|x|t [\-zJjahmvokO] [\-f \s-1TARFILE\s0] [\-C \s-1DIR\s0] [\-T \s-1FILE\s0] [\-X \s-1FILE\s0] [\s-1LONGOPT\s0]... [\s-1FILE\s0]...
+tar c|x|t [\-ZzJjahmvokO] [\-f \s-1TARFILE\s0] [\-C \s-1DIR\s0] [\-T \s-1FILE\s0] [\-X \s-1FILE\s0] [\s-1LONGOPT\s0]... [\s-1FILE\s0]...
 .Sp
 Create, extract, or list files from a tar file
 .Sp
@@ -4289,6 +4332,7 @@ Create, extract, or list files from a tar file
 \&        \-m      Don\*(Aqt restore mtime
 \&        \-o      Don\*(Aqt restore user:group
 \&        \-k      Don\*(Aqt replace existing files
+\&        \-Z      (De)compress using compress
 \&        \-z      (De)compress using gzip
 \&        \-J      (De)compress using xz
 \&        \-j      (De)compress using bzip2
@@ -4830,6 +4874,16 @@ Print system information
 \&        \-i      Hardware platform
 \&        \-o      OS name
 .Ve
+.IP "\fBuncompress\fR" 4
+.IX Item "uncompress"
+uncompress [\-cf] [\s-1FILE\s0]...
+.Sp
+Decompress FILEs (or stdin)
+.Sp
+.Vb 2
+\&        \-c      Write to stdout
+\&        \-f      Overwrite
+.Ve
 .IP "\fBunexpand\fR" 4
 .IX Item "unexpand"
 unexpand [\-fa][\-t N] [\s-1FILE\s0]...
@@ -4884,6 +4938,18 @@ Decompress FILEs (or stdin)
 \&        \-f      Force
 \&        \-k      Keep input files
 \&        \-t      Test integrity
+.Ve
+.IP "\fBunlzop\fR" 4
+.IX Item "unlzop"
+unlzop [\-cfUvF] [\s-1FILE\s0]...
+.Sp
+.Vb 6
+\&        \-c      Write to stdout
+\&        \-f      Force
+\&        \-U      Delete input files
+\&        \-t      Test integrity
+\&        \-v      Verbose
+\&        \-F      Don\*(Aqt verify checksum
 .Ve
 .IP "\fBunshare\fR" 4
 .IX Item "unshare"

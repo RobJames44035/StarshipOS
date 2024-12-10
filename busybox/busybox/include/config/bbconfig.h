@@ -1,1 +1,1 @@
-#undef CONFIG_BBCONFIG
+#define CONFIG_BBCONFIG 1

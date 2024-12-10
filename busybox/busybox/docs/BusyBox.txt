@@ -76,12 +76,12 @@ COMMON OPTIONS
 COMMANDS
     Currently available applets include:
 
-            [, [[, acpid, add-shell, addgroup, adduser, adjtimex, arch, arp,
-            arping, ascii, ash, awk, base32, base64, basename, bc, beep,
-            blkdiscard, blkid, blockdev, bootchartd, brctl, bunzip2, bzcat,
-            bzip2, cal, cat, chat, chattr, chgrp, chmod, chown, chpasswd, chpst,
-            chroot, chrt, chvt, cksum, clear, cmp, comm, conspy, cp, cpio,
-            crc32, crond, crontab, cryptpw, cttyhack, cut, date, dc, dd,
+            [, [[, acpid, add-shell, addgroup, adduser, adjtimex, ar, arch, arp,
+            arping, ascii, ash, awk, base32, base64, basename, bbconfig, bc,
+            beep, blkdiscard, blkid, blockdev, bootchartd, brctl, bunzip2,
+            bzcat, bzip2, cal, cat, chat, chattr, chgrp, chmod, chown, chpasswd,
+            chpst, chroot, chrt, chvt, cksum, clear, cmp, comm, conspy, cp,
+            cpio, crc32, crond, crontab, cryptpw, cttyhack, cut, date, dc, dd,
             deallocvt, delgroup, deluser, depmod, devmem, df, dhcprelay, diff,
             dirname, dmesg, dnsd, dnsdomainname, dos2unix, dpkg, dpkg-deb, du,
             dumpkmap, dumpleases, echo, ed, egrep, eject, env, envdir,
@@ -97,19 +97,19 @@ COMMANDS
             iproute, iprule, iptunnel, kbd_mode, kill, killall, killall5, klogd,
             last, less, link, linux32, linux64, linuxrc, ln, loadfont, loadkmap,
             logger, login, logname, logread, losetup, lpd, lpq, lpr, ls, lsattr,
-            lsmod, lsof, lspci, lsscsi, lsusb, lzcat, lzma, lzop, makedevs,
-            makemime, man, md5sum, mdev, mesg, microcom, mim, mkdir, mkdosfs,
-            mke2fs, mkfifo, mkfs.ext2, mkfs.minix, mkfs.vfat, mknod, mkpasswd,
-            mkswap, mktemp, modinfo, modprobe, more, mount, mountpoint, mpstat,
-            mt, mv, nameif, nanddump, nandwrite, nbd-client, nc, netstat, nice,
-            nl, nmeter, nohup, nologin, nproc, nsenter, nslookup, ntpd, od,
-            openvt, partprobe, passwd, paste, patch, pgrep, pidof, ping, ping6,
-            pipe_progress, pivot_root, pkill, pmap, popmaildir, poweroff,
-            powertop, printenv, printf, ps, pscan, pstree, pwd, pwdx,
-            raidautorun, rdate, rdev, readahead, readlink, readprofile,
-            realpath, reboot, reformime, remove-shell, renice, reset, resize,
-            resume, rev, rm, rmdir, rmmod, route, rpm, rpm2cpio, rtcwake,
-            run-init, run-parts, runlevel, runsv, runsvdir, rx, script,
+            lsmod, lsof, lspci, lsscsi, lsusb, lzcat, lzma, lzop, lzopcat,
+            makedevs, makemime, man, md5sum, mdev, mesg, microcom, mim, minips,
+            mkdir, mkdosfs, mke2fs, mkfifo, mkfs.ext2, mkfs.minix, mkfs.vfat,
+            mknod, mkpasswd, mkswap, mktemp, modinfo, modprobe, more, mount,
+            mountpoint, mpstat, mt, mv, nameif, nanddump, nandwrite, nbd-client,
+            nc, netstat, nice, nl, nmeter, nohup, nologin, nproc, nsenter,
+            nslookup, ntpd, nuke, od, openvt, partprobe, passwd, paste, patch,
+            pgrep, pidof, ping, ping6, pipe_progress, pivot_root, pkill, pmap,
+            popmaildir, poweroff, powertop, printenv, printf, ps, pscan, pstree,
+            pwd, pwdx, raidautorun, rdate, rdev, readahead, readlink,
+            readprofile, realpath, reboot, reformime, remove-shell, renice,
+            reset, resize, resume, rev, rm, rmdir, rmmod, route, rpm, rpm2cpio,
+            rtcwake, run-init, run-parts, runlevel, runsv, runsvdir, rx, script,
             scriptreplay, sed, sendmail, seq, setarch, setconsole, setfattr,
             setfont, setkeycodes, setlogcons, setpriv, setserial, setsid,
             setuidgid, sh, sha1sum, sha256sum, sha3sum, sha512sum, showkey,
@@ -121,10 +121,10 @@ COMMANDS
             traceroute, traceroute6, true, truncate, ts, tty, ttysize, tunctl,
             ubiattach, ubidetach, ubimkvol, ubirename, ubirmvol, ubirsvol,
             ubiupdatevol, udhcpc, udhcpc6, udhcpd, udpsvd, uevent, umount,
-            uname, unexpand, uniq, unix2dos, unlink, unlzma, unshare, unxz,
-            unzip, uptime, users, usleep, uudecode, uuencode, vconfig, vi,
-            vlock, volname, w, wall, watch, watchdog, wc, wget, which, who,
-            whoami, whois, xargs, xxd, xz, xzcat, yes, zcat, zcip
+            uname, uncompress, unexpand, uniq, unix2dos, unlink, unlzma, unlzop,
+            unshare, unxz, unzip, uptime, users, usleep, uudecode, uuencode,
+            vconfig, vi, vlock, volname, w, wall, watch, watchdog, wc, wget,
+            which, who, whoami, whois, xargs, xxd, xz, xzcat, yes, zcat, zcip
 
 COMMAND DESCRIPTIONS
     acpid
@@ -183,6 +183,17 @@ COMMAND DESCRIPTIONS
                 -t TICK Microseconds per tick, usually 10000
                         (positive -t or -f values make clock run faster)
                 -p TCONST
+
+    ar  ar x|p|t|r [-ov] ARCHIVE [FILE]...
+
+        Extract or list FILEs from an ar archive, or create it
+
+                x       Extract
+                p       Extract to stdout
+                t       List
+                r       Create
+                -o      Restore mtime
+                -v      Verbose
 
     arch
         arch
@@ -258,6 +269,11 @@ COMMAND DESCRIPTIONS
 
                 -a              All arguments are FILEs
                 -s SUFFIX       Remove SUFFIX (implies -a)
+
+    bbconfig
+        bbconfig
+
+        Print the config file used by busybox build
 
     bc  bc [-sqlw] [FILE]...
 
@@ -1318,7 +1334,7 @@ COMMAND DESCRIPTIONS
         BAUD_RATE of 0 leaves it unchanged
 
     grep
-        grep [-HhnlLoqvsrRiwFE] [-m N] [-A|B|C N] { PATTERN | -e PATTERN...
+        grep [-HhnlLoqvsrRiwFEz] [-m N] [-A|B|C N] { PATTERN | -e PATTERN...
         | -f FILE... } [FILE]...
 
         Search for PATTERN in FILEs (or stdin)
@@ -1340,6 +1356,7 @@ COMMAND DESCRIPTIONS
                 -x      Match whole lines only
                 -F      PATTERN is a literal (not regexp)
                 -E      PATTERN is an extended regexp
+                -z      NUL terminated input
                 -m N    Match up to N times per file
                 -A N    Print N lines of trailing context
                 -B N    Print N lines of leading context
@@ -2106,6 +2123,12 @@ COMMAND DESCRIPTIONS
                 -F      Don't store or verify checksum
                 -C      Also write checksum of compressed block
 
+    lzopcat
+        lzopcat [-vF] [FILE]...
+
+                -v      Verbose
+                -F      Don't verify checksum
+
     makedevs
         makedevs [-d device_table] rootdir
 
@@ -2198,6 +2221,14 @@ COMMAND DESCRIPTIONS
         Run a script from a Makefile-like specification file
 
                 -f FILE         Spec file (default Mimfile)
+
+    minips
+        minips [-o COL1,COL2=HEADER] [-T]
+
+        Show list of processes
+
+                -o COL1,COL2=HEADER     Select columns for display
+                -T                      Show threads
 
     mkdir
         mkdir [-m MODE] [-p] DIRECTORY...
@@ -2589,6 +2620,11 @@ COMMAND DESCRIPTIONS
                         from /etc/ntp.conf are used
                 -l      Also run as server on port 123
                 -I IFACE Bind server to IFACE, implies -l
+
+    nuke
+        nuke DIR...
+
+        Remove DIRs
 
     od  od [-abcdfhilovxs] [-t TYPE] [-A RADIX] [-N SIZE] [-j SKIP] [-S
         MINSTR] [-w WIDTH] [FILE]...
@@ -3606,7 +3642,7 @@ COMMAND DESCRIPTIONS
                 -F              Same as -f, but keep retrying
                 -s SECONDS      Wait SECONDS between reads with -f
 
-    tar tar c|x|t [-zJjahmvokO] [-f TARFILE] [-C DIR] [-T FILE] [-X FILE]
+    tar tar c|x|t [-ZzJjahmvokO] [-f TARFILE] [-C DIR] [-T FILE] [-X FILE]
         [LONGOPT]... [FILE]...
 
         Create, extract, or list files from a tar file
@@ -3621,6 +3657,7 @@ COMMAND DESCRIPTIONS
                 -m      Don't restore mtime
                 -o      Don't restore user:group
                 -k      Don't replace existing files
+                -Z      (De)compress using compress
                 -z      (De)compress using gzip
                 -J      (De)compress using xz
                 -j      (De)compress using bzip2
@@ -4086,6 +4123,14 @@ COMMAND DESCRIPTIONS
                 -i      Hardware platform
                 -o      OS name
 
+    uncompress
+        uncompress [-cf] [FILE]...
+
+        Decompress FILEs (or stdin)
+
+                -c      Write to stdout
+                -f      Overwrite
+
     unexpand
         unexpand [-fa][-t N] [FILE]...
 
@@ -4132,6 +4177,16 @@ COMMAND DESCRIPTIONS
                 -f      Force
                 -k      Keep input files
                 -t      Test integrity
+
+    unlzop
+        unlzop [-cfUvF] [FILE]...
+
+                -c      Write to stdout
+                -f      Force
+                -U      Delete input files
+                -t      Test integrity
+                -v      Verbose
+                -F      Don't verify checksum
 
     unshare
         unshare [OPTIONS] [PROG ARGS]

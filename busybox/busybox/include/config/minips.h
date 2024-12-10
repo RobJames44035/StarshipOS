@@ -1,1 +1,1 @@
-#undef CONFIG_MINIPS
+#define CONFIG_MINIPS 1

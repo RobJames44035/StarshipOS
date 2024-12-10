@@ -18,6 +18,7 @@ KERNEL_SRC="$HOME/starship/build/init_ram_fs"
 
 function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+    read -p "Hi"
 }
 
 function pause() {
@@ -27,25 +28,45 @@ function pause() {
 
 log "Starting initramfs image creation script."log "Starting initramfs image creation script."
 
-
 if [ ! -d "$BUILD_DIR" ]; then
-    log "Creating target directory: $BUILD_DIR"
-    mkdir -p "$BUILD_DIR"
-    mkdir -p "$BUILD_DIR/boot/grub"
+  log "Creating target directory: $BUILD_DIR"
+  mkdir -p "$BUILD_DIR"
+  mkdir -p "$BUILD_DIR/boot/grub"
 
-    log "Copying grub.cfg $BUILD_DIR/boot/grub"
-    cp "$GRUB_SRC/boot/grub/grub.cfg" "$BUILD_DIR/boot/grub"
+  log "Copying grub.cfg $BUILD_DIR/boot/grub"
+  cp "$GRUB_SRC/boot/grub/grub.cfg" "$BUILD_DIR/boot/grub"
 
-    log "Copying $BUSYBOX_SRC to target $BUILD_DIR"
-    cp -rv "$BUSYBOX_SRC" "$HOME/initramfs/build"
+  log "Copying $BUSYBOX_SRC to target $BUILD_DIR"
+  cp -rv "$BUSYBOX_SRC" "$HOME/initramfs/build"
 
-    log "Copying the $KERNEL_SRC (starship) to target directory $HOME/initramfs/build."
-    cp -rv "$KERNEL_SRC" "$HOME/initramfs/build"
+  log "Copying the $KERNEL_SRC (starship) to target directory $HOME/initramfs/build."
+  cp -rv "$KERNEL_SRC" "$HOME/initramfs/build"
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    # Copy the JDK to the target directory
-    log "Copying JDK to target directory."
-    cp -rv $HOME/java/build/jdk/jdk/* $HOME/initramfs/target/initramfs_img
+  # BusyBox
+  log "Copying BusyBox."
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/bin"
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/sbin"
+    sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/usr"
+
+
+  sudo cp -rv "../busybox/build/init_ram_fs/bin" "$HOME/initramfs/target/init_ramfs_img/bin"
+  sudo cp -rv "../busybox/build/init_ram_fs/sbin" "$HOME/initramfs/target/init_ramfs_img/sbin"
+  sudo cp -rv "../busybox/build/init_ram_fs/usr" "$HOME/initramfs/target/init_ramfs_img/usr"
+  # Java JDK
+  log "Copying JDK23."
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/conf"
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/include"
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/lib"
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/mam"
+  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/modules"
+
+  sudo cp -rv "../java/build/jdk/jdk/bin" "$HOME/initramfs/target/init_ramfs_img/bin"
+  sudo cp -rv "../java/build/jdk/jdk/conf" "$HOME/initramfs/target/init_ramfs_img/conf"
+  sudo cp -rv "../java/build/jdk/jdk/include" "$HOME/initramfs/target/init_ramfs_img/include"
+  sudo cp -rv "../java/build/jdk/jdk/lib" "$HOME/initramfs/target/init_ramfs_img/lib"
+  sudo cp -rv "../java/build/jdk/jdk/man" "$HOME/initramfs/target/init_ramfs_img/man"
+  sudo cp -rv "../java/build/jdk/jdk/modules" "$HOME/initramfs/target/init_ramfs_img/modules"
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ++++++++++++++++++++++
     # Add any other content or files you want in your initramfs here
@@ -73,22 +94,22 @@ mknod -m 666 /dev/null c 1 3
 echo Engines started!
 exec /bin/busybox init
 EOF
-    chmod +x "$HOME/initramfs/build/init_ram_fs/linuxrc"
+  chmod +x "$HOME/initramfs/build/init_ram_fs/linuxrc"
 
-    log "Ensuring /dev/null and /dev/console exist."
-    mkdir -p "$HOME/initramfs/build/init_ram_fs/dev"
-    sudo mknod -m 666 "$HOME/initramfs/build/init_ram_fs/dev/null" c 1 3
-    sudo mknod -m 600 "$HOME/initramfs/build/init_ram_fs/dev/console" c 5 1
+  log "Ensuring /dev/null and /dev/console exist."
+  mkdir -p "$HOME/initramfs/build/init_ram_fs/dev"
+  sudo mknod -m 666 "$HOME/initramfs/build/init_ram_fs/dev/null" c 1 3
+  sudo mknod -m 600 "$HOME/initramfs/build/init_ram_fs/dev/console" c 5 1
 
-    log "Creating the initramfs image: $OUTPUT_IMAGE"
-    (
-        cd "$HOME/initramfs/build/init_ram_fs"
-        find . -print0 | cpio --null --create --verbose --format=newc | gzip --best
-    ) > "$HOME/initramfs/build/$OUTPUT_IMAGE"
+  log "Creating the initramfs image: $OUTPUT_IMAGE"
+  (
+    cd "$HOME/initramfs/build/init_ram_fs"
+    find . -print0 | cpio --null --create --verbose --format=newc | gzip --best
+  ) > "$HOME/initramfs/build/$OUTPUT_IMAGE"
 
-    log "initramfs.img has been created successfully."
+  log "initramfs.img has been created successfully."
 else
-    log "Nothing to do.."
+  log "Nothing to do.."
 fi
 
 log "Finished initramfs image creation script."
