@@ -1497,3 +1497,10 @@
 /busybox/busybox/libbb/xregcomp.o
 /busybox/busybox/coreutils/yes.o
 /busybox/busybox/networking/zcip.o
+/busybox/busybox/archival/ar.o
+/busybox/busybox/miscutils/bbconfig.o
+/busybox/busybox/archival/libarchive/decompress_uncompress.o
+/busybox/busybox/scripts/kconfig/lxdialog/lxdialog
+/busybox/busybox/archival/libarchive/lzo1x_9x.o
+/busybox/busybox/scripts/kconfig/mconf
+/busybox/busybox/klibc-utils/nuke.o
