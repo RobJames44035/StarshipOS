@@ -17,6 +17,8 @@ modern way to manage files and memory.
 
 ## Table of Contents
 
+- [A Different Way of Thinking](DIFFERENT_WAY.md)
+- [For developers, very important!](IMPORTANT-README.md)
 - [Project Vision](#project-vision)
 - [Key Features](#key-features)
 - [Project Structure](#project-structure)
