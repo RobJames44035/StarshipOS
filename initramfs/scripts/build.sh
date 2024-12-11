@@ -18,12 +18,6 @@ KERNEL_SRC="$HOME/starship/build/init_ram_fs"
 
 function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-    read -p "Hi"
-}
-
-function pause() {
-  echo "$1"
-  read -p "Paused... Hit [ENTER]"
 }
 
 log "Starting initramfs image creation script."log "Starting initramfs image creation script."
