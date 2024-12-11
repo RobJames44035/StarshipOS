@@ -17,10 +17,10 @@ if [ -d "$MAKE_DIR" ]; then
         # Attempt to change directory and log on error
         cd "$MAKE_DIR" || { error_log "Failed to change directory to $MAKE_DIR"; exit 1; }
 
-        log "Cleaning with make clean in $MAKE_DIR"
-
-        # Run make clean and log on error
-        sudo make clean || { error_log "make clean failed"; exit 1; }
+#        log "Cleaning with make clean in $MAKE_DIR"
+#
+#        # Run make clean and log on error
+#        sudo make clean || { error_log "make clean failed"; exit 1; }
 
         log "Returning to $THIS_DIR"
 
