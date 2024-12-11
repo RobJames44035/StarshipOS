@@ -74,7 +74,7 @@
                             <arguments>
                                 <argument>-c</argument>
                                 <argument>
-                                    ${basedir}/scripts/generate_header.sh "${project.name}"
+                                    /home/rajames/PROJECTS/StarshipOS/bin/generate_header.sh "${project.name}"
                                 </argument>
                             </arguments>
                         </configuration>
