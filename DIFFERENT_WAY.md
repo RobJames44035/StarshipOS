@@ -1,4 +1,10 @@
-# A Different Way of Thinking.
+# StarshipOS - A Different Way of Thinking.
+
+Our vision is to create a state-of-the-art Operating System where every component, from files to memory management,
+adheres to object-oriented principles. The OS will support running Java applications directly and provide an
+environment where `jshell` can be used interactively as early as possible during the boot process. Ultimately,
+the goal is to develop an object-oriented filesystem that utilizes virtual memory for enhanced performance
+and persistence.
 
 ## No files.
 What, No files? Are you insane? Yes, no files. No, I'm not insane.
