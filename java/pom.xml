@@ -23,6 +23,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
+                    <!-- Compile -->
                     <execution>
                         <id>build-java</id>
                         <phase>compile</phase>
@@ -37,6 +38,7 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <!-- Clean -->
                     <execution>
                         <id>clean-jdk</id>
                         <phase>clean</phase>
@@ -51,7 +53,29 @@
                             </arguments>
                         </configuration>
                     </execution>
-
+                </executions>
+            </plugin>
+            <!-- Attach -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>./target/${project.artifactId}-${project.version}-java-archive.zip</file>
+                                    <type>zip</type>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

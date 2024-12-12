@@ -8,19 +8,38 @@
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>build/jdk/jdk/bin</directory>
+            <directory>build/jdk/bin</directory>
             <includes>
                 <include>**/*</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>build/jdk/jdk/conf</directory>
+            <directory>build/jdk/conf</directory>
             <includes>
                 <include>**/*</include>
             </includes>
         </fileSet>
         <fileSet>
-            <directory>build/jdk/jdk/include</directory>
+            <directory>build/jdk/include</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>build/jdk/lib</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>build/jdk/man</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>build/jdk/modules</directory>
             <includes>
                 <include>**/*</include>
             </includes>

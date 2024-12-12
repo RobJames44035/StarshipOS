@@ -16,7 +16,7 @@ JDK_DIR="${CURRENT_DIR}/jdk"
 BOOT_JDK="${CURRENT_DIR}/jdk-23.0.1"
 PREFIX_DIR="${CURRENT_DIR}/build/bin"
 EXEC_PREFIX_DIR="${CURRENT_DIR}/build/lib"
-FINAL_BUILD_DIR="${CURRENT_DIR}/build/jdk"
+FINAL_BUILD_DIR="${CURRENT_DIR}/build"
 
 # Logging function
 function log() {
@@ -49,7 +49,8 @@ configure_and_build_jdk() {
 #    log "Cleaning previous builds if any..."
 #    make CONF="${CONFIGURATION}" clean
     log "Building JDK..."
-    make CONF="${CONFIGURATION}" images
+    make CONF="${CONFIGURATION}"
+    make CONF="${CONFIGURATION}" docs
     cd "$CURRENT_DIR"
 }
 

@@ -13,7 +13,6 @@
     </properties>
 
     <artifactId>grub</artifactId>
-    <packaging>pom</packaging>
 
     <build>
         <plugins>
@@ -22,20 +21,35 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
+                    <!-- qcow2 -->
                     <execution>
-                        <id>build-grub-cfg</id>
+                        <id>build-grub-cfg-qcow2</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>bash</executable>
+                            <executable>scripts/build.sh</executable>
                             <arguments>
-                                <argument>-c</argument>
-                                <argument>scripts/build.sh</argument>
+                                <argument>hd0</argument>
                             </arguments>
                         </configuration>
                     </execution>
+                    <!-- live_cd -->
+                    <execution>
+                        <id>build-grub-cfg-iso</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>scripts/build.sh</executable>
+                            <arguments>
+                                <argument>cd</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- clean -->
                     <execution>
                         <id>clean-grub-cfg</id>
                         <phase>clean</phase>
@@ -52,6 +66,51 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
+            <!-- Add the Maven Assembly Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>create-combined-zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>busybox-archive.xml</descriptor>
+                            </descriptors>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Attach -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>./target/${project.artifactId}-${project.version}-grub-archive.zip</file>
+                                    <type>zip</type>
+                                    <classifier>grub</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+       </plugins>
     </build>
 </project>
