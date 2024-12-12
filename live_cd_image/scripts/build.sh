@@ -16,7 +16,7 @@ if [ ! -d build ]; then
   log "Starting ISO creation process..."
   mkdir -p "${HOME}/live_cd/build/iso-assembly/boot/grub"
 
-  # Copy the live_cd directory to the iso-assembly directory
+  # Copy the live_cd_image directory to the iso-assembly directory
   log "Copying initramfs to iso-assembly... /boot"
   cp -r "$HOME/initramfs/build/initramfs.img" "$HOME/live_cd/build/iso-assembly/boot"
 

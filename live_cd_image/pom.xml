@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <artifactId>live_cd</artifactId>
+    <artifactId>live_cd_image</artifactId>
     <packaging>pom</packaging>
 
     <name>live_cd</name>

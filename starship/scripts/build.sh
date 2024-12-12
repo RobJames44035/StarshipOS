@@ -6,37 +6,59 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-HOME="/home/rajames/PROJECTS/StarshipOS"
-STARSHIP_ROOT="${HOME}/starship"
-KERNEL_DIR="${STARSHIP_ROOT}/starship_kernel"
-BUILD_DIR="${STARSHIP_ROOT}/build"
-LIVE_CD_PATH="$HOME/starship/build/init_ram_fs" # Really for the live cd
-export INSTALL_MOD_PATH=$LIVE_CD_PATH
+# Define paths and environment
+PROJECT_HOME="/home/rajames/PROJECTS/StarshipOS"
+MODULE_ROOT_DIR="${PROJECT_HOME}/starship"
+KERNEL_SRC_DIR="${MODULE_ROOT_DIR}/starship_kernel"
+BUILD_DIR="${MODULE_ROOT_DIR}/build"
+LIVE_IMAGE_DIR="${BUILD_DIR}/init_ram_fs"  # Really for the live CD
+export INSTALL_MOD_PATH="${LIVE_IMAGE_DIR}"
 
-# Logging function
+# Logging function to show progress
 function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
+# Start the script workflow
 log "Starting kernel build script."
 
+# Check if $BUILD_DIR exists
 if [ ! -d "$BUILD_DIR" ]; then
-  log "Building kernel because the build directory does not exist."
-  cd "$KERNEL_DIR"
-  log "Building the starship kernel in $KERNEL_DIR"
+    log "No build directory detected. Starting kernel build process."
 
-  sudo make -j$(nproc) bzImage
-  sudo make modules
+    # Ensure kernel directory exists before proceeding
+    if [ ! -d "$KERNEL_SRC_DIR" ]; then
+        log "Kernel directory does not exist: $KERNEL_SRC_DIR"
+        log "Exiting script as there is no source to build."
+        exit 1
+    fi
 
-  log "mkdir -p ${LIVE_CD_PATH}"
-  mkdir -p "$LIVE_CD_PATH"
-  log "make modules_install"
-  make modules_install
+    # Enter kernel directory
+    cd "$KERNEL_SRC_DIR"
+    log "Building the Starship kernel in $KERNEL_SRC_DIR."
 
-  mkdir -p "${LIVE_CD_PATH}/boot"
-  log "Copying kernel to ${LIVE_CD_PATH}/boot"
-  cp "arch/x86/boot/bzImage" "$LIVE_CD_PATH/boot/starship"
+    # Compile kernel image and modules
+    log "Compiling with make -j$(nproc) bzImage."
+    sudo make -j$(nproc) bzImage
+    log "Compiling kernel modules."
+    sudo make modules
 
+    # Prepare Live CD path for installation
+    log "Creating Live CD path: $LIVE_IMAGE_DIR"
+    mkdir -p "$LIVE_IMAGE_DIR"
+
+    log "Installing modules into: $LIVE_IMAGE_DIR"
+    make modules_install
+
+    # Copy kernel to boot directory
+    log "Preparing boot directory: ${LIVE_IMAGE_DIR}/boot"
+    mkdir -p "${LIVE_IMAGE_DIR}/boot"
+    log "Copying bzImage (kernel) to ${LIVE_IMAGE_DIR}/boot/starship."
+    cp "arch/x86/boot/bzImage" "${LIVE_IMAGE_DIR}/boot/starship"
+
+    log "Kernel build and installation completed successfully."
 else
-    log "Nothing to do!"
+    # Skip build if $BUILD_DIR already exists
+    log "Build directory already exists. Skipping kernel build."
+    log "The assembly process will now handle attaching the artifacts."
 fi
