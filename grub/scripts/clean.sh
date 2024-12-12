@@ -11,7 +11,7 @@ function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
 }
 
-log "GRUB will be 'Uber-clean'."
+log "GRUB will be 'clean'."
 if [ -d "$BUILD_DIR" ]; then
   sudo rm -rf "$BUILD_DIR"
 else

@@ -7,7 +7,7 @@ THIS_DIR="$PWD"
 MAKE_DIR="$THIS_DIR/starship_kernel"
 
 function log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1" >&2
+    echo "[INFO: $(date +'%Y-%m-%d %H:%M:%S')] $1" >&2
 }
 
 # Check if the directory exists before changing into it
