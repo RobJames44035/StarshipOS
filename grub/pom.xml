@@ -80,7 +80,7 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>busybox-archive.xml</descriptor>
+                                <descriptor>grub-archive.xml</descriptor>
                             </descriptors>
                             <finalName>${project.artifactId}-${project.version}</finalName>
                         </configuration>

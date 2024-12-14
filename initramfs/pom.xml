@@ -10,48 +10,115 @@
     <artifactId>initramfs</artifactId>
     <packaging>pom</packaging>
 
-    <name>initramfs</name>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <busybox.build.dir>${basedir}/busybox/build</busybox.build.dir>
-        <initramfs.image>${project.basedir}/build/initramfs</initramfs.image>
-        <initramfs.commands.dir>${basedir}/scripts</initramfs.commands.dir>
-    </properties>
-
     <build>
         <plugins>
-            <!-- Plugin to run custom tasks -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <!-- Execution for unpacking -->
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.starship</groupId>
+                                    <artifactId>busybox</artifactId>
+                                    <version>0.1.0-SNAPSHOT</version>
+                                    <classifier>busybox-archive</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.starship</groupId>
+                                    <artifactId>starship</artifactId>
+                                    <version>0.1.0-SNAPSHOT</version>
+                                    <classifier>starship-archive</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.starship</groupId>
+                                    <artifactId>grub</artifactId>
+                                    <version>0.1.0-SNAPSHOT</version>
+                                    <classifier>grub-archive</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/build/grub</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Execution for assembling initrd -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
                     <execution>
-                        <id>build-initramfs</id>
+                        <id>execute-build-script</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>bash</executable>
+                            <executable>/bin/bash</executable>
                             <arguments>
-                                <argument>scripts/build.sh</argument>
+                                <argument>${project.basedir}/scripts/build.sh</argument>
                             </arguments>
                         </configuration>
                     </execution>
+                </executions>
+            </plugin>
+            <!-- Assemble -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
                     <execution>
-                        <id>clean-initramfs</id>
-                        <phase>clean</phase>
+                        <id>package-initramfs</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
-                            <executable>bash</executable>
-                            <arguments>
-                                <argument>-c</argument>
-                                <argument>scripts/clean.sh</argument>
-                            </arguments>
+                            <descriptors>
+                                <descriptor>initramfs-archive.xml</descriptor>
+                            </descriptors>
+                            <formats>
+                                <format>zip</format>
+                            </formats>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Attach -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifact</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>./target/${project.artifactId}-${project.version}-initramfs-archive.zip</file>
+                                    <type>zip</type>
+                                </artifact>
+                            </artifacts>
                         </configuration>
                     </execution>
                 </executions>

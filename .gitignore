@@ -63,7 +63,7 @@
 /starship/starship_kernel/arch/x86/.built-in.a.cmd
 /starship/starship_kernel/block/partitions/.built-in.a.cmd
 /starship/starship_kernel/certs/.built-in.a.cmd
-/starship/starship_kernel/crypto/asymmetric_keys/.built-in.a.cmd
+/starship/starship_kernel/crypto/asymmet/.built-in.a.cmd
 /starship/starship_kernel/crypto/.built-in.a.cmd
 /starship/starship_kernel/fs/configfs/.built-in.a.cmd
 /starship/starship_kernel/fs/crypto/.built-in.a.cmd
@@ -1505,3 +1505,5 @@
 /busybox/busybox/scripts/kconfig/mconf
 /busybox/busybox/klibc-utils/nuke.o
 /java/openjdk-23.0.1_linux-x64_bin.tar.gz
+*/target/
+*.o

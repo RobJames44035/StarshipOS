@@ -1,109 +1,61 @@
 #!/bin/bash
-# shellcheck disable=SC2164
 
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-HOME="/home/rajames/PROJECTS/StarshipOS"
-BUILD_DIR="$HOME/initramfs/build/init_ram_fs"
-OUTPUT_IMAGE="initramfs.img"
-
-# Paths to your components
-BUSYBOX_SRC="$HOME/busybox/build/init_ram_fs"
-GRUB_SRC="$HOME/grub/build/init_ram_fs"
-KERNEL_SRC="$HOME/starship/build/init_ram_fs"
-
-#JDK_SRC="/home/rajames/PROJECTS/StarshipOS/java/build/jdk/jdk"  # todo
-#JDK_TARGET_DIR="$TARGET_DIR/usr/lib/jvm"  # Target directory for JDK inside the initramfs todo
-
+# Function for timestamped logging
 function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+#    read -p ""
 }
 
-log "Starting initramfs image creation script."log "Starting initramfs image creation script."
+# Set paths
+BUILD_DIR="target/build"
+INITRAMFS_DIR="$BUILD_DIR/init_ram_fs"
+GRUB_DIR="$BUILD_DIR/grub"
+OUTPUT_DIR="build"
+HOME=$(pwd)
 
-if [ ! -d "$BUILD_DIR" ]; then
-  log "Creating target directory: $BUILD_DIR"
-  mkdir -p "$BUILD_DIR"
-  mkdir -p "$BUILD_DIR/boot/grub"
+# Prepare the output directory
+log "Preparing output directory at $OUTPUT_DIR"
+mkdir -p "$OUTPUT_DIR"
 
-  log "Copying grub.cfg $BUILD_DIR/boot/grub"
-  cp "$GRUB_SRC/boot/grub/grub.cfg" "$BUILD_DIR/boot/grub"
+# ----- Checkpoint 1: Prepare Directories -----
+log "Starting Checkpoint 1: Preparing initramfs directories"
 
-  log "Copying $BUSYBOX_SRC to target $BUILD_DIR"
-  cp -rv "$BUSYBOX_SRC" "$HOME/initramfs/build"
+# Iterate through each block device directory in the grub directory
+for block_device_dir in "$GRUB_DIR"/*; do
+    if [ -d "$block_device_dir" ]; then
+        block_device_name=$(basename "$block_device_dir")
+        target_dir="$OUTPUT_DIR/initramfs_$block_device_name"
+        cp -r "$INITRAMFS_DIR" "$target_dir"
+        log "Copied init_ram_fs to $target_dir"
 
-  log "Copying the $KERNEL_SRC (starship) to target directory $HOME/initramfs/build."
-  cp -rv "$KERNEL_SRC" "$HOME/initramfs/build"
+        # Ensure the boot/grub directory exists in the new structure
+        mkdir -p "$target_dir/boot/grub"
+        log "Created directory: $target_dir/boot/grub"
 
-    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # BusyBox
-  log "Copying BusyBox."
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/bin"
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/sbin"
-    sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/usr"
+        # Copy the corresponding grub.cfg file to boot/grub in the output structure
+        cp "$block_device_dir/init_ram_fs/boot/grub.cfg" "$target_dir/boot/grub/"
+        log "Copied grub.cfg from $block_device_dir to $target_dir/boot/grub/"
 
+#        cd "$HOME"
 
-  sudo cp -rv "../busybox/build/init_ram_fs/bin" "$HOME/initramfs/target/init_ramfs_img/bin"
-  sudo cp -rv "../busybox/build/init_ram_fs/sbin" "$HOME/initramfs/target/init_ramfs_img/sbin"
-  sudo cp -rv "../busybox/build/init_ram_fs/usr" "$HOME/initramfs/target/init_ramfs_img/usr"
-  # Java JDK
-  log "Copying JDK23."
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/conf"
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/include"
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/lib"
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/mam"
-  sudo mkdir -p "$HOME/initramfs/target/init_ramfs_img/modules"
-
-  sudo cp -rv "../java/build/jdk/jdk/bin" "$HOME/initramfs/target/init_ramfs_img/bin"
-  sudo cp -rv "../java/build/jdk/jdk/conf" "$HOME/initramfs/target/init_ramfs_img/conf"
-  sudo cp -rv "../java/build/jdk/jdk/include" "$HOME/initramfs/target/init_ramfs_img/include"
-  sudo cp -rv "../java/build/jdk/jdk/lib" "$HOME/initramfs/target/init_ramfs_img/lib"
-  sudo cp -rv "../java/build/jdk/jdk/man" "$HOME/initramfs/target/init_ramfs_img/man"
-  sudo cp -rv "../java/build/jdk/jdk/modules" "$HOME/initramfs/target/init_ramfs_img/modules"
-
-    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++ ++++++++++++++++++++++
-    # Add any other content or files you want in your initramfs here
-    # Make sure to include any required shared libraries, boot scripts, or configurations
-    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    log "Adding init script."
-    cat <<'EOF' > "$HOME/initramfs/build/init_ram_fs/linuxrc"
-#!/bin/sh
-
-echo "Starship getting ready for Warp."
-# Mount the proc and sys filesystems
-mount -t proc proc /proc
-mount -t sysfs sys /sys
-
-# Create device nodes
-mknod -m 622 /dev/console c 5 1
-mknod -m 666 /dev/null c 1 3
-
-# Set JAVA_HOME for JDK
-# export JAVA_HOME=/usr/lib/jvm/jdk
-# export PATH=$JAVA_HOME/bin:$PATH
-
-# Run BusyBox init
-echo Engines started!
-exec /bin/busybox init
-EOF
-  chmod +x "$HOME/initramfs/build/init_ram_fs/linuxrc"
-
-  log "Ensuring /dev/null and /dev/console exist."
-  mkdir -p "$HOME/initramfs/build/init_ram_fs/dev"
-  sudo mknod -m 666 "$HOME/initramfs/build/init_ram_fs/dev/null" c 1 3
-  sudo mknod -m 600 "$HOME/initramfs/build/init_ram_fs/dev/console" c 5 1
-
-  log "Creating the initramfs image: $OUTPUT_IMAGE"
-  (
-    cd "$HOME/initramfs/build/init_ram_fs"
-    find . -print0 | cpio --null --create --verbose --format=newc | gzip --best
-  ) > "$HOME/initramfs/build/$OUTPUT_IMAGE"
-
-  log "initramfs.img has been created successfully."
-else
-  log "Nothing to do.."
-fi
-
-log "Finished initramfs image creation script."
+        block_device_name=$(basename "$block_device_dir" | sed 's/initramfs_//')
+        initramfs_cpio_name="initramfs.$block_device_name.cpio"
+        initramfs_final_name="initramfs.$block_device_name.gz"
+        log "Creating $initramfs_cpio_name"
+        home_dir=$(pwd)
+        block_device_dir="/home/rajames/PROJECTS/StarshipOS/initramfs/build/initramfs_$block_device_name"
+        log "Working Directory: $block_device_dir"
+        cd "$block_device_dir"
+        sudo find . -mindepth 1 -print0 | cpio --null -o -H newc --owner root:root > "$home_dir/$initramfs_cpio_name"
+        gzip "$home_dir/$initramfs_cpio_name"
+        mv "$home_dir/$initramfs_cpio_name.gz" "$home_dir/$initramfs_final_name"
+        mv "$home_dir/$initramfs_final_name" "$home_dir/build"
+        cd "$home_dir"
+        rm -rf cd "$block_device_dir"
+    else
+        log "Skipping $block_device_dir (not a directory)"
+    fi
+done

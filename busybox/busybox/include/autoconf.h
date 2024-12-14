@@ -2,7 +2,7 @@
  * Automatically generated C config: don't edit
  * Busybox version: 1.35.0
  */
-#define AUTOCONF_TIMESTAMP "2024-12-12 12:56:41 EST"
+#define AUTOCONF_TIMESTAMP "2024-12-14 15:28:44 EST"
 
 #define CONFIG_HAVE_DOT_CONFIG 1
 #define ENABLE_HAVE_DOT_CONFIG 1
@@ -152,10 +152,14 @@
 # define IF_FEATURE_INSTALLER(...) __VA_ARGS__
 #endif
 #define IF_NOT_FEATURE_INSTALLER(...)
-#undef CONFIG_INSTALL_NO_USR
-#define ENABLE_INSTALL_NO_USR 0
-#define IF_INSTALL_NO_USR(...)
-#define IF_NOT_INSTALL_NO_USR(...) __VA_ARGS__
+#define CONFIG_INSTALL_NO_USR 1
+#define ENABLE_INSTALL_NO_USR 1
+#ifdef MAKE_SUID
+# define IF_INSTALL_NO_USR(...) __VA_ARGS__ "CONFIG_INSTALL_NO_USR"
+#else
+# define IF_INSTALL_NO_USR(...) __VA_ARGS__
+#endif
+#define IF_NOT_INSTALL_NO_USR(...)
 #define CONFIG_FEATURE_SUID 1
 #define ENABLE_FEATURE_SUID 1
 #ifdef MAKE_SUID

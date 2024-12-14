@@ -16,9 +16,9 @@
     </properties>
 
     <modules>
-        <module>starship</module>
         <module>busybox</module>
-        <module>java</module>
+        <module>starship</module>
+<!--        <module>java</module>-->
 
         <module>system-bridge</module>
         <module>userland-java</module>

@@ -116,41 +116,41 @@ if [ ! -d build ]; then
 
 
 
-  log "Adding init script."
-  sudo bash -c "cat << 'EOF' > \"$BOOT_MOUNT_POINT/linuxrc\"
-#!/bin/sh
-
-echo 'Starship getting ready for Warp.'
-# Mount the proc and sys filesystems
-mount -t proc proc /proc
-mount -t sysfs sys /sys
-
-# Create device nodes
-mknod -m 622 /dev/console c 5 1
-mknod -m 666 /dev/null c 1 3
-
-## export JAVA_HOME=/usr/lib/jvm/jdk
-## export PATH=\$JAVA_HOME/bin:\$PATH
+#  log "Adding init script."
+#  sudo bash -c "cat << 'EOF' > \"$BOOT_MOUNT_POINT/linuxrc\"
+##!/bin/sh
 #
-# Run BusyBox init
-echo 'Engines started!'
-exec /bin/busybox init
-EOF
-"
-
-  sudo chmod +x "$BOOT_MOUNT_POINT/linuxrc"
-
-  # Install GRUB2 bootloader
-  log "Install GRUB2 bootloader."
-  sudo grub-install --target=i386-pc --boot-directory="$BOOT_MOUNT_POINT" --recheck "$NDB0"
-
-  # Disconnect the disk
-  log "Unmount and disconnect the disk."
-  sudo umount "$BOOT_MOUNT_POINT"
-  sudo umount "$ROOT_MOUNT_POINT"
-  sudo qemu-nbd --disconnect "$NDB0"
-
-  log "starship-os.qcow2 has been created successfully."
+#echo 'Starship getting ready for Warp.'
+## Mount the proc and sys filesystems
+#mount -t proc proc /proc
+#mount -t sysfs sys /sys
+#
+## Create device nodes
+#mknod -m 622 /dev/console c 5 1
+#mknod -m 666 /dev/null c 1 3
+#
+### export JAVA_HOME=/usr/lib/jvm/jdk
+### export PATH=\$JAVA_HOME/bin:\$PATH
+##
+## Run BusyBox init
+#echo 'Engines started!'
+#exec /bin/busybox init
+#EOF
+#"
+#
+#  sudo chmod +x "$BOOT_MOUNT_POINT/linuxrc"
+#
+#  # Install GRUB2 bootloader
+#  log "Install GRUB2 bootloader."
+#  sudo grub-install --target=i386-pc --boot-directory="$BOOT_MOUNT_POINT" --recheck "$NDB0"
+#
+#  # Disconnect the disk
+#  log "Unmount and disconnect the disk."
+#  sudo umount "$BOOT_MOUNT_POINT"
+#  sudo umount "$ROOT_MOUNT_POINT"
+#  sudo qemu-nbd --disconnect "$NDB0"
+#
+#  log "starship-os.qcow2 has been created successfully."
 else
     log "Nothing to do.."
 fi

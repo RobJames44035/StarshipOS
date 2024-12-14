@@ -20,7 +20,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     mkdir -p "$BUILD_DIR"
 
     log "Creating GRUB configuration file: $OUTPUT_FILE"
-    sed "s/@@X_1@@/$BLOCK_DEVICE/g" "$TEMPLATE_FILE" > "build/$BLOCK_DEVICE/$OUTPUT_FILE"
+    sed "s/@@X_1@@/$BLOCK_DEVICE/g" "$TEMPLATE_FILE" > "$BUILD_DIR/$OUTPUT_FILE"
 
     log "Successfully created GRUB configuration file."
 else
