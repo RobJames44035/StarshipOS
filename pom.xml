@@ -18,7 +18,7 @@
     <modules>
         <module>busybox</module>
         <module>starship</module>
-<!--        <module>java</module>-->
+        <module>java</module>
 
         <module>system-bridge</module>
         <module>userland-java</module>
