@@ -7,9 +7,11 @@ set -u  # Treat unset variables as an error
 HOME="/home/rajames/PROJECTS/StarshipOS"
 THE_COW="$HOME/qcow2_image"
 FINAL_BUILD_DIR="$THE_COW/build"
+
 TARGET_DIR="$THE_COW/target"
-ROOT_MOUNT_POINT="$TARGET_DIR/mnt"
-BOOT_MOUNT_POINT="$TARGET_DIR/boot"
+
+ROOT_MOUNT_POINT="$FINAL_BUILD_DIR/mnt"
+BOOT_MOUNT_POINT="$FINAL_BUILD_DIR/boot"
 
 HDD_VIRT_NAME="starship-os.qcow2"
 NDB0="/dev/nbd0"
@@ -24,16 +26,10 @@ function log() {
 }
 
 if [ ! -d build ]; then
-
-  log "Creating disk image."
   mkdir -p "$FINAL_BUILD_DIR"
-  mkdir -p "$TARGET_DIR"
-  mkdir -p "$ROOT_MOUNT_POINT"
+  qemu-img create -f qcow2 "$FINAL_BUILD_DIR/$HDD_VIRT_NAME" 4G
 
-  log "Create a 2TB qcow2 image."
-  qemu-img create -f qcow2 "$FINAL_BUILD_DIR/$HDD_VIRT_NAME" 512G
-
-  # Connect the qcow2 image as a block device
+# Connect the qcow2 image as a block device
   log "Connect the qcow2 image as a block device."
   sudo modprobe nbd max_part=16
   sudo qemu-nbd --connect="$NDB0" "$FINAL_BUILD_DIR/$HDD_VIRT_NAME"
@@ -64,10 +60,11 @@ if [ ! -d build ]; then
   sudo mkfs.ext4 "$ROOT_PART"
 
   log "Create $ROOT_MOUNT_POINT mount point and mounting."
+  mkdir -p "$ROOT_MOUNT_POINT"
   sudo mount "$ROOT_PART" "$ROOT_MOUNT_POINT"
 
   log "Creating $BOOT_MOUNT_POINT mount point and mounting."
-  sudo mkdir -p "$BOOT_MOUNT_POINT"
+  mkdir -p "$BOOT_MOUNT_POINT"
   sudo mount "$BOOT_PART" "$BOOT_MOUNT_POINT"
 
   #######################################
@@ -78,79 +75,71 @@ if [ ! -d build ]; then
   echo "#######################################"
 
   log "Copying kernel."
-  sudo cp "../starship/build/init_ram_fs/boot/starship" "$BOOT_MOUNT_POINT/starship"
+  sudo cp -p "./target/kernel/build/init_ram_fs/boot/starship" "build/boot/starship"
 
   log "Copy kernel modules."
-  sudo cp -rv "../starship/build/init_ram_fs/lib" "$BOOT_MOUNT_POINT"
+  sudo cp -rp "./target/kernel/build/init_ram_fs/lib" "build/boot"
 
   log "Copying initramfs."
-  sudo cp "../initramfs/build/initramfs.img" "$BOOT_MOUNT_POINT/initramfs"
+  sudo cp -p "target/ramdisks/build/initramfs.hd0.gz" "build/boot"
 
   sudo mkdir -p "$BOOT_MOUNT_POINT/grub"
   log "Copying grub.cfg"
-  sudo cp "../grub/build/init_ram_fs/boot/grub/grub.cfg" "$BOOT_MOUNT_POINT/grub/grub.cfg"
+  sudo cp -p "./target/grub/hd0/init_ram_fs/boot/grub.cfg" "build/boot/grub/grub.cfg"
 
+  # Install GRUB bootloader
+  log "Installing GRUB bootloader."
+  sudo grub-install --target=i386-pc --boot-directory="$BOOT_MOUNT_POINT" "$NDB0"
+
+#  tree "build/boot"
   ########################################
   #    Add content to root partition /   #
   ########################################
   echo "########################################"
   echo "#    Add content to root partition /   #"
   echo "########################################"
+  sudo mkdir -p build/mnt/bin \
+         build/mnt/dev \
+         build/mnt/etc \
+         build/mnt/home \
+         build/mnt/lib \
+         build/mnt/lib64 \
+         build/mnt/mnt \
+         build/mnt/opt \
+         build/mnt/proc \
+         build/mnt/root \
+         build/mnt/sbin \
+         build/mnt/sys \
+         build/mnt/tmp \
+         build/mnt/usr/bin \
+         build/mnt/usr/lib \
+         build/mnt/usr/lib64 \
+         build/mnt/usr/sbin \
+         build/mnt/var/log \
+         build/mnt/var/tmp \
+         build/mnt/var/run
 
   # BusyBox
   log "Copying BusyBox."
-  sudo cp -rv "../busybox/build/init_ram_fs/bin" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../busybox/build/init_ram_fs/sbin" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../busybox/build/init_ram_fs/usr" "$ROOT_MOUNT_POINT"
+  sudo cp -rp "./target/busybox/build/init_ram_fs/bin" "build/mnt"
+  sudo cp -rp "./target/busybox/build/init_ram_fs/sbin" "build/mnt"
+
   # Java JDK
   log "Copying JDK23."
-  sudo cp -rv "../java/build/jdk/jdk/bin" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../java/build/jdk/jdk/conf" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../java/build/jdk/jdk/include" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../java/build/jdk/jdk/lib" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../java/build/jdk/jdk/man" "$ROOT_MOUNT_POINT"
-  sudo cp -rv "../java/build/jdk/jdk/modules" "$ROOT_MOUNT_POINT"
+  sudo mkdir -p "build/mnt/java/jdk"
+  sudo cp -rp "./target/java/build/jdk" "build/mnt/java/jdk"
 ###########################################################
-# You may add other content here as needed.
+# You may add other content below as needed.
 ###########################################################
 
+#tree "build/mnt"
+# Cleanup at the end
 
-
-#  log "Adding init script."
-#  sudo bash -c "cat << 'EOF' > \"$BOOT_MOUNT_POINT/linuxrc\"
-##!/bin/sh
-#
-#echo 'Starship getting ready for Warp.'
-## Mount the proc and sys filesystems
-#mount -t proc proc /proc
-#mount -t sysfs sys /sys
-#
-## Create device nodes
-#mknod -m 622 /dev/console c 5 1
-#mknod -m 666 /dev/null c 1 3
-#
-### export JAVA_HOME=/usr/lib/jvm/jdk
-### export PATH=\$JAVA_HOME/bin:\$PATH
-##
-## Run BusyBox init
-#echo 'Engines started!'
-#exec /bin/busybox init
-#EOF
-#"
-#
-#  sudo chmod +x "$BOOT_MOUNT_POINT/linuxrc"
-#
-#  # Install GRUB2 bootloader
-#  log "Install GRUB2 bootloader."
-#  sudo grub-install --target=i386-pc --boot-directory="$BOOT_MOUNT_POINT" --recheck "$NDB0"
-#
-#  # Disconnect the disk
-#  log "Unmount and disconnect the disk."
-#  sudo umount "$BOOT_MOUNT_POINT"
-#  sudo umount "$ROOT_MOUNT_POINT"
-#  sudo qemu-nbd --disconnect "$NDB0"
-#
-#  log "starship-os.qcow2 has been created successfully."
+  sudo rm -rf "$BOOT_MOUNT_POINT/*"
+  sudo umount --lazy "$BOOT_MOUNT_POINT"
+  sudo rm -rf "$ROOT_MOUNT_POINT/*"
+  sudo umount --lazy "$ROOT_MOUNT_POINT"
+  sudo qemu-nbd --disconnect /dev/nbd0
 else
     log "Nothing to do.."
 fi
