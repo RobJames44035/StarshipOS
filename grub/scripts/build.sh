@@ -18,10 +18,9 @@ log "Starting GRUB configuration script."
 if [ ! -d "$BUILD_DIR" ]; then
     log "Creating build directory: $BUILD_DIR"
     mkdir -p "$BUILD_DIR"
-
-    log "Creating GRUB configuration file: $OUTPUT_FILE"
-    sed "s/@@X_1@@/$BLOCK_DEVICE/g" "$TEMPLATE_FILE" > "$BUILD_DIR/$OUTPUT_FILE"
-
+    cp -r src/* build/
+#    mv -rf src/hd0 hd0
+#    mv -rf src/cd cd
     log "Successfully created GRUB configuration file."
 else
     log "Build directory already exists. Skipping creation."
