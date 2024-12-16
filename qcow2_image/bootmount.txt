@@ -1,463 +1,589 @@
 /home/rajames/PROJECTS/StarshipOS/qcow2_image/build/boot
+├── boot
+│   ├── grub
+│   │   └── grub.cfg
+│   ├── initramfs.hd0.gz
+│   └── starship
 ├── grub
-│ ├── fonts
-│ │ └── unicode.pf2
-│ ├── grub.cfg
-│ ├── grubenv
-│ └── i386-pc
-│     ├── 915resolution.mod
-│     ├── acpi.mod
-│     ├── adler32.mod
-│     ├── affs.mod
-│     ├── afs.mod
-│     ├── ahci.mod
-│     ├── all_video.mod
-│     ├── aout.mod
-│     ├── archelp.mod
-│     ├── ata.mod
-│     ├── at_keyboard.mod
-│     ├── backtrace.mod
-│     ├── bfs.mod
-│     ├── biosdisk.mod
-│     ├── bitmap.mod
-│     ├── bitmap_scale.mod
-│     ├── blocklist.mod
-│     ├── boot.img
-│     ├── boot.mod
-│     ├── bsd.mod
-│     ├── bswap_test.mod
-│     ├── btrfs.mod
-│     ├── bufio.mod
-│     ├── cat.mod
-│     ├── cbfs.mod
-│     ├── cbls.mod
-│     ├── cbmemc.mod
-│     ├── cbtable.mod
-│     ├── cbtime.mod
-│     ├── chain.mod
-│     ├── cmdline_cat_test.mod
-│     ├── cmosdump.mod
-│     ├── cmostest.mod
-│     ├── cmp.mod
-│     ├── cmp_test.mod
-│     ├── command.lst
-│     ├── configfile.mod
-│     ├── core.img
-│     ├── cpio_be.mod
-│     ├── cpio.mod
-│     ├── cpuid.mod
-│     ├── crc64.mod
-│     ├── cryptodisk.mod
-│     ├── crypto.lst
-│     ├── crypto.mod
-│     ├── cs5536.mod
-│     ├── ctz_test.mod
-│     ├── datehook.mod
-│     ├── date.mod
-│     ├── datetime.mod
-│     ├── diskfilter.mod
-│     ├── disk.mod
-│     ├── div.mod
-│     ├── div_test.mod
-│     ├── dm_nv.mod
-│     ├── drivemap.mod
-│     ├── echo.mod
-│     ├── efiemu32.o
-│     ├── efiemu64.o
-│     ├── efiemu.mod
-│     ├── ehci.mod
-│     ├── elf.mod
-│     ├── eval.mod
-│     ├── exfat.mod
-│     ├── exfctest.mod
-│     ├── ext2.mod
-│     ├── extcmd.mod
-│     ├── f2fs.mod
-│     ├── fat.mod
-│     ├── file.mod
-│     ├── font.mod
-│     ├── freedos.mod
-│     ├── fshelp.mod
-│     ├── fs.lst
-│     ├── functional_test.mod
-│     ├── gcry_arcfour.mod
-│     ├── gcry_blowfish.mod
-│     ├── gcry_camellia.mod
-│     ├── gcry_cast5.mod
-│     ├── gcry_crc.mod
-│     ├── gcry_des.mod
-│     ├── gcry_dsa.mod
-│     ├── gcry_idea.mod
-│     ├── gcry_md4.mod
-│     ├── gcry_md5.mod
-│     ├── gcry_rfc2268.mod
-│     ├── gcry_rijndael.mod
-│     ├── gcry_rmd160.mod
-│     ├── gcry_rsa.mod
-│     ├── gcry_seed.mod
-│     ├── gcry_serpent.mod
-│     ├── gcry_sha1.mod
-│     ├── gcry_sha256.mod
-│     ├── gcry_sha512.mod
-│     ├── gcry_tiger.mod
-│     ├── gcry_twofish.mod
-│     ├── gcry_whirlpool.mod
-│     ├── gdb.mod
-│     ├── geli.mod
-│     ├── gettext.mod
-│     ├── gfxmenu.mod
-│     ├── gfxterm_background.mod
-│     ├── gfxterm_menu.mod
-│     ├── gfxterm.mod
-│     ├── gptsync.mod
-│     ├── gzio.mod
-│     ├── halt.mod
-│     ├── hashsum.mod
-│     ├── hdparm.mod
-│     ├── hello.mod
-│     ├── help.mod
-│     ├── hexdump.mod
-│     ├── hfs.mod
-│     ├── hfspluscomp.mod
-│     ├── hfsplus.mod
-│     ├── http.mod
-│     ├── hwmatch.mod
-│     ├── iorw.mod
-│     ├── iso9660.mod
-│     ├── jfs.mod
-│     ├── jpeg.mod
-│     ├── keylayouts.mod
-│     ├── keystatus.mod
-│     ├── ldm.mod
-│     ├── legacycfg.mod
-│     ├── legacy_password_test.mod
-│     ├── linux16.mod
-│     ├── linux.mod
-│     ├── loadenv.mod
-│     ├── loopback.mod
-│     ├── lsacpi.mod
-│     ├── lsapm.mod
-│     ├── lsmmap.mod
-│     ├── ls.mod
-│     ├── lspci.mod
-│     ├── luks.mod
-│     ├── lvm.mod
-│     ├── lzopio.mod
-│     ├── macbless.mod
-│     ├── macho.mod
-│     ├── mda_text.mod
-│     ├── mdraid09_be.mod
-│     ├── mdraid09.mod
-│     ├── mdraid1x.mod
-│     ├── memdisk.mod
-│     ├── memrw.mod
-│     ├── minicmd.mod
-│     ├── minix2_be.mod
-│     ├── minix2.mod
-│     ├── minix3_be.mod
-│     ├── minix3.mod
-│     ├── minix_be.mod
-│     ├── minix.mod
-│     ├── mmap.mod
-│     ├── moddep.lst
-│     ├── modinfo.sh
-│     ├── morse.mod
-│     ├── mpi.mod
-│     ├── msdospart.mod
-│     ├── mul_test.mod
-│     ├── multiboot2.mod
-│     ├── multiboot.mod
-│     ├── nativedisk.mod
-│     ├── net.mod
-│     ├── newc.mod
-│     ├── nilfs2.mod
-│     ├── normal.mod
-│     ├── ntfscomp.mod
-│     ├── ntfs.mod
-│     ├── ntldr.mod
-│     ├── odc.mod
-│     ├── offsetio.mod
-│     ├── ohci.mod
-│     ├── part_acorn.mod
-│     ├── part_amiga.mod
-│     ├── part_apple.mod
-│     ├── part_bsd.mod
-│     ├── part_dfly.mod
-│     ├── part_dvh.mod
-│     ├── part_gpt.mod
-│     ├── partmap.lst
-│     ├── part_msdos.mod
-│     ├── part_plan.mod
-│     ├── part_sun.mod
-│     ├── part_sunpc.mod
-│     ├── parttool.lst
-│     ├── parttool.mod
-│     ├── password.mod
-│     ├── password_pbkdf2.mod
-│     ├── pata.mod
-│     ├── pbkdf2.mod
-│     ├── pbkdf2_test.mod
-│     ├── pcidump.mod
-│     ├── pci.mod
-│     ├── pgp.mod
-│     ├── plan9.mod
-│     ├── play.mod
-│     ├── png.mod
-│     ├── priority_queue.mod
-│     ├── probe.mod
-│     ├── procfs.mod
-│     ├── progress.mod
-│     ├── pxechain.mod
-│     ├── pxe.mod
-│     ├── raid5rec.mod
-│     ├── raid6rec.mod
-│     ├── random.mod
-│     ├── rdmsr.mod
-│     ├── read.mod
-│     ├── reboot.mod
-│     ├── regexp.mod
-│     ├── reiserfs.mod
-│     ├── relocator.mod
-│     ├── romfs.mod
-│     ├── scsi.mod
-│     ├── search_fs_file.mod
-│     ├── search_fs_uuid.mod
-│     ├── search_label.mod
-│     ├── search.mod
-│     ├── sendkey.mod
-│     ├── serial.mod
-│     ├── setjmp.mod
-│     ├── setjmp_test.mod
-│     ├── setpci.mod
-│     ├── sfs.mod
-│     ├── shift_test.mod
-│     ├── signature_test.mod
-│     ├── sleep.mod
-│     ├── sleep_test.mod
-│     ├── smbios.mod
-│     ├── spkmodem.mod
-│     ├── squash4.mod
-│     ├── strtoull_test.mod
-│     ├── syslinuxcfg.mod
-│     ├── tar.mod
-│     ├── terminal.lst
-│     ├── terminal.mod
-│     ├── terminfo.mod
-│     ├── test_blockarg.mod
-│     ├── testload.mod
-│     ├── test.mod
-│     ├── testspeed.mod
-│     ├── tftp.mod
-│     ├── tga.mod
-│     ├── time.mod
-│     ├── trig.mod
-│     ├── tr.mod
-│     ├── truecrypt.mod
-│     ├── true.mod
-│     ├── udf.mod
-│     ├── ufs1_be.mod
-│     ├── ufs1.mod
-│     ├── ufs2.mod
-│     ├── uhci.mod
-│     ├── usb_keyboard.mod
-│     ├── usb.mod
-│     ├── usbms.mod
-│     ├── usbserial_common.mod
-│     ├── usbserial_ftdi.mod
-│     ├── usbserial_pl2303.mod
-│     ├── usbserial_usbdebug.mod
-│     ├── usbtest.mod
-│     ├── vbe.mod
-│     ├── verifiers.mod
-│     ├── vga.mod
-│     ├── vga_text.mod
-│     ├── video_bochs.mod
-│     ├── video_cirrus.mod
-│     ├── video_colors.mod
-│     ├── video_fb.mod
-│     ├── videoinfo.mod
-│     ├── video.lst
-│     ├── video.mod
-│     ├── videotest_checksum.mod
-│     ├── videotest.mod
-│     ├── wrmsr.mod
-│     ├── xfs.mod
-│     ├── xnu.mod
-│     ├── xnu_uuid.mod
-│     ├── xnu_uuid_test.mod
-│     ├── xzio.mod
-│     ├── zfscrypt.mod
-│     ├── zfsinfo.mod
-│     ├── zfs.mod
-│     └── zstd.mod
-├── initramfs.hd0.gz
+│   ├── fonts
+│   │   └── unicode.pf2
+│   ├── grubenv
+│   └── i386-pc
+│       ├── 915resolution.mod
+│       ├── acpi.mod
+│       ├── adler32.mod
+│       ├── affs.mod
+│       ├── afs.mod
+│       ├── ahci.mod
+│       ├── all_video.mod
+│       ├── aout.mod
+│       ├── archelp.mod
+│       ├── ata.mod
+│       ├── at_keyboard.mod
+│       ├── backtrace.mod
+│       ├── bfs.mod
+│       ├── biosdisk.mod
+│       ├── bitmap.mod
+│       ├── bitmap_scale.mod
+│       ├── blocklist.mod
+│       ├── boot.img
+│       ├── boot.mod
+│       ├── bsd.mod
+│       ├── bswap_test.mod
+│       ├── btrfs.mod
+│       ├── bufio.mod
+│       ├── cat.mod
+│       ├── cbfs.mod
+│       ├── cbls.mod
+│       ├── cbmemc.mod
+│       ├── cbtable.mod
+│       ├── cbtime.mod
+│       ├── chain.mod
+│       ├── cmdline_cat_test.mod
+│       ├── cmosdump.mod
+│       ├── cmostest.mod
+│       ├── cmp.mod
+│       ├── cmp_test.mod
+│       ├── command.lst
+│       ├── configfile.mod
+│       ├── core.img
+│       ├── cpio_be.mod
+│       ├── cpio.mod
+│       ├── cpuid.mod
+│       ├── crc64.mod
+│       ├── cryptodisk.mod
+│       ├── crypto.lst
+│       ├── crypto.mod
+│       ├── cs5536.mod
+│       ├── ctz_test.mod
+│       ├── datehook.mod
+│       ├── date.mod
+│       ├── datetime.mod
+│       ├── diskfilter.mod
+│       ├── disk.mod
+│       ├── div.mod
+│       ├── div_test.mod
+│       ├── dm_nv.mod
+│       ├── drivemap.mod
+│       ├── echo.mod
+│       ├── efiemu32.o
+│       ├── efiemu64.o
+│       ├── efiemu.mod
+│       ├── ehci.mod
+│       ├── elf.mod
+│       ├── eval.mod
+│       ├── exfat.mod
+│       ├── exfctest.mod
+│       ├── ext2.mod
+│       ├── extcmd.mod
+│       ├── f2fs.mod
+│       ├── fat.mod
+│       ├── file.mod
+│       ├── font.mod
+│       ├── freedos.mod
+│       ├── fshelp.mod
+│       ├── fs.lst
+│       ├── functional_test.mod
+│       ├── gcry_arcfour.mod
+│       ├── gcry_blowfish.mod
+│       ├── gcry_camellia.mod
+│       ├── gcry_cast5.mod
+│       ├── gcry_crc.mod
+│       ├── gcry_des.mod
+│       ├── gcry_dsa.mod
+│       ├── gcry_idea.mod
+│       ├── gcry_md4.mod
+│       ├── gcry_md5.mod
+│       ├── gcry_rfc2268.mod
+│       ├── gcry_rijndael.mod
+│       ├── gcry_rmd160.mod
+│       ├── gcry_rsa.mod
+│       ├── gcry_seed.mod
+│       ├── gcry_serpent.mod
+│       ├── gcry_sha1.mod
+│       ├── gcry_sha256.mod
+│       ├── gcry_sha512.mod
+│       ├── gcry_tiger.mod
+│       ├── gcry_twofish.mod
+│       ├── gcry_whirlpool.mod
+│       ├── gdb.mod
+│       ├── geli.mod
+│       ├── gettext.mod
+│       ├── gfxmenu.mod
+│       ├── gfxterm_background.mod
+│       ├── gfxterm_menu.mod
+│       ├── gfxterm.mod
+│       ├── gptsync.mod
+│       ├── gzio.mod
+│       ├── halt.mod
+│       ├── hashsum.mod
+│       ├── hdparm.mod
+│       ├── hello.mod
+│       ├── help.mod
+│       ├── hexdump.mod
+│       ├── hfs.mod
+│       ├── hfspluscomp.mod
+│       ├── hfsplus.mod
+│       ├── http.mod
+│       ├── hwmatch.mod
+│       ├── iorw.mod
+│       ├── iso9660.mod
+│       ├── jfs.mod
+│       ├── jpeg.mod
+│       ├── keylayouts.mod
+│       ├── keystatus.mod
+│       ├── ldm.mod
+│       ├── legacycfg.mod
+│       ├── legacy_password_test.mod
+│       ├── linux16.mod
+│       ├── linux.mod
+│       ├── loadenv.mod
+│       ├── loopback.mod
+│       ├── lsacpi.mod
+│       ├── lsapm.mod
+│       ├── lsmmap.mod
+│       ├── ls.mod
+│       ├── lspci.mod
+│       ├── luks.mod
+│       ├── lvm.mod
+│       ├── lzopio.mod
+│       ├── macbless.mod
+│       ├── macho.mod
+│       ├── mda_text.mod
+│       ├── mdraid09_be.mod
+│       ├── mdraid09.mod
+│       ├── mdraid1x.mod
+│       ├── memdisk.mod
+│       ├── memrw.mod
+│       ├── minicmd.mod
+│       ├── minix2_be.mod
+│       ├── minix2.mod
+│       ├── minix3_be.mod
+│       ├── minix3.mod
+│       ├── minix_be.mod
+│       ├── minix.mod
+│       ├── mmap.mod
+│       ├── moddep.lst
+│       ├── modinfo.sh
+│       ├── morse.mod
+│       ├── mpi.mod
+│       ├── msdospart.mod
+│       ├── mul_test.mod
+│       ├── multiboot2.mod
+│       ├── multiboot.mod
+│       ├── nativedisk.mod
+│       ├── net.mod
+│       ├── newc.mod
+│       ├── nilfs2.mod
+│       ├── normal.mod
+│       ├── ntfscomp.mod
+│       ├── ntfs.mod
+│       ├── ntldr.mod
+│       ├── odc.mod
+│       ├── offsetio.mod
+│       ├── ohci.mod
+│       ├── part_acorn.mod
+│       ├── part_amiga.mod
+│       ├── part_apple.mod
+│       ├── part_bsd.mod
+│       ├── part_dfly.mod
+│       ├── part_dvh.mod
+│       ├── part_gpt.mod
+│       ├── partmap.lst
+│       ├── part_msdos.mod
+│       ├── part_plan.mod
+│       ├── part_sun.mod
+│       ├── part_sunpc.mod
+│       ├── parttool.lst
+│       ├── parttool.mod
+│       ├── password.mod
+│       ├── password_pbkdf2.mod
+│       ├── pata.mod
+│       ├── pbkdf2.mod
+│       ├── pbkdf2_test.mod
+│       ├── pcidump.mod
+│       ├── pci.mod
+│       ├── pgp.mod
+│       ├── plan9.mod
+│       ├── play.mod
+│       ├── png.mod
+│       ├── priority_queue.mod
+│       ├── probe.mod
+│       ├── procfs.mod
+│       ├── progress.mod
+│       ├── pxechain.mod
+│       ├── pxe.mod
+│       ├── raid5rec.mod
+│       ├── raid6rec.mod
+│       ├── random.mod
+│       ├── rdmsr.mod
+│       ├── read.mod
+│       ├── reboot.mod
+│       ├── regexp.mod
+│       ├── reiserfs.mod
+│       ├── relocator.mod
+│       ├── romfs.mod
+│       ├── scsi.mod
+│       ├── search_fs_file.mod
+│       ├── search_fs_uuid.mod
+│       ├── search_label.mod
+│       ├── search.mod
+│       ├── sendkey.mod
+│       ├── serial.mod
+│       ├── setjmp.mod
+│       ├── setjmp_test.mod
+│       ├── setpci.mod
+│       ├── sfs.mod
+│       ├── shift_test.mod
+│       ├── signature_test.mod
+│       ├── sleep.mod
+│       ├── sleep_test.mod
+│       ├── smbios.mod
+│       ├── spkmodem.mod
+│       ├── squash4.mod
+│       ├── strtoull_test.mod
+│       ├── syslinuxcfg.mod
+│       ├── tar.mod
+│       ├── terminal.lst
+│       ├── terminal.mod
+│       ├── terminfo.mod
+│       ├── test_blockarg.mod
+│       ├── testload.mod
+│       ├── test.mod
+│       ├── testspeed.mod
+│       ├── tftp.mod
+│       ├── tga.mod
+│       ├── time.mod
+│       ├── trig.mod
+│       ├── tr.mod
+│       ├── truecrypt.mod
+│       ├── true.mod
+│       ├── udf.mod
+│       ├── ufs1_be.mod
+│       ├── ufs1.mod
+│       ├── ufs2.mod
+│       ├── uhci.mod
+│       ├── usb_keyboard.mod
+│       ├── usb.mod
+│       ├── usbms.mod
+│       ├── usbserial_common.mod
+│       ├── usbserial_ftdi.mod
+│       ├── usbserial_pl2303.mod
+│       ├── usbserial_usbdebug.mod
+│       ├── usbtest.mod
+│       ├── vbe.mod
+│       ├── verifiers.mod
+│       ├── vga.mod
+│       ├── vga_text.mod
+│       ├── video_bochs.mod
+│       ├── video_cirrus.mod
+│       ├── video_colors.mod
+│       ├── video_fb.mod
+│       ├── videoinfo.mod
+│       ├── video.lst
+│       ├── video.mod
+│       ├── videotest_checksum.mod
+│       ├── videotest.mod
+│       ├── wrmsr.mod
+│       ├── xfs.mod
+│       ├── xnu.mod
+│       ├── xnu_uuid.mod
+│       ├── xnu_uuid_test.mod
+│       ├── xzio.mod
+│       ├── zfscrypt.mod
+│       ├── zfsinfo.mod
+│       ├── zfs.mod
+│       └── zstd.mod
 ├── lib
-│ └── modules
-│     └── 6.12.0
-│         ├── build -> /home/rajames/PROJECTS/StarshipOS/starship/starship_kernel
-│         ├── kernel
-│         │ ├── arch
-│         │ │ └── x86
-│         │ │     └── events
-│         │ │         └── amd
-│         │ │             ├── amd-uncore.ko
-│         │ │             └── power.ko
-│         │ ├── block
-│         │ │ ├── bfq.ko
-│         │ │ ├── kyber-iosched.ko
-│         │ │ └── mq-deadline.ko
-│         │ ├── crypto
-│         │ │ ├── crct10dif_common.ko
-│         │ │ └── crct10dif_generic.ko
-│         │ ├── drivers
-│         │ │ ├── block
-│         │ │ │ ├── floppy.ko
-│         │ │ │ ├── mtip32xx
-│         │ │ │ │ └── mtip32xx.ko
-│         │ │ │ ├── ublk_drv.ko
-│         │ │ │ ├── virtio_blk.ko
-│         │ │ │ └── zram
-│         │ │ │     └── zram.ko
-│         │ │ ├── cdrom
-│         │ │ │ └── cdrom.ko
-│         │ │ ├── firmware
-│         │ │ │ ├── edd.ko
-│         │ │ │ └── qemu_fw_cfg.ko
-│         │ │ ├── gpu
-│         │ │ │ └── drm
-│         │ │ │     ├── drm_kms_helper.ko
-│         │ │ │     ├── drm.ko
-│         │ │ │     └── drm_panel_orientation_quirks.ko
-│         │ │ ├── hv
-│         │ │ │ ├── hv_balloon.ko
-│         │ │ │ └── hv_vmbus.ko
-│         │ │ ├── i2c
-│         │ │ │ └── i2c-mux.ko
-│         │ │ ├── input
-│         │ │ │ └── serio
-│         │ │ │     ├── hyperv-keyboard.ko
-│         │ │ │     └── serio_raw.ko
-│         │ │ ├── message
-│         │ │ │ └── fusion
-│         │ │ │     ├── mptbase.ko
-│         │ │ │     ├── mptctl.ko
-│         │ │ │     ├── mptsas.ko
-│         │ │ │     ├── mptscsih.ko
-│         │ │ │     └── mptspi.ko
-│         │ │ ├── mtd
-│         │ │ │ ├── chips
-│         │ │ │ │ ├── cfi_cmdset_0002.ko
-│         │ │ │ │ ├── cfi_probe.ko
-│         │ │ │ │ ├── cfi_util.ko
-│         │ │ │ │ ├── chipreg.ko
-│         │ │ │ │ ├── gen_probe.ko
-│         │ │ │ │ └── map_ram.ko
-│         │ │ │ ├── devices
-│         │ │ │ │ ├── block2mtd.ko
-│         │ │ │ │ ├── docg3.ko
-│         │ │ │ │ ├── phram.ko
-│         │ │ │ │ ├── pmc551.ko
-│         │ │ │ │ └── slram.ko
-│         │ │ │ ├── hyperbus
-│         │ │ │ │ └── hyperbus-core.ko
-│         │ │ │ ├── lpddr
-│         │ │ │ │ ├── lpddr_cmds.ko
-│         │ │ │ │ └── qinfo_probe.ko
-│         │ │ │ ├── maps
-│         │ │ │ │ ├── map_funcs.ko
-│         │ │ │ │ ├── pci.ko
-│         │ │ │ │ ├── pcmciamtd.ko
-│         │ │ │ │ ├── physmap.ko
-│         │ │ │ │ └── plat-ram.ko
-│         │ │ │ ├── mtd.ko
-│         │ │ │ ├── nand
-│         │ │ │ │ ├── nandcore.ko
-│         │ │ │ │ ├── onenand
-│         │ │ │ │ │ └── onenand.ko
-│         │ │ │ │ └── raw
-│         │ │ │ │     └── nand.ko
-│         │ │ │ └── ubi
-│         │ │ │     ├── gluebi.ko
-│         │ │ │     └── ubi.ko
-│         │ │ ├── nvme
-│         │ │ │ └── host
-│         │ │ │     ├── nvme-core.ko
-│         │ │ │     └── nvme.ko
-│         │ │ ├── scsi
-│         │ │ │ ├── device_handler
-│         │ │ │ │ ├── scsi_dh_alua.ko
-│         │ │ │ │ ├── scsi_dh_emc.ko
-│         │ │ │ │ ├── scsi_dh_hp_sw.ko
-│         │ │ │ │ └── scsi_dh_rdac.ko
-│         │ │ │ ├── hv_storvsc.ko
-│         │ │ │ ├── scsi_common.ko
-│         │ │ │ ├── scsi_mod.ko
-│         │ │ │ ├── scsi_transport_sas.ko
-│         │ │ │ ├── scsi_transport_spi.ko
-│         │ │ │ ├── sd_mod.ko
-│         │ │ │ ├── sg.ko
-│         │ │ │ └── sr_mod.ko
-│         │ │ ├── target
-│         │ │ │ └── target_core_mod.ko
-│         │ │ ├── thermal
-│         │ │ │ └── intel
-│         │ │ │     └── x86_pkg_temp_thermal.ko
-│         │ │ └── virtio
-│         │ │     ├── virtio_balloon.ko
-│         │ │     ├── virtio_input.ko
-│         │ │     ├── virtio_pci.ko
-│         │ │     ├── virtio_pci_legacy_dev.ko
-│         │ │     └── virtio_pci_modern_dev.ko
-│         │ ├── fs
-│         │ │ ├── binfmt_misc.ko
-│         │ │ ├── binfmt_script.ko
-│         │ │ ├── configfs
-│         │ │ │ └── configfs.ko
-│         │ │ ├── efs
-│         │ │ │ └── efs.ko
-│         │ │ ├── exfat
-│         │ │ │ └── exfat.ko
-│         │ │ ├── fat
-│         │ │ │ ├── fat.ko
-│         │ │ │ ├── msdos.ko
-│         │ │ │ └── vfat.ko
-│         │ │ ├── ntfs3
-│         │ │ │ └── ntfs3.ko
-│         │ │ ├── squashfs
-│         │ │ │ └── squashfs.ko
-│         │ │ └── udf
-│         │ │     └── udf.ko
-│         │ ├── lib
-│         │ │ ├── bch.ko
-│         │ │ ├── crc-itu-t.ko
-│         │ │ ├── crc-t10dif.ko
-│         │ │ ├── lz4
-│         │ │ │ └── lz4_decompress.ko
-│         │ │ ├── lzo
-│         │ │ │ ├── lzo_compress.ko
-│         │ │ │ └── lzo_decompress.ko
-│         │ │ ├── xxhash.ko
-│         │ │ ├── xz
-│         │ │ │ └── xz_dec.ko
-│         │ │ └── zstd
-│         │ │     ├── zstd_common.ko
-│         │ │     └── zstd_decompress.ko
-│         │ └── mm
-│         │     └── zsmalloc.ko
-│         ├── modules.alias
-│         ├── modules.alias.bin
-│         ├── modules.builtin
-│         ├── modules.builtin.alias.bin
-│         ├── modules.builtin.bin
-│         ├── modules.builtin.modinfo
-│         ├── modules.dep
-│         ├── modules.dep.bin
-│         ├── modules.devname
-│         ├── modules.order
-│         ├── modules.softdep
-│         ├── modules.symbols
-│         └── modules.symbols.bin
-├── lost+found [error opening dir]
-└── starship
+│   └── modules
+│       └── 6.12.0
+│           ├── build -> /home/rajames/PROJECTS/StarshipOS/starship/starship_kernel
+│           ├── kernel
+│           │   ├── arch
+│           │   │   └── x86
+│           │   │       └── events
+│           │   │           └── amd
+│           │   │               ├── amd-uncore.ko
+│           │   │               └── power.ko
+│           │   ├── block
+│           │   │   ├── bfq.ko
+│           │   │   ├── kyber-iosched.ko
+│           │   │   └── mq-deadline.ko
+│           │   ├── crypto
+│           │   │   ├── async_tx
+│           │   │   │   ├── async_memcpy.ko
+│           │   │   │   ├── async_pq.ko
+│           │   │   │   ├── async_raid6_recov.ko
+│           │   │   │   ├── async_tx.ko
+│           │   │   │   └── async_xor.ko
+│           │   │   ├── authencesn.ko
+│           │   │   ├── authenc.ko
+│           │   │   ├── cbc.ko
+│           │   │   ├── crypto_null.ko
+│           │   │   ├── ecb.ko
+│           │   │   ├── essiv.ko
+│           │   │   └── xor.ko
+│           │   ├── drivers
+│           │   │   ├── acpi
+│           │   │   │   └── dptf
+│           │   │   │       ├── dptf_pch_fivr.ko
+│           │   │   │       └── dptf_power.ko
+│           │   │   ├── ata
+│           │   │   │   ├── acard-ahci.ko
+│           │   │   │   ├── ahci_dwc.ko
+│           │   │   │   ├── ahci.ko
+│           │   │   │   ├── ahci_platform.ko
+│           │   │   │   ├── ata_piix.ko
+│           │   │   │   ├── libahci.ko
+│           │   │   │   ├── libahci_platform.ko
+│           │   │   │   ├── libata.ko
+│           │   │   │   ├── pdc_adma.ko
+│           │   │   │   ├── sata_inic162x.ko
+│           │   │   │   ├── sata_mv.ko
+│           │   │   │   ├── sata_nv.ko
+│           │   │   │   ├── sata_qstor.ko
+│           │   │   │   ├── sata_sil24.ko
+│           │   │   │   └── sata_sx4.ko
+│           │   │   ├── block
+│           │   │   │   ├── floppy.ko
+│           │   │   │   ├── mtip32xx
+│           │   │   │   │   └── mtip32xx.ko
+│           │   │   │   ├── ublk_drv.ko
+│           │   │   │   ├── virtio_blk.ko
+│           │   │   │   └── zram
+│           │   │   │       └── zram.ko
+│           │   │   ├── cdrom
+│           │   │   │   └── cdrom.ko
+│           │   │   ├── cxl
+│           │   │   │   ├── core
+│           │   │   │   │   └── cxl_core.ko
+│           │   │   │   ├── cxl_mem.ko
+│           │   │   │   ├── cxl_pci.ko
+│           │   │   │   └── cxl_port.ko
+│           │   │   ├── firmware
+│           │   │   │   ├── edd.ko
+│           │   │   │   └── qemu_fw_cfg.ko
+│           │   │   ├── gpu
+│           │   │   │   └── drm
+│           │   │   │       ├── drm_kms_helper.ko
+│           │   │   │       ├── drm.ko
+│           │   │   │       ├── drm_panel_orientation_quirks.ko
+│           │   │   │       ├── drm_shmem_helper.ko
+│           │   │   │       ├── drm_ttm_helper.ko
+│           │   │   │       ├── drm_vram_helper.ko
+│           │   │   │       ├── ttm
+│           │   │   │       │   └── ttm.ko
+│           │   │   │       ├── vboxvideo
+│           │   │   │       │   └── vboxvideo.ko
+│           │   │   │       └── virtio
+│           │   │   │           └── virtio-gpu.ko
+│           │   │   ├── hv
+│           │   │   │   ├── hv_balloon.ko
+│           │   │   │   └── hv_vmbus.ko
+│           │   │   ├── i2c
+│           │   │   │   ├── busses
+│           │   │   │   │   └── i2c-virtio.ko
+│           │   │   │   └── i2c-mux.ko
+│           │   │   ├── input
+│           │   │   │   ├── gameport
+│           │   │   │   │   ├── emu10k1-gp.ko
+│           │   │   │   │   ├── fm801-gp.ko
+│           │   │   │   │   └── gameport.ko
+│           │   │   │   └── serio
+│           │   │   │       ├── altera_ps2.ko
+│           │   │   │       ├── arc_ps2.ko
+│           │   │   │       ├── ct82c710.ko
+│           │   │   │       ├── hyperv-keyboard.ko
+│           │   │   │       ├── ps2mult.ko
+│           │   │   │       └── serio_raw.ko
+│           │   │   ├── md
+│           │   │   │   ├── bcache
+│           │   │   │   │   └── bcache.ko
+│           │   │   │   ├── dm-bio-prison.ko
+│           │   │   │   ├── dm-bufio.ko
+│           │   │   │   ├── dm-cache.ko
+│           │   │   │   ├── dm-cache-smq.ko
+│           │   │   │   ├── dm-clone.ko
+│           │   │   │   ├── dm-crypt.ko
+│           │   │   │   ├── dm-delay.ko
+│           │   │   │   ├── dm-dust.ko
+│           │   │   │   ├── dm-ebs.ko
+│           │   │   │   ├── dm-era.ko
+│           │   │   │   ├── dm-flakey.ko
+│           │   │   │   ├── dm-historical-service-time.ko
+│           │   │   │   ├── dm-integrity.ko
+│           │   │   │   ├── dm-io-affinity.ko
+│           │   │   │   ├── dm-log.ko
+│           │   │   │   ├── dm-log-writes.ko
+│           │   │   │   ├── dm-mirror.ko
+│           │   │   │   ├── dm-mod.ko
+│           │   │   │   ├── dm-multipath.ko
+│           │   │   │   ├── dm-queue-length.ko
+│           │   │   │   ├── dm-raid.ko
+│           │   │   │   ├── dm-region-hash.ko
+│           │   │   │   ├── dm-round-robin.ko
+│           │   │   │   ├── dm-service-time.ko
+│           │   │   │   ├── dm-snapshot.ko
+│           │   │   │   ├── dm-switch.ko
+│           │   │   │   ├── dm-thin-pool.ko
+│           │   │   │   ├── dm-unstripe.ko
+│           │   │   │   ├── dm-vdo
+│           │   │   │   │   └── dm-vdo.ko
+│           │   │   │   ├── dm-verity.ko
+│           │   │   │   ├── dm-writecache.ko
+│           │   │   │   ├── dm-zero.ko
+│           │   │   │   ├── dm-zoned.ko
+│           │   │   │   ├── md-mod.ko
+│           │   │   │   ├── persistent-data
+│           │   │   │   │   └── dm-persistent-data.ko
+│           │   │   │   ├── raid0.ko
+│           │   │   │   ├── raid10.ko
+│           │   │   │   ├── raid1.ko
+│           │   │   │   └── raid456.ko
+│           │   │   ├── message
+│           │   │   │   └── fusion
+│           │   │   │       ├── mptbase.ko
+│           │   │   │       ├── mptctl.ko
+│           │   │   │       ├── mptsas.ko
+│           │   │   │       ├── mptscsih.ko
+│           │   │   │       └── mptspi.ko
+│           │   │   ├── mtd
+│           │   │   │   ├── chips
+│           │   │   │   │   ├── cfi_cmdset_0002.ko
+│           │   │   │   │   ├── cfi_probe.ko
+│           │   │   │   │   ├── cfi_util.ko
+│           │   │   │   │   ├── chipreg.ko
+│           │   │   │   │   ├── gen_probe.ko
+│           │   │   │   │   └── map_ram.ko
+│           │   │   │   ├── devices
+│           │   │   │   │   ├── block2mtd.ko
+│           │   │   │   │   ├── docg3.ko
+│           │   │   │   │   ├── phram.ko
+│           │   │   │   │   ├── pmc551.ko
+│           │   │   │   │   └── slram.ko
+│           │   │   │   ├── hyperbus
+│           │   │   │   │   └── hyperbus-core.ko
+│           │   │   │   ├── lpddr
+│           │   │   │   │   ├── lpddr_cmds.ko
+│           │   │   │   │   └── qinfo_probe.ko
+│           │   │   │   ├── maps
+│           │   │   │   │   ├── map_funcs.ko
+│           │   │   │   │   ├── pci.ko
+│           │   │   │   │   ├── pcmciamtd.ko
+│           │   │   │   │   ├── physmap.ko
+│           │   │   │   │   └── plat-ram.ko
+│           │   │   │   ├── mtd.ko
+│           │   │   │   ├── nand
+│           │   │   │   │   ├── nandcore.ko
+│           │   │   │   │   ├── onenand
+│           │   │   │   │   │   └── onenand.ko
+│           │   │   │   │   └── raw
+│           │   │   │   │       └── nand.ko
+│           │   │   │   └── ubi
+│           │   │   │       ├── gluebi.ko
+│           │   │   │       └── ubi.ko
+│           │   │   ├── nvme
+│           │   │   │   └── host
+│           │   │   │       ├── nvme-core.ko
+│           │   │   │       └── nvme.ko
+│           │   │   ├── rpmsg
+│           │   │   │   ├── rpmsg_core.ko
+│           │   │   │   ├── rpmsg_ns.ko
+│           │   │   │   └── virtio_rpmsg_bus.ko
+│           │   │   ├── scsi
+│           │   │   │   ├── device_handler
+│           │   │   │   │   ├── scsi_dh_alua.ko
+│           │   │   │   │   ├── scsi_dh_emc.ko
+│           │   │   │   │   ├── scsi_dh_hp_sw.ko
+│           │   │   │   │   └── scsi_dh_rdac.ko
+│           │   │   │   ├── fdomain.ko
+│           │   │   │   ├── pcmcia
+│           │   │   │   │   ├── aha152x_cs.ko
+│           │   │   │   │   ├── fdomain_cs.ko
+│           │   │   │   │   ├── qlogic_cs.ko
+│           │   │   │   │   └── sym53c500_cs.ko
+│           │   │   │   ├── qlogicfas408.ko
+│           │   │   │   ├── scsi_common.ko
+│           │   │   │   ├── scsi_mod.ko
+│           │   │   │   ├── scsi_transport_sas.ko
+│           │   │   │   ├── scsi_transport_spi.ko
+│           │   │   │   ├── sd_mod.ko
+│           │   │   │   ├── sg.ko
+│           │   │   │   ├── sr_mod.ko
+│           │   │   │   └── virtio_scsi.ko
+│           │   │   ├── target
+│           │   │   │   └── target_core_mod.ko
+│           │   │   ├── thermal
+│           │   │   │   └── intel
+│           │   │   │       └── x86_pkg_temp_thermal.ko
+│           │   │   ├── virt
+│           │   │   │   └── vboxguest
+│           │   │   │       └── vboxguest.ko
+│           │   │   └── virtio
+│           │   │       ├── virtio_balloon.ko
+│           │   │       ├── virtio_dma_buf.ko
+│           │   │       ├── virtio_input.ko
+│           │   │       ├── virtio_mmio.ko
+│           │   │       ├── virtio_pci.ko
+│           │   │       ├── virtio_pci_legacy_dev.ko
+│           │   │       └── virtio_pci_modern_dev.ko
+│           │   ├── fs
+│           │   │   ├── binfmt_misc.ko
+│           │   │   ├── binfmt_script.ko
+│           │   │   ├── configfs
+│           │   │   │   └── configfs.ko
+│           │   │   ├── efs
+│           │   │   │   └── efs.ko
+│           │   │   ├── exfat
+│           │   │   │   └── exfat.ko
+│           │   │   ├── ext4
+│           │   │   │   └── ext4.ko
+│           │   │   ├── fat
+│           │   │   │   ├── fat.ko
+│           │   │   │   ├── msdos.ko
+│           │   │   │   └── vfat.ko
+│           │   │   ├── jbd2
+│           │   │   │   └── jbd2.ko
+│           │   │   ├── mbcache.ko
+│           │   │   ├── ntfs3
+│           │   │   │   └── ntfs3.ko
+│           │   │   ├── squashfs
+│           │   │   │   └── squashfs.ko
+│           │   │   └── udf
+│           │   │       └── udf.ko
+│           │   ├── lib
+│           │   │   ├── bch.ko
+│           │   │   ├── crc-itu-t.ko
+│           │   │   ├── libcrc32c.ko
+│           │   │   ├── lz4
+│           │   │   │   ├── lz4_compress.ko
+│           │   │   │   └── lz4_decompress.ko
+│           │   │   ├── lzo
+│           │   │   │   ├── lzo_compress.ko
+│           │   │   │   └── lzo_decompress.ko
+│           │   │   ├── raid6
+│           │   │   │   └── raid6_pq.ko
+│           │   │   ├── xxhash.ko
+│           │   │   ├── xz
+│           │   │   │   └── xz_dec.ko
+│           │   │   └── zstd
+│           │   │       ├── zstd_common.ko
+│           │   │       └── zstd_decompress.ko
+│           │   └── mm
+│           │       └── zsmalloc.ko
+│           ├── modules.alias
+│           ├── modules.alias.bin
+│           ├── modules.builtin
+│           ├── modules.builtin.alias.bin
+│           ├── modules.builtin.bin
+│           ├── modules.builtin.modinfo
+│           ├── modules.dep
+│           ├── modules.dep.bin
+│           ├── modules.devname
+│           ├── modules.order
+│           ├── modules.softdep
+│           ├── modules.symbols
+│           └── modules.symbols.bin
+└── lost+found [error opening dir]
 
-61 directories, 399 files
+85 directories, 501 files

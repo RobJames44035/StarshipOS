@@ -27,7 +27,7 @@
         <module>grub</module>
         <module>initramfs</module>
         <module>qcow2_image</module>
-        <module>live_cd_image</module>
+<!--        <module>live_cd_image</module>-->
     </modules>
 
     <build>
