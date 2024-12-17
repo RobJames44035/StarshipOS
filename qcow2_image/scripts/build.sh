@@ -9,7 +9,7 @@ HOME="/home/rajames/PROJECTS/StarshipOS"
 QCOW2_DIR="$HOME/qcow2_image"
 BUILD_DIR="$QCOW2_DIR/build"
 HDD_NAME="starship-os.qcow2"
-HDD_SIZE="4G"
+HDD_SIZE="40G"
 BOOT_MOUNT="$BUILD_DIR/boot"
 ROOT_MOUNT="$BUILD_DIR/mnt"
 
