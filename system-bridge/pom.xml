@@ -23,5 +23,10 @@
             <artifactId>jna</artifactId>
             <version>5.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.jnr</groupId>
+            <artifactId>jnr-constants</artifactId>
+            <version>0.10.4</version>
+        </dependency>
     </dependencies>
 </project>

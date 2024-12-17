@@ -1,39 +1,42 @@
 //file:noinspection unused
+//file:noinspection GroovyAssignabilityCheck
 package org.starship.init
 
-import com.sun.jna.Library
 import com.sun.jna.Native
+import groovy.util.logging.Slf4j
 import org.starship.sys.PanicException
 import sun.misc.Signal
 import sun.misc.SignalHandler
 
 import java.lang.management.ManagementFactory
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
+@Slf4j
 class Init {
     // Configuration paths
     static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
     static final String FALLBACK_CONFIG_PATH = "resources/default-init.config"
 
     // List of running child processes
-    static final List<Process> childProcesses = [].asSynchronized() as List<Process>
+    static List<Process> childProcesses = [].asSynchronized() as List<Process>
+    static Set<String> mountedResources = ConcurrentHashMap.newKeySet()
 
     // Load a configuration file dynamically
     static void loadConfig(String configPath) {
         try {
             File configFile = new File(configPath)
             if (!configFile.exists()) {
-                println "Configuration file not found: ${configPath}. Attempting fallback configuration..."
+                log "Configuration file not found: ${configPath}. Attempting fallback configuration..."
 
-                // Attempt to load fallback config
-                File fallbackConfigFile = new File(FALLBACK_CONFIG_PATH)
-                if (!fallbackConfigFile.exists()) {
-                    println "Fallback configuration not found in resources/default-init.config."
-                    kernelPanic("Critical configuration files are missing")
+                // Attempt to load fallback config from the classpath
+                URL fallbackConfigUrl = Init.class.getClassLoader().getResource(FALLBACK_CONFIG_PATH)
+                if (fallbackConfigUrl == null) {
+                    throw new PanicException("Fallback configuration not found in classpath: ${FALLBACK_CONFIG_PATH}")
+                } else {
+                    log("Using fallback configuration from: ${fallbackConfigUrl}")
+                    evaluate(new File(fallbackConfigUrl.toURI()))
                 }
-
-                println "Using fallback configuration from ${FALLBACK_CONFIG_PATH}."
-                evaluate(fallbackConfigFile)
             } else {
                 // Evaluate primary configuration
                 println "Loading configuration from: ${configPath}"
@@ -41,9 +44,7 @@ class Init {
             }
         } catch (Exception e) {
             // Handle unexpected errors and call kernel panic
-            println "Error while reading configuration: ${e.message}"
-            e.printStackTrace()
-            kernelPanic("Failed to load configuration due to an error: ${e.message}")
+            throw new PanicException("Failed to load configuration due to an error: ${e.message}", e)
         }
     }
 
@@ -53,27 +54,16 @@ class Init {
         loadConfig(path) // Recursive call to load the included configuration
     }
 
-    // Kernel panic implementation via JNA
-    static void kernelPanic(String message) {
-        println "KERNEL PANIC: ${message}"
-        // JNA interface to libc for real system shutdown (halt)
-        final LibC libc = Native.load("c", LibC)
-
-        // Sync and trigger panic
-        libc.sync()
-        libc.reboot(0xfee1dead as int) // Magic number for Linux kernel panic
-    }
-
     // Reap zombie processes (PID 1 responsibility)
     static void reapZombies() {
         childProcesses.removeIf { process ->
             try {
                 if (process.waitFor(0, TimeUnit.SECONDS)) {
-                    println "Reaped zombie process with exit code: ${process.exitValue()}"
+                    log("Reaped zombie process with exit code: ${process.exitValue()}")
                     return true
                 }
             } catch (Exception e) {
-                println "Error while reaping process: ${e.message}"
+                log("Error while reaping process: ${e.message}")
             }
             return false
         }
@@ -100,15 +90,131 @@ class Init {
         }
     }
 
+    // Evaluate the configuration for the init process
+    static void evaluate(File configFile) {
+        if (configFile == null || !configFile.exists()) {
+            throw new IllegalArgumentException("Configuration file ${configFile?.name} does not exist or is null.")
+        }
+
+        try {
+            log("Evaluating configuration file: ${configFile.absolutePath}")
+
+            // Create a new GroovyShell instance
+            GroovyShell shell = new GroovyShell()
+
+            // Execute the DSL config file
+            shell.evaluate(configFile)
+
+            log("Configuration file evaluated successfully.")
+        } catch (Exception e) {
+            log("Error while evaluating configuration file: ${e.message}")
+            throw e
+        }
+    }
+
+    @SuppressWarnings('GroovySynchronizationOnNonFinalField')
+    static void unmountResource(String mountPoint) {
+        synchronized (mountedResources) {
+            if (!mountedResources.contains(mountPoint)) {
+                log.warn("Attempt to unmount an unknown or already unmounted resource: {}", mountPoint)
+                return
+            }
+
+            try {
+                log.info("Unmounting resource: {} using kernel call...", mountPoint)
+
+                // Call the umount function from libc
+                int result = CLib.INSTANCE.umount(mountPoint)
+
+                if (result == 0) {
+                    log.info("Successfully unmounted resource: {}", mountPoint)
+                    mountedResources.remove(mountPoint) // Remove from tracking
+                } else {
+                    // Retrieve the errno value for additional error information
+                    String errorMessage = Native.getLastError()
+                    log.error("Failed to unmount resource {}. Error code: {}", mountPoint, errorMessage)
+                }
+            } catch (Exception e) {
+                log.error("Exception occurred while unmounting resource {}: {}", mountPoint, e.message, e)
+            }
+        }
+    }
+
+    static void shutdown() {
+        try {
+            log.info("System shutdown initiated...")
+
+            // 1. Stop all spawned child processes
+            if (childProcesses.isEmpty()) {
+                log.info("No active child processes to terminate.")
+            } else {
+                childProcesses.each { process ->
+                    try {
+                        if (process.isAlive()) {
+                            log.info("Terminating child process (pid: {})...", process.pid())
+                            process.destroy() // Attempt graceful termination
+                            if (!process.waitFor(5, TimeUnit.SECONDS)) {
+                                log.warn("Forcefully killing process (pid: {})...", process.pid())
+                                process.destroyForcibly() // Force termination if it doesn't stop in 5 seconds
+                            }
+                            log.info("Child process (pid: {}) terminated.", process.pid())
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to terminate process (pid: {}): {}", process?.pid(), e.message, e)
+                    }
+                }
+                // Clear the list of child processes
+                childProcesses.clear()
+                log.info("All child processes terminated.")
+            }
+
+            // 2. Unmount filesystems (example implementation for mounted resources)
+            if (mountedResources.isEmpty()) {
+                log.info("No mounted resources to unmount.")
+            } else {
+                mountedResources.each { mountPoint ->
+                    try {
+                        log.info("Unmounting resource: {}...", mountPoint)
+                        unmountResource(mountPoint)
+                        log.info("Resource {} unmounted successfully.", mountPoint)
+                    } catch (Exception e) {
+                        log.error("Failed to unmount resource {}: {}", mountPoint, e.message, e)
+                    }
+                }
+                mountedResources.clear()
+                log.info("All mounted resources unmounted.")
+            }
+
+            // OPTIONAL: 3. Cleanup temporary files or logs
+            File tempDir = new File("/tmp")
+            if (tempDir.exists() && tempDir.isDirectory()) {
+                log.info("Cleaning up temporary directory: /tmp")
+                boolean cleanedUp = tempDir.deleteDir()
+                if (cleanedUp) {
+                    log.info("Temporary directory cleaned up successfully.")
+                } else {
+                    log.warn("Failed to clean up temporary directory: /tmp")
+                }
+            }
+
+            // 4. Log shutdown completion message
+            log.info("System shutdown completed successfully. Goodbye!")
+
+        } catch (Exception e) {
+            log.error("Error during shutdown: {}", e.message, e)
+            throw e
+        }
+    }
+
     // Main method for initialization
     static void main(String[] args) {
         // Check that the process is running as PID 1
         if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
-            println "Warning: This script is not running as PID 1."
+            log("Warning: This script is not running as PID 1.")
         }
 
         try {
-            println "Initializing StarshipOS as PID 1..."
+            log("Initializing StarshipOS as PID 1...")
 
             // Setup shutdown hook
             setupShutdownHook()
@@ -142,10 +248,5 @@ class Init {
         } catch (Exception e) {
             throw new PanicException("Initialization failed due to: ${e.message}", e)
         }
-    }
-
-    static interface LibC extends Library {
-        void sync(); // Manages filesystem sync before halting
-        int reboot(int howto); // Executes system halt or reboot
     }
 }
