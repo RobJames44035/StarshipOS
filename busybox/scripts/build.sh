@@ -28,7 +28,8 @@ if [ ! -d build ]; then
 make CONFIG_PREFIX="$BUSYBOX_DST" install
 
 log "Replacing linuxrc with custom init script as a here document."
-cat << 'EOF' > "$BUSYBOX_DST/init_ram_fs/linuxrc"
+cd "../"
+sudo cat << 'EOF' > "build/init_ram_fs/linuxrc"
 #!/bin/sh
 echo "Initializing the system with custom linuxrc"
 
@@ -49,12 +50,11 @@ exec /bin/sh
 EOF
 
 log "Set permissions for the new linuxrc script."
-chmod +x "$BUSYBOX_DST/init_ram_fs/linuxrc"
+chmod +x "build/init_ram_fs/linuxrc"
 
   log "Setting proper file permissions & ownership for BusyBox."
-  sudo chown root:root "$BUSYBOX_DST/bin/busybox"
-  sudo chmod 4755 "$BUSYBOX_DST/bin/busybox"
-  cd "$HOME/busybox"
+  sudo chown root:root "build/init_ram_fs/linuxrc"
+  sudo chmod 4755 "build/init_ram_fs/linuxrc"
 else
   log "Nothing to do."
 fi
