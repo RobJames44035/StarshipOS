@@ -29,6 +29,7 @@ make CONFIG_PREFIX="$BUSYBOX_DST" install
 
 log "Replacing linuxrc with custom init script as a here document."
 cd "../"
+sudo rm "build/init_ram_fs/linuxrc"
 sudo cat << 'EOF' > "build/init_ram_fs/linuxrc"
 #!/bin/sh
 echo "Initializing the system with custom linuxrc"

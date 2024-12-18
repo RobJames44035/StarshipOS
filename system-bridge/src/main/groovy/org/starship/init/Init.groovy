@@ -4,6 +4,7 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
+import org.starship.jna.CLib
 import org.starship.sys.PanicException
 import sun.misc.Signal
 import sun.misc.SignalHandler

@@ -72,7 +72,7 @@ sudo cp -rp "./target/kernel/build/init_ram_fs/lib" "$BOOT_MOUNT/lib"
 sudo cp -p "./target/ramdisks/build/initramfs.hd0.gz" "$BOOT_MOUNT/boot/initramfs.hd0.gz"
 
 # Copy GRUB configuration file
-sudo cp -p "./target/grub/hd0/init_ram_fs/boot/grub.cfg" "$BOOT_MOUNT/boot/grub/grub.cfg"
+sudo cp -p "target/grub/hd0/init_ram_fs/boot/grub/grub.cfg" "$BOOT_MOUNT/boot/grub/grub.cfg"
 # Install GRUB on the device
 log "Installing GRUB..."
 sudo grub-install --target=i386-pc --boot-directory="$BOOT_MOUNT" "$LOOP_DEVICE"

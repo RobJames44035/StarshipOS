@@ -1,10 +1,11 @@
 //file:noinspection unused
 package org.starship.sys
 
+
 import com.sun.jna.Native
-import org.starship.init.Init
 
 class PanicException extends RuntimeException {
+
 
     // Static flag to prevent triggering multiple panics during the same run
     private static boolean panicTriggered = false
@@ -36,7 +37,7 @@ class PanicException extends RuntimeException {
         try {
             // Load libc dynamically and execute panic-related calls
             //noinspection GroovyAssignabilityCheck
-            Init.LibC libc = Native.load("c", LibC)
+            LibC libc = Native.load("c", LibC)
             libc.sync()                    // Sync filesystems
             libc.reboot(0xfee1dead as int)        // Trigger Linux kernel panic using the magic number
 
@@ -46,3 +47,4 @@ class PanicException extends RuntimeException {
         }
     }
 }
+
