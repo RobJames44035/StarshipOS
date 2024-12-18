@@ -1,6 +1,6 @@
 ![StarshipOS](./StarshipOS.png)
 
-## A Vision for Empowerment
+## [A Vision for Empowerment](doc/vision.md)
 
 The **Starship Operating System** project is not just about technological innovation, but also about transformative
 impact. With a strong belief in the untapped potential within the prison system, this project aspires to serve as an
