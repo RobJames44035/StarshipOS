@@ -8,10 +8,11 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder
 import ch.qos.logback.core.ConsoleAppender
 import ch.qos.logback.core.FileAppender
 import ch.qos.logback.core.util.StatusPrinter
+import groovy.util.logging.Slf4j
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-
+@Slf4j
 class LoggingConfig {
     private static final Logger logger = LoggerFactory.getLogger(LoggingConfig)
 

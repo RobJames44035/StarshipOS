@@ -1,7 +1,10 @@
 package org.starship.config
 
+import groovy.util.logging.Slf4j
+
 // SystemConfig.groovy: Handles the "system" block in the DSL
 
+@Slf4j
 class SystemConfig {
     String hostname                        // Stores the hostname
     List mounts = []                       // Stores mount points
@@ -25,17 +28,17 @@ class SystemConfig {
     // Apply all the system configurations
     void apply() {
         if (hostname) {
-            println "Setting hostname to: ${hostname} (stubbed)"
+            log.info "Setting hostname to: ${hostname} (stubbed)"
             // Stub: Simulate hostname change
         }
 
         mounts.each { mount ->
-            println "Mounting ${mount.type} on ${mount.on} (stubbed)"
+            log.info "Mounting ${mount.type} on ${mount.on} (stubbed)"
             // Stub: Simulate mounting filesystems
         }
 
         tasks.each { task ->
-            println "Spawning task '${task.name}': ${task.command} (stubbed)"
+            log.info "Spawning task '${task.name}': ${task.command} (stubbed)"
             // Stub: Simulate starting processes
         }
     }

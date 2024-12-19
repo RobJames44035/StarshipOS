@@ -29,4 +29,33 @@
             <version>0.10.4</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Assemble -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>package-system-bridge</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>system-bridge-archive.xml</descriptor>
+                            </descriptors>
+                            <formats>
+                                <format>zip</format>
+                            </formats>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

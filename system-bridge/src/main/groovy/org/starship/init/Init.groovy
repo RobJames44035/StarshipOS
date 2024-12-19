@@ -226,7 +226,7 @@ class Init {
             Signal.handle(new Signal("TERM"), new SignalHandler() {
                 @Override
                 void handle(Signal signal) {
-                    System.out.println("Caught SIGTERM, shutting down gracefully...")
+                    log.info("Caught SIGTERM, shutting down gracefully...")
                     shutdown()
                 }
             })
@@ -234,7 +234,7 @@ class Init {
             Signal.handle(new Signal("INT"), new SignalHandler() {
                 @Override
                 void handle(Signal signal) {
-                    System.out.println("Caught SIGINT, shutting down gracefully...")
+                    log.info("Caught SIGINT, shutting down gracefully...")
                     shutdown()
                 }
             })

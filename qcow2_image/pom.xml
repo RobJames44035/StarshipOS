@@ -16,6 +16,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.starship</groupId>
+            <artifactId>system-bridge</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <!-- Plugin to run custom tasks -->
@@ -72,6 +80,14 @@
                                     <classifier>grub-archive</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${project.build.directory}/grub</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.starship</groupId>
+                                    <artifactId>system-bridge</artifactId>
+                                    <version>0.1.0-SNAPSHOT</version>
+                                    <type>zip</type>
+                                    <classifier>system-bridge-archive</classifier>
+                                    <outputDirectory>./target/system-bridge</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

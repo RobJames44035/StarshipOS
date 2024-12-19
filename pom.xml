@@ -16,8 +16,8 @@
     </properties>
 
     <modules>
-        <module>busybox</module>
         <module>starship</module>
+        <module>busybox</module>
         <module>java</module>
 
         <module>system-bridge</module>
@@ -27,7 +27,7 @@
         <module>grub</module>
         <module>initramfs</module>
         <module>qcow2_image</module>
-<!--        <module>live_cd_image</module>-->
+<!-- TODO put this back       <module>live_cd_image</module>-->
     </modules>
 
     <dependencies>

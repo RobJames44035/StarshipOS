@@ -1325,7 +1325,8 @@ void uprobe_unregister_sync(void)
 	 * unlucky enough caller can free consumer's memory and cause
 	 * handler_chain() or handle_uretprobe_chain() to do an use-after-free.
 	 */
-	synchronize_rcu_tasks_trace();
+	synchronize_rcu_tasks();
+//	synchronize_rcu_tasks_trace();
 	synchronize_srcu(&uretprobes_srcu);
 }
 EXPORT_SYMBOL_GPL(uprobe_unregister_sync);

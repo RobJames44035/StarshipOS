@@ -1,4 +1,4 @@
-/home/rajames/PROJECTS/StarshipOS/qcow2_image/build/mnt
+build/root
 ├── bin
 │   ├── [ -> /home/rajames/PROJECTS/StarshipOS/busybox/./build/init_ram_fs/bin/busybox
 │   ├── [[ -> /home/rajames/PROJECTS/StarshipOS/busybox/./build/init_ram_fs/bin/busybox

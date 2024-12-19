@@ -3,77 +3,58 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
-# Function for timestamped logging
-function log() {
+if [ ! -d build ]; then
+  # Function for timestamped logging
+  function log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
-#    read -p ""
+    #  read -p ""
+  }
+
+  log "Creating initrd build directory..."
+  mkdir -p "build/initrd/boot/grub"
+
+  # Copy necessary files
+  log "Copying required files..."
+  cp -r "target/kernel/build/init_ram_fs/boot" "build/initrd"
+  cp -r "target/kernel/build/init_ram_fs/lib" "build/initrd"
+  cp -r "target/busybox/build/init_ram_fs/bin" "build/initrd"
+  cp -r "target/busybox/build/init_ram_fs/sbin" "build/initrd"
+  cp "target/build/grub/hd0/init_ram_fs/boot/grub/grub.cfg" "build/initrd/boot/grub/grub.cfg"
+
+  # Ensure init script exists and is executable
+  log "Creating init script..."
+  cat << 'EOF' > "build/initrd/init"
+#!/bin/sh
+
+# Mount the necessary filesystems
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+
+# Print debug-friendly info
+echo "**** Boot debugging shell ****"
+echo "Mounting root filesystem on /mnt..."
+
+# Attempt to mount the root filesystem
+  mount -o ro /dev/sda3 /mnt || {
+  echo "ERROR: Failed to mount the root filesystem on /mnt!"
+  exec /bin/sh  # Drop to a debug shell if mount fails
 }
 
-# Set paths
-BUILD_DIR="target/build"
-INITRAMFS_DIR="$BUILD_DIR/init_ram_fs"
-GRUB_DIR="$BUILD_DIR/grub"
-OUTPUT_DIR="build"
-HOME=$(pwd)
+# Switch to the new root filesystem
+echo "Switching to the real root filesystem..."
+exec switch_root /mnt /sbin/init
+EOF
 
-# Prepare the output directory
-log "Preparing output directory at $OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR"
+  sudo chmod +x "build/initrd/init"
+  sudo chown root:root "build/initrd/init"
+  log "Packaging initrd file..."
+  cd "build/initrd"
+  (
+      find . -print0 | cpio --null -o -H newc | gzip > "$(realpath ../initrd.gz)"
+  )
 
-# ----- Checkpoint 1: Prepare Directories -----
-log "Starting Checkpoint 1: Preparing initramfs directories"
-
-# Iterate through each block device directory in the grub directory
-for block_device_dir in "$GRUB_DIR"/*; do
-  if [ -d "$block_device_dir" ]; then
-    block_device_name=$(basename "$block_device_dir")
-    target_dir="$OUTPUT_DIR/initramfs_$block_device_name"
-    cp -r "$INITRAMFS_DIR" "$target_dir"
-    mkdir -p "$target_dir/bin"
-    mkdir -p "$target_dir/dev"
-    mkdir -p "$target_dir/etc"
-    mkdir -p "$target_dir/home"
-    mkdir -p "$target_dir/lib"
-    mkdir -p "$target_dir/lib64"
-    mkdir -p "$target_dir/mnt"
-    mkdir -p "$target_dir/opt"
-    mkdir -p "$target_dir/proc"
-    mkdir -p "$target_dir/root"
-    mkdir -p "$target_dir/sbin"
-    mkdir -p "$target_dir/sys"
-    mkdir -p "$target_dir/tmp"
-    mkdir -p "$target_dir/usr/bin"
-    mkdir -p "$target_dir/usr/lib"
-    mkdir -p "$target_dir/usr/lib64"
-    mkdir -p "$target_dir/usr/sbin"
-    mkdir -p "$target_dir/var/log"
-    mkdir -p "$target_dir/var/tmp"
-    mkdir -p "$target_dir/var/run"
-    log "Copied init_ram_fs to $target_dir"
-
-    # Ensure the boot/grub directory exists in the new structure
-    mkdir -p "$target_dir/boot/grub"
-    log "Created directory: $target_dir/boot/grub"
-
-    # Copy the corresponding grub.cfg file to boot/grub in the output structure
-    cp "target/build/grub/$block_device_name/init_ram_fs/boot/grub/grub.cfg" "$target_dir/boot/grub/"
-    log "Copied grub.cfg from $block_device_dir to $target_dir/boot/grub/"
-
-    block_device_name=$(basename "$block_device_dir" | sed 's/initramfs_//')
-    initramfs_cpio_name="initramfs.$block_device_name.cpio"
-    initramfs_final_name="initramfs.$block_device_name.gz"
-    log "Creating $initramfs_cpio_name"
-    home_dir=$(pwd)
-    block_device_dir="build/initramfs_$block_device_name"
-    log "Working Directory: $block_device_dir"
-    cd "$block_device_dir"
-    sudo find . -mindepth 1 -print0 | cpio --null -o -H newc --owner root:root > "$home_dir/$initramfs_cpio_name"
-    gzip "$home_dir/$initramfs_cpio_name"
-    mv "$home_dir/$initramfs_cpio_name.gz" "$home_dir/$initramfs_final_name"
-    mv "$home_dir/$initramfs_final_name" "$home_dir/build"
-    cd "$home_dir"
-    rm -rf cd "$block_device_dir"
-  else
-    log "Skipping $block_device_dir (not a directory)"
-  fi
-done
+  log "Finished building initd.gz"
+else
+  log "Nothing to do."
+fi
