@@ -37,11 +37,9 @@ download_and_unpack_jdk() {
 # Function to configure and build the JDK
 configure_and_build_jdk() {
     cd "$JDK_DIR"
-    make CONF="${CONFIGURATION}" clean
     log "Configuring build with boot JDK..."
     bash ./configure --with-boot-jdk="$BOOT_JDK" --with-jvm-variants=server --enable-libffi-bundling --with-jvm-features="compiler1,compiler2,zgc" --prefix="$PREFIX_DIR" --exec-prefix="$EXEC_PREFIX_DIR"
 
-#    log "Cleaning previous builds if any..."
     log "Building JDK..."
     make CONF="${CONFIGURATION}" 2>&1 | tee -a ../build.log
 #    make CONF="${CONFIGURATION}" docs 2>&1 | tee -a ../build.log
