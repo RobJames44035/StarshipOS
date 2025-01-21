@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+# SD card slot, first partition
+mkdir -p /mnt/mmcblk0p2
+automount -d /mnt/mmcblk0p2 'mount /dev/mmc0.1 /mnt/mmcblk0p2'

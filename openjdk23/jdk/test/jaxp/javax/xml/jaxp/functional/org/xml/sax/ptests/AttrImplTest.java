@@ -1,0 +1,182 @@
+/*
+ * StarshipOS Copyright (c) 2003-2025. R.A. James
+ */
+package org.xml.sax.ptests;
+
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+
+import org.testng.annotations.Test;
+import org.xml.sax.helpers.AttributesImpl;
+
+/**
+ * Class containing the test cases for AttributesImpl API.
+ */
+/*
+ * @test
+ * @library /javax/xml/jaxp/libs
+ * @run testng/othervm org.xml.sax.ptests.AttrImplTest
+ */
+public class AttrImplTest {
+    private static final String CAR_URI = "http://www.cars.com/xml";
+
+    private static final String CAR_LOCALNAME = "part";
+
+    private static final String CAR_QNAME = "p";
+
+    private static final String CAR_TYPE = "abc";
+
+    private static final String CAR_VALUE = "Merc";
+
+    private static final String JEEP_URI = "http://www.jeeps.com/xml";
+
+    private static final String JEEP_LOCALNAME = "wheel";
+
+    private static final String JEEP_QNAME = "w";
+
+    private static final String JEEP_TYPE = "xyz";
+
+    private static final String JEEP_VALUE = "Mit";
+
+    /**
+     * Basic test for getIndex(String).
+     */
+    @Test
+    public void testcase01() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        assertEquals(attr.getIndex(CAR_QNAME), 0);
+        assertEquals(attr.getIndex(JEEP_QNAME), 1);
+    }
+
+    /**
+     * Basic test for getIndex(String, String).
+     */
+    @Test
+    public void testcase02() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        assertEquals(attr.getIndex(JEEP_URI, JEEP_LOCALNAME), 1);
+    }
+
+    /**
+     * getIndex(String, String) returns -1 if none matches.
+     */
+    @Test
+    public void testcase03() {
+        AttributesImpl attr = new AttributesImpl();
+        assertEquals(attr.getIndex(JEEP_URI, "whl"), -1);
+    }
+
+    /**
+     * Basic test for getType(int) and getType(String).
+     */
+    @Test
+    public void testcase04() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        assertEquals(attr.getType(1), JEEP_TYPE);
+        assertEquals(attr.getType(JEEP_QNAME), JEEP_TYPE);
+    }
+
+    /**
+     * Basic test for getValue(int), getValue(String) and getValue(String, String).
+     */
+    @Test
+    public void testcase05() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        assertEquals(attr.getValue(1), JEEP_VALUE);
+        assertEquals(attr.getValue(attr.getQName(1)), JEEP_VALUE);
+        assertEquals(attr.getValue(attr.getURI(1), attr.getLocalName(1)), JEEP_VALUE);
+    }
+
+    /**
+     * Basic test for getLocalName(int), getQName(int), getType(int),
+     * getType(String) and getURI(int).
+     */
+    @Test
+    public void testcase06() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        attr.setAttribute(1, "www.megginson.com", "author", "meg", "s", "SAX2");
+        assertEquals(attr.getLocalName(1), "author");
+        assertEquals(attr.getQName(1), "meg");
+        assertEquals(attr.getType(1), "s");
+        assertEquals(attr.getType("meg"), "s");
+        assertEquals(attr.getURI(1), "www.megginson.com");
+    }
+
+    /**
+     * Basic test for setLocalName(int, String), setQName(int, String),
+     * setType(int, String), setValue(int, String) and setURI(int, String).
+     */
+    @Test
+    public void testcase07() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        attr.setLocalName(1, "speclead");
+        attr.setQName(1, "megi");
+        attr.setType(1, "sax");
+        attr.setValue(1, "SAX01");
+        attr.setURI(1, "www.megginson.com/sax/sax01");
+
+        assertEquals(attr.getLocalName(1), "speclead");
+        assertEquals(attr.getQName(1), "megi");
+        assertEquals(attr.getType(1), "sax");
+        assertEquals(attr.getType("megi"), "sax");
+        assertEquals(attr.getURI(1), "www.megginson.com/sax/sax01");
+    }
+
+    /**
+     * Basic test for getLength().
+     */
+    @Test
+    public void testcase08() {
+        AttributesImpl attr = new AttributesImpl();
+        assertEquals(attr.getLength(), 0);
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        assertEquals(attr.getLength(), 2);
+    }
+
+    /**
+     * Javadoc says getLocalName returns null if the index if out of range.
+     */
+    @Test
+    public void testcase09() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        attr.removeAttribute(1);
+        assertNull(attr.getLocalName(1));
+    }
+
+    /**
+     * Javadoc says java.lang.ArrayIndexOutOfBoundsException is thrown When the
+     * supplied index does not point to an attribute in the list.
+     */
+    @Test(expectedExceptions = ArrayIndexOutOfBoundsException.class)
+    public void testcase10() {
+        AttributesImpl attr = new AttributesImpl();
+        attr.addAttribute(CAR_URI, CAR_LOCALNAME, CAR_QNAME, CAR_TYPE, CAR_VALUE);
+        attr.addAttribute(JEEP_URI, JEEP_LOCALNAME, JEEP_QNAME, JEEP_TYPE,
+                JEEP_VALUE);
+        attr.removeAttribute(1);
+        attr.removeAttribute(1);
+    }
+}

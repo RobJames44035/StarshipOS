@@ -1,0 +1,13 @@
+/*
+ * StarshipOS Copyright (c) 2020-2025. R.A. James
+ */
+
+/*
+ * Test case status
+ */
+public enum Status {
+
+    UNSTARTED,
+    PASS,
+    FAIL;
+}

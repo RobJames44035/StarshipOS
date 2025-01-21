@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE document [
+	<!ENTITY ws "Wiliam SHAkespeare">
+	<!ELEMENT document (title)>
+	<!ELEMENT title (#PCDATA)>
+]>
+<document>
+	<title>&ws;</title>
+</document> 

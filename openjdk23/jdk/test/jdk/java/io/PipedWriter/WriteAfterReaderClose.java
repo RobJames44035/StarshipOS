@@ -1,0 +1,27 @@
+/*
+ * StarshipOS Copyright (c) 1998-2025. R.A. James
+ */
+
+/* @test
+   @bug 4140956
+   @summary Test if write throws exception after reader
+            closes the pipe.
+*/
+
+
+
+import java.io.*;
+
+public class WriteAfterReaderClose {
+    public static void main(String argv[]) throws Exception {
+        PipedReader pr = new PipedReader();
+        PipedWriter pw = new PipedWriter(pr);
+
+        pr.close();
+        try {
+            pw.write('a');
+            throw new Exception("Should not allow write after close");
+        } catch (IOException e) {
+        }
+    }
+}

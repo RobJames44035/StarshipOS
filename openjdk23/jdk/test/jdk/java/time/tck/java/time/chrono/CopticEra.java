@@ -1,0 +1,70 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
+
+package tck.java.time.chrono;
+
+
+import java.time.DateTimeException;
+import java.time.chrono.Era;
+
+/**
+ * An era in the Coptic calendar system.
+ * <p>
+ * The Coptic calendar system uses the 'Era of the Martyrs'.
+ * The start of the Coptic epoch {@code 0001-01-01 (Coptic)} is {@code 0284-08-29 (ISO)}.
+ * <p>
+ * <b>Do not use {@code ordinal()} to obtain the numeric representation of {@code CopticEra}.
+ * Use {@code getValue()} instead.</b>
+ *
+ * <h4>Implementation notes</h4>
+ * This is an immutable and thread-safe enum.
+ */
+public enum CopticEra implements Era {
+
+    /**
+     * The singleton instance for the era BEFORE_AM, 'Before Era of the Martyrs'.
+     * This has the numeric value of {@code 0}.
+     */
+    BEFORE_AM,
+    /**
+     * The singleton instance for the era AM, 'Era of the Martyrs'.
+     * This has the numeric value of {@code 1}.
+     */
+    AM;
+
+    //-----------------------------------------------------------------------
+    /**
+     * Obtains an instance of {@code CopticEra} from an {@code int} value.
+     * <p>
+     * {@code CopticEra} is an enum representing the Coptic eras of BEFORE_AM/AM.
+     * This factory allows the enum to be obtained from the {@code int} value.
+     *
+     * @param era  the BEFORE_AM/AM value to represent, from 0 (BEFORE_AM) to 1 (AM)
+     * @return the era singleton, not null
+     * @throws DateTimeException if the value is invalid
+     */
+    public static CopticEra of(int era) {
+        switch (era) {
+            case 0:
+                return BEFORE_AM;
+            case 1:
+                return AM;
+            default:
+                throw new DateTimeException("Invalid era: " + era);
+        }
+    }
+
+    //-----------------------------------------------------------------------
+    /**
+     * Gets the numeric era {@code int} value.
+     * <p>
+     * The era BEFORE_AM has the value 0, while the era AM has the value 1.
+     *
+     * @return the era value, from 0 (BEFORE_AM) to 1 (AM)
+     */
+    public int getValue() {
+        return ordinal();
+    }
+
+}

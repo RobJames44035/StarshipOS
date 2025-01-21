@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
+# Restore / clear the Linux "SCSI target" driver configuration with `targetctl`
+#
+
+start() {
+	local ret
+
+	printf "Restoring target configuration: "
+	/usr/bin/targetctl restore >/dev/null 2>&1
+	ret=$?
+	echo "done"
+
+	return $ret
+}
+
+stop() {
+	local ret
+
+	printf "Clearing target configuration: "
+	/usr/bin/targetctl clear >/dev/null 2>&1
+	ret=$?
+	echo "done"
+
+	return $ret
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart}"
+		exit 1
+esac

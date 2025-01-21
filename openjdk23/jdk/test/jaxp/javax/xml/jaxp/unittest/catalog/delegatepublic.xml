@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE  catalogtest  PUBLIC  "-//JAVASE//XML CATALOG DTD//DELEGATEPULIC"
+     "http://java.com/xml/catalog/dtd/delegatepublic.dtd">
+
+<catalogtest>Test &delegatepublic; entry</catalogtest>

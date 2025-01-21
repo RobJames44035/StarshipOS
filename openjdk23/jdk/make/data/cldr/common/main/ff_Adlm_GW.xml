@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
+<ldml>
+	<identity>
+		<version number="$Revision$"/>
+		<language type="ff"/>
+		<script type="Adlm"/>
+		<territory type="GW"/>
+	</identity>
+	<numbers>
+		<currencies>
+			<currency type="GNF">
+				<symbol>GNF</symbol>
+			</currency>
+		</currencies>
+	</numbers>
+</ldml>

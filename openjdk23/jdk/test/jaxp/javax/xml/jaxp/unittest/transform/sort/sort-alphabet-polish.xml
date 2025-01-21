@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+<alphabet language="pl">
+  <character>A</character>
+  <character>Ż</character>
+  <character>B</character>
+  <character>C</character>
+  <character>Ć</character>
+  <character>D</character>
+  <character>Ł</character>
+  <character>E</character>
+  <character>Ę</character>
+  <character>F</character>
+  <character>G</character>
+  <character>H</character>
+  <character>I</character>
+  <character>J</character>
+  <character>K</character>
+  <character>L</character>
+  <character>Z</character>
+  <character>Ź</character>
+  <character>M</character>
+  <character>N</character>
+  <character>Ń</character>
+  <character>O</character>
+  <character>Ó</character>
+  <character>P</character>
+  <character>R</character>
+  <character>S</character>
+  <character>Ś</character>
+  <character>T</character>
+  <character>U</character>
+  <character>W</character>
+  <character>Ą</character>
+  <character>Y</character>
+</alphabet>

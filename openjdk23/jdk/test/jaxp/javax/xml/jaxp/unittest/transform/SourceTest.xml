@@ -1,0 +1,25 @@
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<a>
+  <b>
+    <c>
+      <d>
+        <e attr="foo">
+	  E3
+        </e>
+      </d>
+    </c>
+  </b>
+  <b>
+    <c>
+      <d>
+        <e attr="bar">
+	  E3
+        </e>
+      </d>
+    </c>
+  </b>
+</a>
+

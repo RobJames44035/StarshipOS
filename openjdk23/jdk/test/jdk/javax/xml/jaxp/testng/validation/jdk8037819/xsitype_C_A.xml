@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<C attr="typeY"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:type="Y">
+   <A attr="typeY" xsi:type="Y"/>
+</C>

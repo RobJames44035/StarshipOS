@@ -1,0 +1,115 @@
+/*
+ * StarshipOS Copyright (c) 2002-2025. R.A. James
+ */
+
+package nsk.jdb.threadgroup.threadgroup002;
+
+import nsk.share.*;
+import nsk.share.jpda.*;
+import nsk.share.jdb.*;
+
+import java.io.*;
+
+/* This is debuggee aplication */
+public class threadgroup002a {
+    public static void main(String args[]) {
+        threadgroup002a _threadgroup002a = new threadgroup002a();
+        System.exit(threadgroup002.JCK_STATUS_BASE + _threadgroup002a.runIt(args, System.out));
+    }
+
+    static void lastBreak () {}
+
+    static int numThreadGroups = 3;
+    static int numThreads      = 15;
+    static Object waitnotify   = new Object();
+    final static String THREADGROUP_NAME = "MyThreadGroup#";
+
+    public int runIt(String args[], PrintStream out) {
+        JdbArgumentHandler argumentHandler = new JdbArgumentHandler(args);
+        Log log = new Log(out, argumentHandler);
+
+        ThreadGroup tgHolder[] = new ThreadGroup[numThreadGroups];
+        Thread holder [] = new Thread[numThreads];
+        Lock lock = new Lock();
+
+        for (int i = 0; i < numThreadGroups ; i++ )
+            tgHolder[i] = new ThreadGroup(THREADGROUP_NAME + i);
+
+        try {
+            lock.setLock();
+            int factor = numThreads / numThreadGroups;
+            int k;
+            for (int i = 0; i < numThreadGroups ; i++) {
+                for (int j = 0; j < factor ; j++) {
+                    k = i * factor + j;
+                    holder[k] = new MyThread(lock, tgHolder[i], "MyThread#");
+                    synchronized (waitnotify) {
+                        holder[k].start();
+                        waitnotify.wait();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("TEST ERROR: Caught unexpected Exception while waiting in main thread: " +
+                e.getMessage());
+            System.exit(threadgroup002.FAILED);
+        }
+
+        lastBreak();   // When jdb stops here, there should be 5 running MyThreads.
+        lock.releaseLock();
+
+        for (int i = 0; i < numThreads ; i++) {
+            if (holder[i].isAlive()) {
+                try {
+                    holder[i].join(argumentHandler.getWaitTime() * 60000);
+                } catch (InterruptedException e) {
+                    throw new Failure("Unexpected InterruptedException catched while waiting for join of: " + holder[i]);
+                }
+            }
+        }
+
+        log.display("Debuggee PASSED");
+        return threadgroup002.PASSED;
+    }
+
+}
+
+class Lock {
+    boolean lockSet;
+
+    synchronized void setLock() throws InterruptedException {
+        while (lockSet == true)
+            wait();
+        lockSet = true;
+    }
+
+    synchronized void releaseLock() {
+        if (lockSet == true) {
+            lockSet = false;
+            notify();
+        }
+    }
+}
+
+class MyThread extends Thread {
+
+    Lock lock;
+    MyThread (Lock l, ThreadGroup group, String name) {
+        super(group, name);
+        this.lock = l;
+    }
+
+    public void run() {
+        synchronized (threadgroup002a.waitnotify) {
+            threadgroup002a.waitnotify.notifyAll();
+        }
+        try {
+            lock.setLock();
+        } catch(Exception e) {
+            System.err.println("TEST ERROR: Caught unexpected Exception while waiting in MyThread: " +
+                e.getMessage());
+            System.exit(threadgroup002.FAILED);
+        }
+        lock.releaseLock();
+    }
+}

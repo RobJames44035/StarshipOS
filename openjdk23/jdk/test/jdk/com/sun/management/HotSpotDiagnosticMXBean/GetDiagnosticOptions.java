@@ -1,0 +1,43 @@
+/*
+ * StarshipOS Copyright (c) 2005-2025. R.A. James
+ */
+
+/*
+ * @test
+ * @bug     6658779
+ * @summary Basic Test for HotSpotDiagnosticMXBean.getDiagnosticOptions()
+ * @author  Daniel Fuchs
+ *
+ * @run main GetDiagnosticOptions
+ */
+
+import com.sun.management.HotSpotDiagnosticMXBean;
+import com.sun.management.VMOption;
+import java.lang.management.ManagementFactory;
+import java.util.List;
+import javax.management.MBeanServer;
+
+public class GetDiagnosticOptions {
+    private static String HOTSPOT_DIAGNOSTIC_MXBEAN_NAME =
+        "com.sun.management:type=HotSpotDiagnostic";
+
+    public static void main(String[] args) throws Exception {
+        List<HotSpotDiagnosticMXBean> list =
+            ManagementFactory.getPlatformMXBeans(HotSpotDiagnosticMXBean.class);
+        HotSpotDiagnosticMXBean mbean = list.get(0);
+        checkDiagnosticOptions(mbean);
+
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        mbean = ManagementFactory.newPlatformMXBeanProxy(mbs,
+                    HOTSPOT_DIAGNOSTIC_MXBEAN_NAME,
+                    HotSpotDiagnosticMXBean.class);
+        checkDiagnosticOptions(mbean);
+    }
+
+    private static void checkDiagnosticOptions(HotSpotDiagnosticMXBean mbean) {
+        List<VMOption> options = mbean.getDiagnosticOptions();
+        for (VMOption opt : options) {
+            System.out.println("option: "+opt.getName()+"="+opt.getValue());
+        }
+    }
+}

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  - StarshipOS Copyright (c) 2022-2025. R.A. James
+  -->
+
+<svg version="1.1"
+     width="140" height="120"
+     xmlns="http://www.w3.org/2000/svg"
+>
+    <style><![CDATA[
+        text {
+            font: 15px 'DejaVu Serif', serif;
+            fill: #000;
+        }
+        text.centered {
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        tspan {
+            font-style: italic;
+            font-size: smaller;
+        }
+        ellipse, path {
+            stroke: #000;
+            stroke-width: 1;
+        }
+        path {
+            fill: none;
+        }
+        path.dashed {
+            stroke-dasharray: 2;
+        }
+    ]]></style>
+    <path
+            d="M 65 25 L 30  75
+               M 65 25 L 100 75"
+    />
+
+    <ellipse
+            cx="65" cy="25"
+            rx="18" ry="14"
+            fill="#990066"
+    />
+    <text
+            x="65"
+            y="25"
+            style="fill: #fff"
+            class="centered"
+    >F</text>
+    <text
+            x="86"
+            y="36"
+    >1</text>
+
+    <ellipse
+            cx="30" cy="75"
+            rx="18" ry="14"
+            fill="#00ccff"
+    />
+    <text
+            x="30"
+            y="75"
+            class="centered"
+    >D<tspan>i</tspan></text>
+    <text
+            x="51"
+            y="86"
+    >2</text>
+
+    <ellipse
+            cx="100" cy="75"
+            rx="18" ry="14"
+            fill="#00ccff"
+    />
+    <text
+            x="100"
+            y="75"
+            class="centered"
+    >D<tspan>ii</tspan></text>
+    <text
+            x="121"
+            y="86"
+    >3</text>
+
+    <path
+            d="M 65,5
+               C 45,5 3,30 3,75
+               S 50,94 65,94
+               S 140,120 135,75
+               S 85,5 65,5"
+            class="dashed"
+    />
+</svg>

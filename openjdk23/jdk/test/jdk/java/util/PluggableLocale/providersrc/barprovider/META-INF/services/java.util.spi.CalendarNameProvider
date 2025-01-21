@@ -1,0 +1,11 @@
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
+#
+#
+# fully-qualified name of the java.util.spi.CalendarNameProvider
+# implementation class
+#
+com.bar.CalendarNameProviderImpl

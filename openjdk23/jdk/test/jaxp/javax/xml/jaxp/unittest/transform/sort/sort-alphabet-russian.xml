@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+<alphabet language="ru">
+  <character>А</character>
+  <character>Б</character>
+  <character>В</character>
+  <character>Г</character>
+  <character>Д</character>
+  <character>Е</character>
+  <character>Ё</character>
+  <character>Ж</character>
+  <character>З</character>
+  <character>Й</character>
+  <character>П</character>
+  <character>Я</character>
+  <character>К</character>
+  <character>Л</character>
+  <character>С</character>
+  <character>М</character>
+  <character>Н</character>
+  <character>О</character>
+  <character>Р</character>
+  <character>И</character>
+  <character>Т</character>
+  <character>Ф</character>
+  <character>Х</character>
+  <character>Ц</character>
+  <character>У</character>
+  <character>Ш</character>
+  <character>Щ</character>
+  <character>Ъ</character>
+  <character>Ы</character>
+  <character>Ч</character>
+  <character>Ь</character>
+  <character>Э</character>
+  <character>Ю</character>
+</alphabet>

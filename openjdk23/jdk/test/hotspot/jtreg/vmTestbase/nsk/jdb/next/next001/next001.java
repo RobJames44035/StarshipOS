@@ -1,0 +1,130 @@
+/*
+ * StarshipOS Copyright (c) 2002-2025. R.A. James
+ */
+
+
+/*
+ * @test
+ *
+ * @summary converted from VM Testbase nsk/jdb/next/next001.
+ * VM Testbase keywords: [jpda, jdb]
+ * VM Testbase readme:
+ * DECSRIPTION
+ * A positive test for the 'next' command.
+ * The debuggee program (next001a.java) creates two additional
+ * threads of MyThread type and starts them. The jdb sets up breakpoint
+ * inside the method 'func2' which is invoked in these addional threads.
+ * When breakpoint is hitted the checked command is called at the line
+ * in which debuggee's method ('func3') is invoked. After this,
+ * the stack trace of the current method is checked by 'where' command.
+ * The test passes if only calling method ('func2') presents in stack
+ * trace, but not the called method ('func3').
+ * The test consists of two program:
+ *   next001.java - launches jdb and debuggee, writes commands to jdb, reads the jdb output,
+ *   next001a.java - the debugged application.
+ * COMMENTS
+ *
+ * @library /vmTestbase
+ *          /test/lib
+ * @build nsk.jdb.next.next001.next001a
+ * @run driver
+ *      nsk.jdb.next.next001.next001
+ *      -arch=${os.family}-${os.simpleArch}
+ *      -waittime=5
+ *      -debugee.vmkind=java
+ *      -transport.address=dynamic
+ *      -jdb=${test.jdk}/bin/jdb
+ *      -java.options="${test.vm.opts} ${test.java.opts}"
+ *      -workdir=.
+ *      -debugee.vmkeys="${test.vm.opts} ${test.java.opts}"
+ */
+
+package nsk.jdb.next.next001;
+
+import nsk.share.*;
+import nsk.share.jdb.*;
+
+import java.io.*;
+import java.util.*;
+
+public class next001 extends JdbTest {
+
+    public static void main (String argv[]) {
+        debuggeeClass =  DEBUGGEE_CLASS;
+        firstBreak = FIRST_BREAK;
+        lastBreak = LAST_BREAK;
+        new next001().runTest(argv);
+    }
+
+    static final String PACKAGE_NAME    = "nsk.jdb.next.next001";
+    static final String TEST_CLASS      = PACKAGE_NAME + ".next001";
+    static final String DEBUGGEE_CLASS  = TEST_CLASS + "a";
+    static final String FIRST_BREAK     = DEBUGGEE_CLASS + ".main";
+    static final String LAST_BREAK      = DEBUGGEE_CLASS + ".lastBreak";
+    static final String MYTHREAD        = "MyThread";
+    static final String DEBUGGEE_THREAD = PACKAGE_NAME + "." + MYTHREAD;
+
+    static final String[] checkedMethods = {"func1", "func2", "func3"};
+
+    protected void runCases() {
+        String[] reply;
+        Paragrep grep;
+        int count;
+        Vector v;
+        String found;
+        String[] threads;
+
+        jdb.setBreakpointInMethod(LAST_BREAK);
+
+        int breakCount = 0;
+        int nextCount = 0;
+        for (int i = 0; i < next001a.numThreads; i++) {
+            reply = jdb.receiveReplyFor(JdbCommand.cont);
+            if (jdb.isAtBreakpoint(reply, LAST_BREAK)) {
+                breakCount++;
+                reply = jdb.receiveReplyFor(JdbCommand.step); // to get out of lastBreak;
+
+                reply = jdb.receiveReplyFor(JdbCommand.next);
+                if (!checkNext()) {
+                    success = false;
+                } else {
+                    nextCount++;
+                }
+            }
+        }
+
+        jdb.contToExit(1);
+
+        if (nextCount != next001a.numThreads) {
+            log.complain("Wrong number of 'next' events: " + nextCount);
+            log.complain("Must be equal to : " + next001a.numThreads);
+            success = false;
+        }
+    }
+
+
+    private boolean checkNext () {
+        Paragrep grep;
+        String found;
+        int count;
+        boolean result = true;
+        String[] reply;
+
+        reply = jdb.receiveReplyFor(JdbCommand.where);
+
+        grep = new Paragrep(reply);
+        count = grep.find(DEBUGGEE_THREAD + "." + checkedMethods[2]);
+        if (count > 0) {
+            log.complain("Debuggee is suspended in wrong method after 'next' command: " + DEBUGGEE_THREAD + "." + checkedMethods[2]);
+            result= false;
+        }
+
+        count = grep.find(DEBUGGEE_THREAD + "." + checkedMethods[1]);
+        if (count != 1) {
+            log.complain("Checked method does not exist in thread stack trace: " + DEBUGGEE_THREAD + "." + checkedMethods[1]);
+            result= false;
+        }
+
+        return result;
+    }
+}

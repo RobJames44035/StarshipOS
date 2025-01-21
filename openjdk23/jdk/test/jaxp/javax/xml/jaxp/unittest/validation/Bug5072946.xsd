@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+     <xsd:element name="root">
+         <xsd:complexType>
+           <xsd:attribute name="foo" type="xsd:string" default="value"/>
+         </xsd:complexType>
+     </xsd:element>
+</xsd:schema>

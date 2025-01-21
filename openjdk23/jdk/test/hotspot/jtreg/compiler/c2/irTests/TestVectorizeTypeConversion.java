@@ -1,0 +1,83 @@
+/*
+ * StarshipOS Copyright (c) 2022-2025. R.A. James
+ */
+
+package compiler.c2.irTests;
+
+import compiler.lib.ir_framework.*;
+import java.util.Random;
+import jdk.test.lib.Asserts;
+import jdk.test.lib.Utils;
+
+/*
+ * @test
+ * @bug 8283091
+ * @summary Auto-vectorization enhancement for type conversion between different data sizes.
+ * @requires (os.simpleArch == "x64" & vm.cpu.features ~= ".*avx2.*") | os.arch=="aarch64"
+ * @library /test/lib /
+ * @run driver compiler.c2.irTests.TestVectorizeTypeConversion
+ */
+
+public class TestVectorizeTypeConversion {
+
+    final private static int SIZE = 3000;
+
+    private static double[] doublea = new double[SIZE];
+    private static double[] doubleb = new double[SIZE];
+    private static long[] longa = new long[SIZE];
+    private static long[] longb = new long[SIZE];
+    private static int[] inta = new int[SIZE];
+    private static int[] intb = new int[SIZE];
+    private static float[] floata = new float[SIZE];
+    private static float[] floatb = new float[SIZE];
+
+    public static void main(String[] args) {
+        TestFramework.runWithFlags("-XX:+IgnoreUnrecognizedVMOptions", "-XX:+SuperWordRTDepCheck");
+    }
+
+    @Test
+    // Mixing types of different sizes has the effect that some vectors are shorter than the type allows.
+    @IR(counts = {IRNode.LOAD_VECTOR_I,   IRNode.VECTOR_SIZE + "min(max_int, max_double)", ">0",
+                  IRNode.VECTOR_CAST_I2D, IRNode.VECTOR_SIZE + "min(max_int, max_double)", ">0",
+                  IRNode.STORE_VECTOR, ">0"})
+    private static void testConvI2D(double[] d, int[] a) {
+        for(int i = 0; i < d.length; i++) {
+            d[i] = (double) (a[i]);
+        }
+    }
+
+    @Test
+    // Mixing types of different sizes has the effect that some vectors are shorter than the type allows.
+    @IR(counts = {IRNode.LOAD_VECTOR_L,   IRNode.VECTOR_SIZE + "min(max_int, max_long)", ">0",
+                  IRNode.LOAD_VECTOR_I,   IRNode.VECTOR_SIZE + "min(max_int, max_long)", ">0",
+                  IRNode.VECTOR_CAST_I2L, IRNode.VECTOR_SIZE + "min(max_int, max_long)", ">0",
+                  IRNode.VECTOR_CAST_L2I, IRNode.VECTOR_SIZE + "min(max_int, max_long)", ">0",
+                  IRNode.STORE_VECTOR, ">0"})
+    private static void testConvI2L(int[] d1, int d2[], long[] a1, long[] a2) {
+        for(int i = 0; i < d1.length; i++) {
+            d1[i] = (int) (a1[i]);
+            a2[i] = (long) (d2[i]);
+        }
+    }
+
+    @Test
+    // Mixing types of different sizes has the effect that some vectors are shorter than the type allows.
+    @IR(counts = {IRNode.LOAD_VECTOR_F,   IRNode.VECTOR_SIZE + "min(max_float, max_double)", ">0",
+                  IRNode.LOAD_VECTOR_D,   IRNode.VECTOR_SIZE + "min(max_float, max_double)", ">0",
+                  IRNode.VECTOR_CAST_D2F, IRNode.VECTOR_SIZE + "min(max_float, max_double)", ">0",
+                  IRNode.VECTOR_CAST_F2D, IRNode.VECTOR_SIZE + "min(max_float, max_double)", ">0",
+                  IRNode.STORE_VECTOR, ">0"})
+    private static void testConvF2D(double[] d1, double[] d2, float[] a1, float[] a2) {
+        for(int i = 0; i < d1.length; i++) {
+            d1[i] = (double) (a1[i]);
+            a2[i] = (float) (d2[i]);
+        }
+    }
+
+    @Run(test = {"testConvI2D", "testConvI2L", "testConvF2D"})
+    private void test_runner() {
+        testConvI2D(doublea, inta);
+        testConvI2L(inta, intb, longa, longb);
+        testConvF2D(doublea, doubleb, floata, floatb);
+    }
+}

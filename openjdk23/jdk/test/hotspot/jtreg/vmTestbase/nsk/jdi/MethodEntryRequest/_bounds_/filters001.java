@@ -1,0 +1,210 @@
+/*
+ * StarshipOS Copyright (c) 2002-2025. R.A. James
+ */
+
+package nsk.jdi.MethodEntryRequest._bounds_;
+
+import nsk.share.*;
+import nsk.share.jdi.*;
+
+import com.sun.jdi.*;
+import com.sun.jdi.request.*;
+
+import java.io.*;
+
+/**
+ * The test checks up the                <br>
+ *  - addThreadFilter(ThreadReference)   <br>
+ *  - addInstanceFilter(ObjectReference) <br>
+ *  - addClassFilter(ReferenceType)      <br>
+ *  - addClassFilter(String)             <br>
+ *  - addClassExclusionFilter(String)    <br>
+ * methods with <code>null</code> argument value.
+ * In any cases <code>NullPointerException</code> is expected.
+ */
+public class filters001 {
+
+    private final static String prefix = "nsk.jdi.MethodEntryRequest._bounds_.";
+    private final static String debuggerName = prefix + "filters001";
+    private final static String debugeeName = debuggerName + "a";
+
+    private static int exitStatus;
+    private static Log log;
+    private static Debugee debugee;
+
+    private static void display(String msg) {
+        log.display("debugger> " + msg);
+    }
+
+    private static void complain(String msg) {
+        log.complain("debugger FAILURE> " + msg + "\n");
+    }
+
+    public static void main(String argv[]) {
+        int result = run(argv,System.out);
+        if (result != 0) {
+            throw new RuntimeException("TEST FAILED with result " + result);
+        }
+    }
+
+    public static int run(String argv[], PrintStream out) {
+
+        exitStatus = Consts.TEST_PASSED;
+
+        filters001 thisTest = new filters001();
+
+        ArgumentHandler argHandler = new ArgumentHandler(argv);
+        log = new Log(out, argHandler);
+
+        debugee = Debugee.prepareDebugee(argHandler, log, debugeeName);
+
+        thisTest.execTest();
+        display("execTest finished. exitStatus = " + exitStatus);
+
+        return exitStatus;
+    }
+
+    private void execTest() {
+
+        display("");
+        display(">>>creating MethodEntryRequest");
+
+        MethodEntryRequest request =
+                    debugee.getEventRequestManager().createMethodEntryRequest();
+
+        display("");
+        addThreadFilter(request, null);
+
+        display("");
+        addInstanceFilter(request, null);
+
+        display("");
+        addClassFilter(request, (ReferenceType )null);
+
+        display("");
+        addClassFilter(request, (String )null);
+
+        display("");
+        addClassExclusionFilter(request, (String )null);
+
+        display("");
+        debugee.quit();
+    }
+
+    private void addThreadFilter(MethodEntryRequest request, ThreadReference thread) {
+        String tmp = "addThreadFilter         :thread name> ";
+        tmp += (thread == null) ? "<null>" : thread.name();
+        display(tmp);
+
+        try {
+            request.addThreadFilter(thread);
+            if (thread==null){
+                complain("*****NullPointerException is not thrown");
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (NullPointerException e) {
+            if (thread == null){
+                display("!!!Expected " + e);
+            } else {
+                complain("*****Unexpected " + e);
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (Exception e) {
+            complain("Unexpected " + e);
+            exitStatus = Consts.TEST_FAILED;
+        }
+    }
+
+    private void addInstanceFilter(MethodEntryRequest request,
+                                            ObjectReference instance) {
+        String tmp = "addInstanceFilter       :object value> ";
+        tmp += (instance == null) ? "<null>" : instance.toString();
+        display(tmp);
+
+        try {
+            request.addInstanceFilter(instance);
+            if (instance==null){
+                complain("*****NullPointerException is not thrown");
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (NullPointerException e) {
+            if (instance == null){
+                display("!!!Expected " + e);
+            } else {
+                complain("*****Unexpected " + e);
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (Exception e) {
+            complain("Unexpected " + e);
+            exitStatus = Consts.TEST_FAILED;
+        }
+    }
+
+    private void addClassFilter(MethodEntryRequest request, ReferenceType refType) {
+
+        display("addClassFilter          :ReferenceType> <" + refType + ">");
+
+        try {
+            request.addClassFilter(refType);
+            if (refType==null){
+                complain("*****NullPointerException is not thrown");
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (NullPointerException e) {
+            if (refType==null){
+                display("!!!Expected " + e);
+            } else {
+                complain("*****Unexpected " + e);
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (Exception e) {
+            complain("*****Unexpected " + e);
+            exitStatus = Consts.TEST_FAILED;
+        }
+    }
+
+    private void addClassFilter(MethodEntryRequest request, String classPattern) {
+
+        display("addClassFilter          :classPattern> <" + classPattern + ">");
+        try {
+            request.addClassFilter(classPattern);
+            if (classPattern==null){
+                complain("*****NullPointerException is not thrown");
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (NullPointerException e) {
+            if (classPattern==null){
+                display("!!!Expected " + e);
+            } else {
+                complain("*****Unexpected " + e);
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (Exception e) {
+            complain("*****Unexpected " + e);
+            exitStatus = Consts.TEST_FAILED;
+        }
+    }
+
+    private void addClassExclusionFilter(MethodEntryRequest request,
+                                                    String classPattern) {
+        display("addExclusionClassFilter :classPattern> <" + classPattern + ">");
+        try {
+            request.addClassExclusionFilter(classPattern);
+            if (classPattern==null){
+                complain("*****NullPointerException is not thrown");
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (NullPointerException e) {
+            if (classPattern==null){
+                display("!!!Expected " + e);
+            } else {
+                complain("*****Unexpected " + e);
+                exitStatus = Consts.TEST_FAILED;
+            }
+        } catch (Exception e) {
+            complain("*****Unexpected " + e);
+            exitStatus = Consts.TEST_FAILED;
+        }
+    }
+
+}

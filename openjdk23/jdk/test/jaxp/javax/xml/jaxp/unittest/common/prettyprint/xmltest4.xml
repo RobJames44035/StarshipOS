@@ -1,0 +1,5 @@
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<rss version="2.0"><ns:test id='i001'><ns:child>child1</ns:child><test att1='v1'>  abc test</test></ns:test></rss>

@@ -1,0 +1,127 @@
+/*
+ * StarshipOS Copyright (c) 2001-2025. R.A. James
+ */
+
+package nsk.jdi.VirtualMachineManager.majorInterfaceVersion;
+
+import nsk.share.*;
+import nsk.share.jpda.*;
+import nsk.share.jdi.*;
+
+import com.sun.jdi.*;
+import java.util.*;
+import java.io.*;
+
+/**
+ * The test for the implementation of an object of the type     <BR>
+ * VirtualMachineManager.                                       <BR>
+ *                                                              <BR>
+ * The test checks up that results of the method                <BR>
+ * <code>com.sun.jdi.VirtualMachineManager.majorInterfaceVersion()</code> <BR>
+ * complies with its specification.                             <BR>
+ * <BR>
+ * The test checks up that invoking the method                  <BR>
+ *   VirtualMachineManager.majorInterfaceVersion() doesn't throw<BR>
+ *  an exception and a returned value is of the int type.       <BR>
+ */
+
+public class major001 {
+
+    //----------------------------------------------------- templete section
+    static final int PASSED = 0;
+    static final int FAILED = 2;
+    static final int PASS_BASE = 95;
+
+    //----------------------------------------------------- templete parameters
+    static final String
+    sHeader1 = "\n==> nsk/jdi/VirtualMachineManager/majorInterfaceVersion/major001  ",
+    sHeader2 = "--> debugger: ",
+    sHeader3 = "##> debugger: ";
+
+    //----------------------------------------------------- main method
+
+    public static void main (String argv[]) {
+        int result = run(argv, System.out);
+        if (result != 0) {
+            throw new RuntimeException("TEST FAILED with result " + result);
+        }
+    }
+
+    public static int run (String argv[], PrintStream out) {
+        return new major001().runThis(argv, out);
+    }
+
+    //--------------------------------------------------   log procedures
+
+    private static Log  logHandler;
+
+    private static void log1(String message) {
+        logHandler.display(sHeader1 + message);
+    }
+    private static void log2(String message) {
+        logHandler.display(sHeader2 + message);
+    }
+    private static void log3(String message) {
+        logHandler.complain(sHeader3 + message);
+    }
+
+    //  ************************************************    test parameters
+    //====================================================== test program
+    //------------------------------------------------------ common section
+
+    static ArgumentHandler      argsHandler;
+
+    static int waitTime;
+
+    static int  testExitCode = PASSED;
+
+    static final int returnCode0 = 0;
+    static final int returnCode1 = 1;
+    static final int returnCode2 = 2;
+    static final int returnCode3 = 3;
+    static final int returnCode4 = 4;
+
+    //------------------------------------------------------ methods
+
+    private int runThis (String argv[], PrintStream out) {
+
+        argsHandler     = new ArgumentHandler(argv);
+        logHandler      = new Log(out, argsHandler);
+
+        waitTime = argsHandler.getWaitTime();
+
+    //------------------------------------------------------  testing section
+        log1("      TESTING BEGINS");
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ variable part
+
+        log2("......call to Bootstrap.virtualMachineManager()");
+        VirtualMachineManager vmm = Bootstrap.virtualMachineManager();
+        if (vmm == null) {
+            log3("ERROR: null returned");
+            testExitCode = FAILED;
+        } else {
+
+            log2("......call to vmm.majorInterfaceVersion()");
+            int majorVersion;
+            try {
+                majorVersion = vmm.majorInterfaceVersion();
+                log2("         majorInterfaceVersion() == " + majorVersion);
+            } catch ( Exception e) {
+                log3("ERROR: Exception : " + e);
+                testExitCode = FAILED;
+            }
+        }
+
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        log1("      TESTING ENDS");
+
+    //--------------------------------------------------   test summary section
+    //-------------------------------------------------    standard end section
+
+        if (testExitCode != PASSED) {
+            logHandler.complain("TEST FAILED");
+        }
+        return testExitCode;
+    }
+}

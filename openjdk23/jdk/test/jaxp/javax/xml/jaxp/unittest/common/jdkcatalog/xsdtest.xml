@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<{{rootElement}} xmlns="{{targetNamespace}}"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="{{targetNamespace}} {{SCHEMA_LOCATION}}"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+</{{rootElement}}>

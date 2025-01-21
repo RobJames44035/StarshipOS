@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2016-2025. R.A. James
+  -->
+<sampleapi>
+    <module name="UNNAMED">
+        <package name="sampleapi.simple.sub">
+            <class basename="SClass">
+                <modifier>public</modifier>
+                <modifier>none|abstract</modifier>
+                <implement>SInterface0</implement>
+                <member>
+                    <field basename="id">
+                        <modifier>public</modifier>
+                        <type>int</type>
+                    </field>
+                    <method basename="get">
+                        <modifier>public</modifier>
+                        <type>int</type>
+                        <throw>SException0</throw>
+                    </method>
+                    <method basename="put">
+                        <modifier>public</modifier>
+                        <param>int</param>
+                        <type>void</type>
+                        <throw>SException0</throw>
+                    </method>
+                </member>
+            </class>
+
+            <class basename="SException">
+                <modifier>public</modifier>
+                <extend ref="java.lang.Exception"/>
+                <member>
+                    <constructor>
+                        <modifier>public</modifier>
+                        <param>String</param>
+                    </constructor>
+                </member>
+            </class>
+
+            <interface basename="SInterface">
+                <modifier>public</modifier>
+                <member>
+                    <method basename="put">
+                        <modifier>public</modifier>
+                        <type>void</type>
+                        <param>int</param>
+                    </method>
+                </member>
+            </interface>
+
+            <enum basename="SEnum">
+                <modifier>public</modifier>
+                <member>
+                    <constant basename="ON" count="1"/>
+                    <constant basename="OFF" count="1"/>
+                </member>
+            </enum>
+
+            <annotation basename="SAnno">
+                <modifier>public</modifier>
+                <member>
+                    <method basename="value">
+                        <modifier>public</modifier>
+                        <type>boolean</type>
+                    </method>
+                </member>
+            </annotation>
+        
+        </package>
+    </module>
+</sampleapi>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2014-2025. R.A. James
+  -->
+<gMonths>
+    <!-- valid gMonths -->
+    <gMonth>--01</gMonth>
+    <gMonth>--01Z</gMonth>
+    <gMonth>--01-08:00</gMonth>
+</gMonths>

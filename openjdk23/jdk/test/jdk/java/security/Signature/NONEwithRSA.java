@@ -1,0 +1,77 @@
+/*
+ * StarshipOS Copyright (c) 2003-2025. R.A. James
+ */
+
+/**
+ * @test
+ * @bug 4955844
+ * @library /test/lib
+ * @summary ensure that the NONEwithRSA adapter works correctly
+ * @author Andreas Sterbenz
+ * @key randomness
+ */
+
+import java.util.*;
+
+import java.security.*;
+
+import javax.crypto.*;
+import jdk.test.lib.security.SecurityUtils;
+
+public class NONEwithRSA {
+
+    public static void main(String[] args) throws Exception {
+//      showProvider(Security.getProvider(System.getProperty("test.provider.name", "SUN")));
+        Random random = new Random();
+        byte[] b = new byte[16];
+        random.nextBytes(b);
+
+        String kpgAlgorithm = "RSA";
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance(kpgAlgorithm);
+        kpg.initialize(SecurityUtils.getTestKeySize(kpgAlgorithm));
+        KeyPair kp = kpg.generateKeyPair();
+
+        Signature sig = Signature.getInstance("NONEwithRSA");
+        sig.initSign(kp.getPrivate());
+        System.out.println("Provider: " + sig.getProvider());
+        sig.update(b);
+        byte[] sb = sig.sign();
+
+        sig.initVerify(kp.getPublic());
+        sig.update(b);
+        if (sig.verify(sb) == false) {
+            throw new Exception("verification failed");
+        }
+
+        Cipher c = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        c.init(Cipher.DECRYPT_MODE, kp.getPublic());
+        byte[] dec = c.doFinal(sb);
+        if (Arrays.equals(dec, b) == false) {
+            throw new Exception("decryption failed");
+        }
+
+        sig = Signature.getInstance("NONEwithRSA",
+                System.getProperty("test.provider.name", "SunJCE"));
+        sig.initSign(kp.getPrivate());
+        sig = Signature.getInstance("NONEwithRSA", Security.getProvider(
+                System.getProperty("test.provider.name", "SunJCE")));
+        sig.initSign(kp.getPrivate());
+
+        try {
+            Signature.getInstance("NONEwithRSA", "SUN");
+            throw new Exception("call succeeded");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("OK");
+    }
+
+    private static void showProvider(Provider p) {
+        System.out.println(p);
+        for (Iterator t = p.getServices().iterator(); t.hasNext(); ) {
+            System.out.println(t.next());
+        }
+    }
+
+}

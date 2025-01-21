@@ -1,0 +1,19 @@
+#!/bin/sh
+
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+case "$1" in
+  start|restart|graceful|graceful-stop|stop)
+	apachectl -k $1
+	;;
+  reload)
+	apachectl -k restart
+	;;
+  *)
+	echo "Usage: $0 {start|restart|reload|graceful|graceful-stop|stop}"
+	exit 1
+esac
+
+exit $?

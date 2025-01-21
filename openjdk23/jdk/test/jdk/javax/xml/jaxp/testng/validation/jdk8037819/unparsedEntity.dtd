@@ -1,0 +1,6 @@
+<!NOTATION myNotation SYSTEM "somethingElse" >
+<!--
+  - StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!ENTITY myUnparsedEntity SYSTEM "something" NDATA myNotation >

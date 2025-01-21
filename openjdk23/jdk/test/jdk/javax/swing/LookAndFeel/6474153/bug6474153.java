@@ -1,0 +1,34 @@
+/*
+ * StarshipOS Copyright (c) 2011-2025. R.A. James
+ */
+
+/* @test
+ * @bug 6474153
+ * @summary LookAndFeel.makeKeyBindings(...) doesn't ignore last element in keyBindingList with odd size
+ * @author Alexander Potochkin
+ */
+
+import javax.swing.KeyStroke;
+import javax.swing.LookAndFeel;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+
+public class bug6474153 {
+
+    public static void main(String... args) throws Exception {
+        checkArray(LookAndFeel.makeKeyBindings(new Object[] {"UP", DefaultEditorKit.upAction} ));
+        checkArray(LookAndFeel.makeKeyBindings(new Object[] {"UP", DefaultEditorKit.upAction, "PAGE_UP"} ));
+    }
+
+    private static void checkArray(JTextComponent.KeyBinding[] keyActionArray) {
+        if (keyActionArray.length != 1) {
+            throw new RuntimeException("Wrong array lenght!");
+        }
+        if (!DefaultEditorKit.upAction.equals(keyActionArray[0].actionName)) {
+            throw new RuntimeException("Wrong action name!");
+        }
+        if (!KeyStroke.getKeyStroke("UP").equals(keyActionArray[0].key)) {
+            throw new RuntimeException("Wrong keystroke!");
+        }
+    }
+}

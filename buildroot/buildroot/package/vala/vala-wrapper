@@ -1,0 +1,6 @@
+#!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+$0-@VALA_VERSION@ --vapidir=${STAGING_DIR}/usr/share/vala/vapi --girdir=${STAGING_DIR}/usr/share/gir-1.0 "$@"

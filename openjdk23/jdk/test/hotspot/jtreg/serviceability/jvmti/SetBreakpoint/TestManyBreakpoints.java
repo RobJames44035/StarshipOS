@@ -1,0 +1,63 @@
+/*
+ * StarshipOS Copyright (c) 2022-2025. R.A. James
+ */
+
+/*
+ * @test
+ * @bug 8144992
+ * @requires vm.jvmti
+ * @library /testlibrary/asm
+ * @run main/othervm/native -agentlib:TestManyBreakpoints
+ *                          -Xlog:gc+metaspace
+ *                          -Xint
+ *                          -XX:MetaspaceSize=16K -XX:MaxMetaspaceSize=64M
+ *                          TestManyBreakpoints
+ */
+
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+public class TestManyBreakpoints {
+
+  static final int BATCHES = 50;
+  static final int METHODS = 1000;
+
+  public static void main(String[] args) throws Exception {
+    for (int c = 0; c < BATCHES; c++) {
+      System.out.println("Batch " + c);
+      TestClassLoader loader = new TestClassLoader();
+      Class.forName("Target", true, loader);
+    }
+  }
+
+  private static class TestClassLoader extends ClassLoader implements Opcodes {
+    static byte[] TARGET_BYTES = generateTarget();
+
+    private static byte[] generateTarget() {
+      ClassWriter cw = new ClassWriter(0);
+
+      cw.visit(52, ACC_SUPER | ACC_PUBLIC, "Target", null, "java/lang/Object", null);
+      for (int m = 0; m < METHODS; m++) {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC | ACC_STATIC, "m" + m, "()V", null, null);
+        mv.visitCode();
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+      }
+      cw.visitEnd();
+      return cw.toByteArray();
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+      if (name.equals("Target")) {
+        return defineClass(name, TARGET_BYTES, 0, TARGET_BYTES.length);
+      } else {
+        return super.findClass(name);
+      }
+    }
+  }
+
+}

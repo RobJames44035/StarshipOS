@@ -1,0 +1,35 @@
+/*
+ * StarshipOS Copyright (c) 2015-2025. R.A. James
+ */
+
+/*
+ * @test
+ * @bug 8085979
+ * @summary Testing TLS engines re-handshaking using each of the supported
+ *          cipher suites with application data exchange before and after
+ *          re-handshake and closing of the engines.
+ * @library /sun/security/krb5/auto /javax/net/ssl/TLSCommon /test/lib
+ * @modules java.security.jgss
+ *          jdk.security.auth
+ *          java.security.jgss/sun.security.jgss.krb5
+ *          java.security.jgss/sun.security.krb5:+open
+ *          java.security.jgss/sun.security.krb5.internal:+open
+ *          java.security.jgss/sun.security.krb5.internal.ccache
+ *          java.security.jgss/sun.security.krb5.internal.crypto
+ *          java.security.jgss/sun.security.krb5.internal.ktab
+ *          java.base/sun.security.util
+ * @run main/othervm -Dtest.security.protocol=TLSv1 -Dtest.mode=norm TLSRehandshakeWithDataExTest
+ * @run main/othervm -Dtest.security.protocol=TLSv1 -Dtest.mode=norm_sni TLSRehandshakeWithDataExTest
+ * @run main/othervm -Dtest.security.protocol=TLSv1 -Dtest.mode=krb TLSRehandshakeWithDataExTest
+ */
+
+/**
+ * Testing TLS engines re-handshaking using each of the supported cipher suites
+ * with application data exchange before and after re-handshake and closing of
+ * the engines.
+ */
+public class TLSRehandshakeWithDataExTest {
+    public static void main(String[] args) {
+        RehandshakeWithDataExTest.main(args);
+    }
+}

@@ -1,0 +1,72 @@
+/*
+ * StarshipOS Copyright (c) 2001-2025. R.A. James
+ */
+
+/* @test
+ * @bug 4180282
+ * @summary RMI needs a mechanism to dynamically change a VMs RMI
+ * serverHostname.  If the java.rmi.server.hostname property is
+ * changed dynamically, newly exported objects should be exported
+ * with the new hostname instead of the value of the
+ * java.rmi.server.hostname property when the first object was exported.
+ *
+ * @author Ann Wollrath
+ *
+ * @build ChangeHostName ChangeHostName_Stub
+ * @run main/othervm ChangeHostName
+ */
+
+import java.net.InetAddress;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.RemoteObject;
+import java.rmi.server.UnicastRemoteObject;
+
+public class ChangeHostName
+    extends UnicastRemoteObject
+    implements Receiver
+{
+    public ChangeHostName() throws RemoteException {
+    }
+
+    public void receive(Remote obj) {
+        System.err.println("received: " + obj.toString());
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        InetAddress localAddress = InetAddress.getLocalHost();
+        String[] hostlist = new String[] {
+            localAddress.getHostAddress(), localAddress.getHostName() };
+
+        for (int i = 0; i < hostlist.length; i++) {
+
+            System.setProperty("java.rmi.server.hostname", hostlist[i]);
+            Remote impl = new ChangeHostName();
+            System.err.println("\ncreated impl extending URO: " + impl);
+
+            Receiver stub = (Receiver) RemoteObject.toStub(impl);
+            System.err.println("stub for impl: " + stub);
+
+            System.err.println("invoking method on stub");
+            stub.receive(stub);
+
+            UnicastRemoteObject.unexportObject(impl, true);
+            System.err.println("unexported impl");
+
+            if (stub.toString().indexOf(hostlist[i]) >= 0) {
+                System.err.println("stub's ref contains hostname: " +
+                                   hostlist[i]);
+            } else {
+                throw new RuntimeException(
+                    "TEST FAILED: stub's ref doesn't contain hostname: " +
+                    hostlist[i]);
+            }
+        }
+        System.err.println("TEST PASSED");
+    }
+}
+
+interface Receiver extends Remote {
+    void receive(Remote obj) throws RemoteException;
+}

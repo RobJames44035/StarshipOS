@@ -1,0 +1,72 @@
+/*
+ * StarshipOS Copyright (c) 2017-2025. R.A. James
+ */
+
+/**
+ * @test
+ * @bug 8182031
+ * @summary  Verifies if ComboBox Popup opens and closes immediately
+ * @key headful
+ * @run main ComboPopupTest
+ */
+
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+public class ComboPopupTest {
+    JFrame frame = null;
+    JComboBox<String> comboBox = null;
+    private volatile Point p = null;
+    private volatile Dimension d = null;
+
+    public static void main(String[] args) throws Exception {
+        new ComboPopupTest();
+    }
+
+    public ComboPopupTest() throws Exception {
+        try {
+            Robot robot = new Robot();
+            robot.setAutoDelay(100);
+            SwingUtilities.invokeAndWait(() -> start());
+            robot.delay(1000);
+            SwingUtilities.invokeAndWait(() -> {
+                p = comboBox.getLocationOnScreen();
+                d = comboBox.getSize();
+            });
+            robot.waitForIdle();
+            robot.mouseMove(p.x + d.width - 1, p.y + d.height/2);
+            robot.waitForIdle();
+            robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+            robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+            robot.waitForIdle();
+
+            System.out.println("popmenu visible " + comboBox.isPopupVisible());
+            if (!comboBox.isPopupVisible()) {
+                throw new RuntimeException("combobox popup is not visible");
+            }
+        } finally {
+            if (frame != null) { SwingUtilities.invokeAndWait(()->frame.dispose()); }
+        }
+    }
+
+    public void start() {
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Container contentPane = frame.getContentPane();
+        comboBox = new JComboBox<String>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" });
+        contentPane.setLayout(new FlowLayout());
+        contentPane.add(comboBox);
+        frame.setLocationRelativeTo(null);
+        frame.pack();
+        frame.setVisible(true);
+    }
+}
+

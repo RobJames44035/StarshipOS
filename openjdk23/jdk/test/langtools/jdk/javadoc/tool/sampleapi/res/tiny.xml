@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2015-2025. R.A. James
+  -->
+<sampleapi>
+    <module name="UNNAMED">
+        <package name="sampleapi.tiny" module="sat.sampleapi">
+            <class basename="TinyClass">
+                <modifier>public</modifier>
+                <modifier>none|abstract</modifier>
+                <member>
+                    <field basename="id">
+                        <modifier>public</modifier>
+                        <type>int</type>
+                    </field>
+                    <method basename="get">
+                        <modifier>public</modifier>
+                        <type>int</type>
+                    </method>
+                </member>
+            </class>
+
+            <interface basename="TinyInterface">
+                <modifier>public</modifier>
+                <member>
+                    <method basename="put">
+                        <modifier>public</modifier>
+                        <type>void</type>
+                        <param>int</param>
+                    </method>
+                </member>
+            </interface>
+
+            <enum basename="TinyEnum">
+                <modifier>public</modifier>
+                <member>
+                    <constant basename="YES" count="1"/>
+                    <constant basename="NO" count="1"/>
+                    <constant basename="MAYBE" count="1"/>
+                </member>
+            </enum>
+
+            <annotation basename="TinyAnno">
+                <modifier>public</modifier>
+                <member>
+                    <method basename="value">
+                        <modifier>public</modifier>
+                        <type>boolean</type>
+                    </method>
+                </member>
+            </annotation>
+        </package>
+    </module>
+</sampleapi>

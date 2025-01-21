@@ -1,0 +1,83 @@
+/*
+ * StarshipOS Copyright (c) 2012-2025. R.A. James
+ */
+
+/*
+ * @test
+ * @bug 6355584 8194486
+ * @summary Introduce constrained Kerberos delegation
+ * @library /test/lib
+ * @compile -XDignore.symbol.file S4U2proxyGSS.java
+ * @run main jdk.test.lib.FileInstaller TestHosts TestHosts
+ * @run main/othervm -Djdk.net.hosts.file=TestHosts
+ *      -Djavax.security.auth.useSubjectCredsOnly=false S4U2proxyGSS krb5
+ * @run main/othervm -Djdk.net.hosts.file=TestHosts
+ *      -Djavax.security.auth.useSubjectCredsOnly=false S4U2proxyGSS spnego
+ */
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.ietf.jgss.Oid;
+import sun.security.jgss.GSSUtil;
+
+public class S4U2proxyGSS {
+
+    public static void main(String[] args) throws Exception {
+        Oid mech;
+        if (args[0].equals("spnego")) {
+            mech = GSSUtil.GSS_SPNEGO_MECH_OID;
+        } else if (args[0].contains("krb5")) {
+            mech = GSSUtil.GSS_KRB5_MECH_OID;
+        } else {
+            throw new Exception("Unknown mech");
+        }
+
+        OneKDC kdc = new OneKDC(null);
+        kdc.writeJAASConf();
+        kdc.setOption(KDC.Option.PREAUTH_REQUIRED, false);
+        Map<String,List<String>> map = new HashMap<>();
+        map.put(OneKDC.SERVER + "@" + OneKDC.REALM, Arrays.asList(
+                new String[]{OneKDC.SERVER + "@" + OneKDC.REALM}));
+        kdc.setOption(KDC.Option.ALLOW_S4U2PROXY, map);
+
+        Context c, s, b;
+        System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+        System.setProperty("java.security.auth.login.config", OneKDC.JAAS_CONF);
+        File f = new File(OneKDC.JAAS_CONF);
+        FileOutputStream fos = new FileOutputStream(f);
+        fos.write((
+                "com.sun.security.jgss.krb5.initiate {\n" +
+                "    com.sun.security.auth.module.Krb5LoginModule required;\n};\n" +
+                "com.sun.security.jgss.krb5.accept {\n" +
+                "    com.sun.security.auth.module.Krb5LoginModule required\n" +
+                "    principal=\"" + OneKDC.SERVER + "\"\n" +
+                "    useKeyTab=true\n" +
+                "    storeKey=true;\n};\n"
+                ).getBytes());
+        fos.close();
+        Security.setProperty("auth.login.defaultCallbackHandler", "OneKDC$CallbackForClient");
+        c = Context.fromThinAir();
+        s = Context.fromThinAir();
+        b = Context.fromThinAir();
+        c.startAsClient(OneKDC.SERVER, mech);
+        c.x().requestCredDeleg(false);
+        s.startAsServer(mech);
+
+        Context.handshake(c, s);
+        Context p = s.delegated();
+        p.startAsClient(OneKDC.SERVER, mech);
+        b.startAsServer(mech);
+        Context.handshake(p, b);
+
+        String n1 = p.x().getSrcName().toString().split("@")[0];
+        String n2 = b.x().getSrcName().toString().split("@")[0];
+        if (!n1.equals(OneKDC.USER) || !n2.equals(OneKDC.USER)) {
+            throw new Exception("Delegation failed");
+        }
+    }
+}

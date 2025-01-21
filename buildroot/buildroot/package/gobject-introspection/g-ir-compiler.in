@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+"$(dirname "$0")"/g-ir-scanner-qemuwrapper "$(dirname "$0")"/g-ir-compiler.real "$@"

@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+if [ ! -d "INSTALL_LOCATION" ]
+then
+    mkdir -p "INSTALL_LOCATION"
+fi
+
+exit 0
