@@ -1,20 +1,9 @@
+<!--
+  - StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!-- ...................................................................... -->
 <!-- XHTML Link Element Module  ........................................... -->
-<!-- file: xhtml-link-1.mod
-
-     This is XHTML, a reformulation of HTML as a modular XML application.
-     Copyright 1998-2005 W3C (MIT, ERCIM, Keio), All Rights Reserved.
-     Revision: $Id: xhtml-link-1.mod,v 4.1 2001/04/05 06:57:40 altheim Exp $ SMI
-
-     This DTD module is identified by the PUBLIC and SYSTEM identifiers:
-
-       PUBLIC "-//W3C//ELEMENTS XHTML Link Element 1.0//EN"
-       SYSTEM "http://www.w3.org/MarkUp/DTD/xhtml-link-1.mod"
-
-     Revisions:
-     (none)
-     ....................................................................... -->
-
 <!-- Link element
 
         link

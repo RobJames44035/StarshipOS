@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 echo
 read -p "Enter label of measurement(e.g. My desktop PC) : " label
 

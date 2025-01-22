@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 from asn1crypto import pem, x509
 
 

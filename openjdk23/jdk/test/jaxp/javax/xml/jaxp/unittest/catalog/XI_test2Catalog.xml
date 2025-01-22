@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!-- comment before root -->
 <!DOCTYPE red SYSTEM "XI_red.dtd">
 <red xmlns:xinclude="http://www.w3.org/2001/XInclude">

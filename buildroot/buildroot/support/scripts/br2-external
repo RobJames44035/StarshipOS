@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 set -e
 
 # This script must be able to run with bash-3.1, so it can't use

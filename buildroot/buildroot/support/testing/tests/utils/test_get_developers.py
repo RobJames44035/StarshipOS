@@ -5,6 +5,8 @@ a logfile. Only when the tests fail there will be output to the console.
 
 The file syntax is already tested by the GitLab-CI job check-DEVELOPERS.
 """
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import os
 import subprocess
 import tempfile

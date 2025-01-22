@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # The systemd-tmpfiles has the ability to grab information
 # from the filesystem (instead from the running system).
 #

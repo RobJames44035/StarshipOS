@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <!-- DTDs and external entities -->
     <uri name="http://openjdk_java_net/xml/catalog/dtd/system.dtd" uri="system.dtd"/>

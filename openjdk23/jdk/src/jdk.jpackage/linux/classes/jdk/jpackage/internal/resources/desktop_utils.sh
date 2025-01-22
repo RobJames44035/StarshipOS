@@ -1,4 +1,8 @@
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # Remove $1 desktop file from the list of default handlers for $2 mime type
 # in $3 file dumping output to stdout.
 #

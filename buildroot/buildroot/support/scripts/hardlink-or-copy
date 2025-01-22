@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # Try to hardlink a file into a directory, fallback to copy on failure.
 #
 # Hardlink-or-copy the source file in the first argument into the

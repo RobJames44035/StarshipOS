@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import augeas
 
 a = augeas.Augeas(root="/")

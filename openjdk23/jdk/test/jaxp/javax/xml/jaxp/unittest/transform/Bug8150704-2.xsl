@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<!-- 
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!--
 Invoice Transfer XSLT 
 --> 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exslt="http://exslt.org/common" exclude-result-prefixes="exslt" version="1.0"> 

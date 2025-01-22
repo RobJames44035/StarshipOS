@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 NAME=thd
 PIDFILE=/var/run/$NAME.pid
 DAEMON_ARGS="--daemon --triggers /etc/triggerhappy/triggers.d --socket /var/run/thd.socket --pidfile $PIDFILE --user nobody /dev/input/event*"

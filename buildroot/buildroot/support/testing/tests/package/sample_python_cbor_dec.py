@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import cbor
 
 with open("/tmp/data.cbor", "rb") as f:

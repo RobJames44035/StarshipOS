@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 set -e
 
 HSS_PAYLOAD_GENERATOR="${HOST_DIR}"/bin/hss-payload-generator

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # A little script I whipped up to make it easy to
 # patch source trees and have sane error handling
 # -Erik

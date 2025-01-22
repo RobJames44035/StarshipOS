@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 export GDK_USE_XFT=1
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"

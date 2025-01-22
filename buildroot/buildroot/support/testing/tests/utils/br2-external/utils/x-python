@@ -1,3 +1,6 @@
 #!/usr/bin/env python3
+
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 # Trigger flake8 warning "W391 blank line at end of file"
 

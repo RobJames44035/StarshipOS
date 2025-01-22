@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 set -e
 
 cd "${0%/*}"

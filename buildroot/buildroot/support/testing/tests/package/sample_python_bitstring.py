@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import bitstring
 
 value = bitstring.BitArray("uint:12=42")

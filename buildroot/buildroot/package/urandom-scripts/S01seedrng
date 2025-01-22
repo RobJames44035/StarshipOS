@@ -1,5 +1,9 @@
 #! /bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # Preserve the random seed between reboots. See urandom(4).
 #
 # This script can be called multiple times during operation (e.g. with

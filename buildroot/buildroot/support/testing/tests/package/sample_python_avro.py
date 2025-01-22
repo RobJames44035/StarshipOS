@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 from io import BytesIO
 from avro.schema import parse
 from avro.io import DatumReader, BinaryDecoder

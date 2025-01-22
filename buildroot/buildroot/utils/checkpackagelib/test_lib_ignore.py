@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import pytest
 import checkpackagelib.test_util as util
 import checkpackagelib.lib_ignore as m

@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding ="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <foo attr1="pass" pre:attr1="fail" xmlns="foo.com" xmlns:pre="somefix"/>

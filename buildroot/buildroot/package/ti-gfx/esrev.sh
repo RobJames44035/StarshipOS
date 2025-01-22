@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # Debug script to determine proper ES revision for the current board. The
 # pvrsrvkm module must be insmoded before attempting to get the es rev.
 

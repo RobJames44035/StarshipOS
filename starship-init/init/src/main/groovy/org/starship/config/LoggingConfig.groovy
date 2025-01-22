@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
+
 //file:noinspection GroovyAssignabilityCheck
 //file:noinspection unused
 package org.starship.config

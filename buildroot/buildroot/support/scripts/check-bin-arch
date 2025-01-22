@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # List of hardcoded paths that should be ignored, as they may
 # contain binaries for an architecture different from the
 # architecture of the target.

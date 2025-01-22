@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            elementFormDefault="qualified" 
            xmlns:xh11d="http://www.w3.org/1999/xhtml/datatypes/" >
     <xs:import namespace="http://www.w3.org/1999/xhtml/datatypes/" 

@@ -1,5 +1,4 @@
-# Copyright (C) 2010-2013 Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-# Copyright (C) 2019 Yann E. MORIN <yann.morin.1998@free.fr>
+#  StarshipOS Copyright (c) 2025. R.A. James
 
 import json
 import logging

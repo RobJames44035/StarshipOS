@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # nfs           This shell script takes care of starting and stopping
 #               the NFS services. Stolen from RedHat FC5.
 

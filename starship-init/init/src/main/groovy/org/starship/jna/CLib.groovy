@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
+
 package org.starship.jna
 
 import com.sun.jna.Library

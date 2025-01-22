@@ -1,4 +1,8 @@
 <?xml version='1.0'?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!-- XML Schema schema for XML Schemas: Part 2: Datatypes -->
 <!DOCTYPE schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "XMLSchema.dtd" [
 <!ENTITY % s ''>

@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 # See utils/checkpackagelib/readme.txt before editing this file.
 
 import os

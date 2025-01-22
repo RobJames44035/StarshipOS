@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 BOARD_DIR="$(dirname $0)"
 mkimage=$HOST_DIR/bin/mkimage
 

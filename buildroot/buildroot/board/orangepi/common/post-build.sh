@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 linux_image()
 {
 	if grep -Eq "^BR2_LINUX_KERNEL_UIMAGE=y$" ${BR2_CONFIG}; then

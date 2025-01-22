@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 from binascii import hexlify
 
 from spake2 import SPAKE2_A, SPAKE2_B

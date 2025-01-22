@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # messagebus:   The D-BUS systemwide message bus
 #
 # chkconfig: 345 97 03
@@ -31,7 +35,7 @@ stop() {
     printf "Stopping system message bus: "
 
     ## we don't want to kill all the per-user $processname, we want
-    ## to use the pid file *only*; because we use the fake nonexistent 
+    ## to use the pid file *only*; because we use the fake nonexistent
     ## program name "$servicename" that should be safe-ish
     killall dbus-daemon
     RETVAL=$?

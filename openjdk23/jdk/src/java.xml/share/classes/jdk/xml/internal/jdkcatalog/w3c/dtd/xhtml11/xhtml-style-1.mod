@@ -1,20 +1,9 @@
+<!--
+  - StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!-- ...................................................................... -->
 <!-- XHTML Document Style Sheet Module  ................................... -->
-<!-- file: xhtml-style-1.mod
-
-     This is XHTML, a reformulation of HTML as a modular XML application.
-     Copyright 1998-2005 W3C (MIT, ERCIM, Keio), All Rights Reserved.
-     Revision: $Id: xhtml-style-1.mod,v 4.1 2001/04/05 06:57:40 altheim Exp $ SMI
-
-     This DTD module is identified by the PUBLIC and SYSTEM identifiers:
-
-       PUBLIC "-//W3C//DTD XHTML Style Sheets 1.0//EN"
-       SYSTEM "http://www.w3.org/MarkUp/DTD/xhtml-style-1.mod"
-
-     Revisions:
-     (none)
-     ....................................................................... -->
-
 <!-- Style Sheets
 
         style

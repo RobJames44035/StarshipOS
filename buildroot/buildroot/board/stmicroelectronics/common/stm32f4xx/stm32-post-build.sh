@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # Busybox is built without network support
 sed -i '/hostname/d' ${TARGET_DIR}/etc/inittab
 

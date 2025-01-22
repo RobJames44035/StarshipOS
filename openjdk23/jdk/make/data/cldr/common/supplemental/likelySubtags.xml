@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE supplementalData SYSTEM "../../common/dtd/ldmlSupplemental.dtd">
 <!--
-Copyright © 1991-2024 Unicode, Inc.
-For terms of use, see http://www.unicode.org/copyright.html
-SPDX-License-Identifier: Unicode-3.0
-CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
--->
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE supplementalData SYSTEM "../../common/dtd/ldmlSupplemental.dtd">
 <!--
 Likely subtags data is generated programatically from CLDR's language/territory/population
 data using the GenerateMaximalLocales tool. Under normal circumstances this file should

@@ -1,2 +1,9 @@
-<?xml version="1.0" ?><A><B>1</B><B>2</B></A>
+<?xml version="1.0" ?><!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<A>
+    <B>1</B>
+    <B>2</B>
+</A>
 

@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 set -e
 
 UUID=$(dumpe2fs "$BINARIES_DIR/rootfs.ext2" 2>/dev/null | sed -n 's/^Filesystem UUID: *\(.*\)/\1/p')

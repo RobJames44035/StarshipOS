@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:tn="foo"
            targetNamespace="foo" elementFormDefault="qualified">

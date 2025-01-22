@@ -1,3 +1,7 @@
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xsl:transform
   xmlns:astro="http://www.astro.com/astro"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">

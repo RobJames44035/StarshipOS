@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import flake8.main.application
 import os
 import subprocess

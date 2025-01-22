@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <project xmlns="http://www.netbeans.org/ns/project/1">
     <type>org.netbeans.modules.cnd.makeproject</type>
     <configuration>

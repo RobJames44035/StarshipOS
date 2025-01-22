@@ -2,5 +2,9 @@
 <!ENTITY % bltin "&#42;">
 <!ENTITY % pe "x">
 
+        <!--
+          - StarshipOS Copyright (c) 2025. R.A. James
+          -->
+
 <!ELEMENT top (#PCDATA)>
 

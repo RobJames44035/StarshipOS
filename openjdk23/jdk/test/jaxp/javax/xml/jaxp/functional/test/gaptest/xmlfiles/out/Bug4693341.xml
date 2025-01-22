@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!DOCTYPE SupplierOrder SYSTEM "Bug4693341.dtd" >
 <SupplierOrder>
 <OrderId>10016</OrderId>

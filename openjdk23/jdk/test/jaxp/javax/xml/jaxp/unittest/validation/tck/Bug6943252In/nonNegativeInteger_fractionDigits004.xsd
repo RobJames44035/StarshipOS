@@ -1,4 +1,8 @@
 <?xml version='1.0'?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema' >
 <!-- Schema to test nonNegativeInteger datatype -->
   <xsd:element name='test' type='fooType' />

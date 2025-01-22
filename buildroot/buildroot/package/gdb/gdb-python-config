@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # This shell script is used to fake Python. Gdb wants to be passed a
 # Python interpreter, to run its own python-config.py program, which
 # uses sysconfig. However, when cross-compiling, this doesn't work

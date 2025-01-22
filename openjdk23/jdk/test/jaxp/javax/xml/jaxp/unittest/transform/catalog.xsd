@@ -1,4 +1,8 @@
-<xs:schema 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<xs:schema
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     targetNamespace="http://www.astro.com/astro" 
     xmlns:astro="http://www.astro.com/astro"

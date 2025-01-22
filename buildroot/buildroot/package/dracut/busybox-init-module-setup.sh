@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 check() {
 	require_binaries busybox || return 1
 	return 0

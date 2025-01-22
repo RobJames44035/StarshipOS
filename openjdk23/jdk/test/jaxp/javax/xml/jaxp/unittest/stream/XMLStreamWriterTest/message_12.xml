@@ -1,4 +1,8 @@
-      <S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
+<!--
+~ StarshipOS Copyright (c) 2025. R.A. James
+-->
+
+<S:Envelope xmlns:S="http://www.w3.org/2003/05/soap-envelope">
       <S:Header>
       <wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" S:mustUnderstand="1">
       <wsu:Timestamp xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="3">

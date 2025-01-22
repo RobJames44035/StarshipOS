@@ -1,3 +1,7 @@
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:core="https://schemas.opentest4j.org/reporting/core/0.1.0"
            targetNamespace="https://schemas.opentest4j.org/reporting/core/0.1.0"

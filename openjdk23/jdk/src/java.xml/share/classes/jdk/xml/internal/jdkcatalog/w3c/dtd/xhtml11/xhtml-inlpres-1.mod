@@ -1,20 +1,9 @@
+<!--
+  - StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!-- ...................................................................... -->
 <!-- XHTML Inline Presentation Module  .................................... -->
-<!-- file: xhtml-inlpres-1.mod
-
-     This is XHTML, a reformulation of HTML as a modular XML application.
-     Copyright 1998-2005 W3C (MIT, ERCIM, Keio), All Rights Reserved.
-     Revision: $Id: xhtml-inlpres-1.mod,v 4.0 2001/04/02 22:42:49 altheim Exp $ SMI
-
-     This DTD module is identified by the PUBLIC and SYSTEM identifiers:
-
-       PUBLIC "-//W3C//ELEMENTS XHTML Inline Presentation 1.0//EN"
-       SYSTEM "http://www.w3.org/MarkUp/DTD/xhtml-inlpres-1.mod"
-
-     Revisions:
-     (none)
-     ....................................................................... -->
-
 <!-- Inline Presentational Elements
 
         b, big, i, small, sub, sup, tt

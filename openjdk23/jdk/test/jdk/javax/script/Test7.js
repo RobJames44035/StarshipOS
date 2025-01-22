@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
+
 //this is the first line of Test7.js
 var filename;
 try {

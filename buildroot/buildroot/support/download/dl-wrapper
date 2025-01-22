@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # This script is a wrapper to the other download backends.
 # Its role is to ensure atomicity when saving downloaded files
 # back to BR2_DL_DIR, and not clutter BR2_DL_DIR with partial,

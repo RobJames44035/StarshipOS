@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 
+        <!--
+          - StarshipOS Copyright (c) 2025. R.A. James
+          -->
+
 <!ELEMENT Configuration (CanonicalizationMethods , TransformAlgorithms , JCEAlgorithmMappings , Log4J , ResourceBundles , UnitTests , ResourceResolvers , KeyResolvers)>
 
 <!ATTLIST Configuration  xmlns CDATA  #FIXED 'http://www.xmlsecurity.org/NS/#configuration' 

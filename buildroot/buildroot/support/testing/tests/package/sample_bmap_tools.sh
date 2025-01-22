@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # simple test which creates a dummy file system image, then use bmaptool create
 # and bmaptool copy to copy it to another file
 

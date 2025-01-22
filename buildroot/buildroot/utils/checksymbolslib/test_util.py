@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 def assert_calls(method, expected_calls):
     method.assert_has_calls(expected_calls, any_order=True)
     assert method.call_count == len(expected_calls)

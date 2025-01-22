@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 OUTPUT_DIR=$1
 BOARD_NAME=${2:-stm32f429discovery}
 

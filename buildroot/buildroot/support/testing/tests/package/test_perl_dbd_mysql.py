@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 from tests.package.test_perl import TestPerlBase
 import os
 

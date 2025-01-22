@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 from passlib.hash import pbkdf2_sha256
 
 hash = pbkdf2_sha256.hash("password")

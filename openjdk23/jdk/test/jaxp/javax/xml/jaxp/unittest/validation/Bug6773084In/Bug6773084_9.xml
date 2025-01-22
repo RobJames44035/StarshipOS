@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <eOtherPayment>
   <OtherPaymentSerialID>b972115d-829e-43ff-aebb-c7157ef25c71</OtherPaymentSerialID>
   <CustomsCode>01AP</CustomsCode>

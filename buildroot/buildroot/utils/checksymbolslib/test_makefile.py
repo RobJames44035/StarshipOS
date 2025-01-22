@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import pytest
 from unittest.mock import Mock
 from unittest.mock import call

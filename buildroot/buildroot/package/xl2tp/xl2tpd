@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 PATH=/bin:/usr/bin:/sbin:/usr/sbin
 DAEMON=/usr/sbin/xl2tpd
 PIDFILE=/var/run/xl2tpd.pid
@@ -14,7 +18,7 @@ case "$1" in
     start-stop-daemon -K  -p $PIDFILE -x $DAEMON
     ;;
   restart|force-reload)
-    start-stop-daemon -K  -p $PIDFILE -x $DAEMON 
+    start-stop-daemon -K  -p $PIDFILE -x $DAEMON
     sleep 1
     start-stop-daemon -S  -p $PIDFILE -x $DAEMON
     ;;

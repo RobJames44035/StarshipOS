@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import os
 from tests.package.test_python import TestPythonPackageBase
 

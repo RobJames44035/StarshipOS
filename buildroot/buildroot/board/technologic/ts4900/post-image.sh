@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Copyright (C) 2015-2016 Savoir-Faire Linux
-# Post image generation script.
+# StarshipOS Copyright (c) 2025. R.A. James
+#
 
 BOARD_DIR="$(dirname $0)"
 GENIMAGE_CFG=$BOARD_DIR/genimage.cfg

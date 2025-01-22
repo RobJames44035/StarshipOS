@@ -1,5 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?> 
-<messages> 
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<messages>
 <tty version="MDAGCQ 08 0 1A" id="464010300121400" op_system="Linux" system="DEV" channel="AMU INB" type="" originator="MUCRM1A" datetime="2016-09-21T13:38:28.324105Z"> 
 <recipient mode="To" type="Tty">NCE00ZZ</recipient> 
 <recipient mode="To" type="Tty">NC100ZZ</recipient> 

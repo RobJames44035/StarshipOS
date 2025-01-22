@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # This is a temporary work around for generating kr260 u-boot.itb.
 # The problem is there is no way to currently configure u-boot to apply
 # the carrier board dtb overlay during build, so all kr260 carrier board

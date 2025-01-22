@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
     <delegateSystem systemIdStartString="http://remote/dtd/alice/" catalog="delegateSystem-alice.xml" />
 

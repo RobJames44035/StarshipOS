@@ -1,5 +1,9 @@
 <?xml version="1.1"?>
-<!DOCTYPE  catalogtest  PUBLIC  "-//OPENJDK//XML CATALOG DTD//1.0"  
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE  catalogtest  PUBLIC  "-//OPENJDK//XML CATALOG DTD//1.0"
      "http://openjdk_java_net/xml/catalog/dtd/system.dtd">
 <test:root xmlns:test="test"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

@@ -1,4 +1,8 @@
 <?xml version='1.0' encoding ='utf-8'?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!DOCTYPE SupplierOrder [
 <!ENTITY % paraEntity SYSTEM "file:/externalParameterEntity">
 %paraEntity;

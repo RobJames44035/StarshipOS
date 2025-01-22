@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE note [                           
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE note [
 <!ELEMENT note    (to,from,heading,body)>
 <!ELEMENT to      (#PCDATA)>
 <!NOTATION gs SYSTEM "http://who.knows.where/">

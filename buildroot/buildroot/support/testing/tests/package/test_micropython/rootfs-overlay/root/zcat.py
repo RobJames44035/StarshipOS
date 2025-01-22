@@ -1,5 +1,7 @@
 #! /usr/bin/env micropython
 
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import gzip
 import sys
 

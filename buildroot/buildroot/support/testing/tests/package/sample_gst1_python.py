@@ -2,6 +2,8 @@
 """A simple test that uses gst1-python to run a fake videotestsrc for 100
 frames
 """
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import sys
 import gi
 gi.require_version('Gst', '1.0')

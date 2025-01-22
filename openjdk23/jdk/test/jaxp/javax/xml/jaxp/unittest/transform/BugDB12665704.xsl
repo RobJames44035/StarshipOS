@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:wff="http://www.mysap.com/wff/2001" version="1.0" exclude-result-prefixes="wff">
     <xsl:output encoding="UTF-8" indent="yes" method="html" version="4.01" doctype-system="http://www.w3.org/TR/html4/loose.dtd" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"/>
     <xsl:template match="/">

@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 BOARD_DIR="$(dirname $0)"
 PARTUUID="$($HOST_DIR/bin/uuidgen)"
 

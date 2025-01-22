@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2024-2025.
+  ~ StarshipOS Copyright (c) 2024-2025. R.A. James
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -21,7 +21,7 @@
 
     <modules>
         <module>buildroot</module>
-    <!--<module>openjdk23</module>-->
+        <module>openjdk23</module>
         <module>starship-init</module>
         <module>starship-sdk</module>
         <module>starship-userland</module>
@@ -123,31 +123,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                <version>3.5.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>package-system-bridge</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>single</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <descriptors>-->
-<!--                                <descriptor>init.xml</descriptor>-->
-<!--                            </descriptors>-->
-<!--                            <formats>-->
-<!--                                <format>tgz</format>-->
-<!--                            </formats>-->
-<!--                            <finalName>${project.artifactId}-${project.version}</finalName>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
 
         </plugins>
     </build>

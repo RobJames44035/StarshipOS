@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE  xsd:schema  PUBLIC  "-//OPENJDK//XML CATALOG DTD//USECATALOG"  
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE  xsd:schema  PUBLIC  "-//OPENJDK//XML CATALOG DTD//USECATALOG"
      "http://openjdk_java_net/xml/catalog/dtd/usecatalogtest.dtd">
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"

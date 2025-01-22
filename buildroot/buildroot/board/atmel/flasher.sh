@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 BUILDIR=$1
 TTY=$2
 BOARD=$3

@@ -1,4 +1,8 @@
 #! /bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # tvheadend startup script inspired by the Debian one in the package
 
 # Author: Yann E. MORIN <yann.morin.1998@free.fr>

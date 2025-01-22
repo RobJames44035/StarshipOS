@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 def check_file(check_function, filename, string):
     obj = check_function(filename, 'url')
     result = []

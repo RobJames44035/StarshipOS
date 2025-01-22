@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import asyncio
 from dbus_next.aio import MessageBus
 from dbus_next.service import ServiceInterface, method

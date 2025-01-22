@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # This script is used to generate a gconv-modules file that takes into
 # account only the gconv modules installed by Buildroot, and generates
 # a stripped-down gconv-moduels file on its stdout.

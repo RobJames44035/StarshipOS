@@ -1,5 +1,9 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <wsdl:definitions name = "Untitled" targetNamespace = "http://web.services.galileo.someCompany.com/checkAddressImpl" xmlns:ns0 = "http://someCompany.com/fss/services/Portal_checkAddress_request" xmlns:ns1 = "http://someCompany.com/fss/services/Portal_checkAddress_result" xmlns:soap = "http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns = "http://web.services.galileo.someCompany.com/checkAddressImpl" xmlns:tnsi = "http://web.services.galileo.someCompany.com/internal/checkAddress" xmlns:wsdl = "http://schemas.xmlsoap.org/wsdl/" xmlns:xs = "http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
 		<xsd:schema attributeFormDefault = "unqualified" elementFormDefault = "qualified" targetNamespace = "http://someCompany.com/fss/services/Portal_checkAddress_result" xml:lang = "de" xmlns = "http://someCompany.com/fss/services/Portal_checkAddress_result" xmlns:xsd = "http://www.w3.org/2001/XMLSchema">

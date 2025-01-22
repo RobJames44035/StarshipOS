@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 GOI_LIBRARY_PATH="${GIR_EXTRA_LIBS_PATH:+${GIR_EXTRA_LIBS_PATH}:}.libs:$(dirname "$0")/../lib:$(dirname "$0")/../../lib"
 
 # Pass -r to qemu-user as to trick glibc into not erroring out if the host kernel

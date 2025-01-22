@@ -1,3 +1,7 @@
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 choice
 	prompt "Target Architecture Variant"
 	default BR2_sh4

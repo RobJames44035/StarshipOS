@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <testXMLXSD xmlns="http://xml.xsd.test/testXMLXSD"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns:xml="http://www.w3.org/XML/1998/namespace"

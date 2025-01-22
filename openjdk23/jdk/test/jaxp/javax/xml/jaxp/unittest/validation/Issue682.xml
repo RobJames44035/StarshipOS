@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <root xmlns="http://unique/test"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://unique/test unique.xsd">

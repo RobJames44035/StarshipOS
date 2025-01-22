@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # Pass -r to qemu-user as to trick glibc into not errorings out if the host kernel
 # is older than the target kernel.
 exec @QEMU_USER@ -r @TOOLCHAIN_HEADERS_VERSION@ \

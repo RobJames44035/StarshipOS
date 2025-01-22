@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import evdev
 
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]

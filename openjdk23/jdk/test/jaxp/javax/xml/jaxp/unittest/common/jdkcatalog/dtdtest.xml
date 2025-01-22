@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-    <!DOCTYPE html PUBLIC "{{publicId}}"
+<!--
+~ StarshipOS Copyright (c) 2025. R.A. James
+-->
+
+<!DOCTYPE html PUBLIC "{{publicId}}"
       "{{systemId}}">
 <html>
     <head>

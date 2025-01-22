@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # shellcheck disable=SC2164
 # shellcheck disable=SC2162
 # shellcheck disable=SC2046

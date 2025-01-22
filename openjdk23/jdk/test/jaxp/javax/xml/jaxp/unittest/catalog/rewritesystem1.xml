@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE  catalogtest  PUBLIC  "-//OPENJDK//XML CATALOG DTD//REWRITE"  
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<!DOCTYPE  catalogtest  PUBLIC  "-//OPENJDK//XML CATALOG DTD//REWRITE"
      "http://openjdk_java_net/rewritesystem.dtd">
      
 <catalogtest>Test &rewritesystem; entry</catalogtest>

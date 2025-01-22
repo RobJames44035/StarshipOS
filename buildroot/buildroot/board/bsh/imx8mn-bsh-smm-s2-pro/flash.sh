@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 if [ $# -eq 0 ]; then
     OUTPUT_DIR=output
 else

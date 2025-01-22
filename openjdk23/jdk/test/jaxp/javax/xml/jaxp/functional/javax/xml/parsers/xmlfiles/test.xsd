@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
- <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<!--
+ ~ StarshipOS Copyright (c) 2025. R.A. James
+ -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 <xs:element name="contact">
 <xs:complexType>
 <xs:sequence>

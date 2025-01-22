@@ -1,3 +1,6 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
 
 var ScriptContext = javax.script.ScriptContext;
 print(count);

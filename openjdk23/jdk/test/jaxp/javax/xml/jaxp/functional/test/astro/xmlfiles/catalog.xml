@@ -1,4 +1,8 @@
 <?xml version="1.1" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <stardb xmlns="http://www.astro.com/astro" xmlns:astro="http://www.astro.com/astro" xsi:schemaLocation="http://www.astro.com/astro catalog.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <_test01></_test01>
    <test-02 xmlns:xsi=""></test-02>

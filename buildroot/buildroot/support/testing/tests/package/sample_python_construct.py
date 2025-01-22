@@ -1,3 +1,5 @@
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 # Inspired from https://construct.readthedocs.io/en/latest/intro.html#example
 import construct
 

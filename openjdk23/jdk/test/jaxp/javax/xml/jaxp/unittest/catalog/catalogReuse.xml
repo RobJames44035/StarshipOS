@@ -1,4 +1,8 @@
 <?xml version='1.0'?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
     <rewriteURI uriStartString="http://entailments/example.org/" rewritePrefix="derived/"/>
     <rewriteURI uriStartString="http://example.org/" rewritePrefix="sources/"/>

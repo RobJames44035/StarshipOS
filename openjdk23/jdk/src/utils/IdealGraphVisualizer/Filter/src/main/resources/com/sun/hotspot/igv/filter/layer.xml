@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!DOCTYPE filesystem PUBLIC "-//NetBeans//DTD Filesystem 1.1//EN" "https://www.netbeans.org/dtds/filesystem-1_1.dtd">
 <filesystem>
         <file name="JavaScriptHelper" url="helper.js"/>

@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # genimage will need to find the extlinux.conf
 # in the binaries directory
 

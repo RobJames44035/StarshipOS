@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <xsl:stylesheet version="1.0"
                 xmlns:TRI="http://www.exchangenetwork.net/schema/TRI/6"
                 xmlns:sc="urn:us:net:exchangenetwork:sc:1:0"

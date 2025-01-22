@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 NAME="${0##*/}"
 STAGING_DIR="${1}"
 TARGET_DIR="${2}"

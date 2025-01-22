@@ -1,5 +1,9 @@
 #!/bin/sh
 #
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
+#
 # netplugd     This shell script takes care of starting and stopping
 #              the network plug management daemon.
 #
@@ -9,7 +13,7 @@
 # processname: netplugd
 # pidfile: /var/run/netplugd.pid
 
-# Copyright 2003 Key Research, Inc.
+
 
 # Create needed directories
 mkdir -p /var/lock/subsys

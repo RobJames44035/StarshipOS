@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<env:Envelope xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/" 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<env:Envelope xmlns:enc="http://schemas.xmlsoap.org/soap/encoding/"
     xmlns:env="http://schemas.xmlsoap.org/soap/envelope/" 
     xmlns:ns0="http://headertest.org/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">

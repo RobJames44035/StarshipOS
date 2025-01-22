@@ -6,6 +6,8 @@ Utility for building Buildroot packages for existing PyPI packages
 Any package built by scanpypi should be manually checked for
 errors.
 """
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import argparse
 import json
 import sys

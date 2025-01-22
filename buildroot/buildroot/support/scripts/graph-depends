@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 # Usage (the graphviz package must be installed in your distribution)
 #  ./support/scripts/graph-depends [-p package-name] > test.dot
 #  dot -Tpdf test.dot -o test.pdf
@@ -19,9 +21,6 @@
 #    dependencies as they are with the current Buildroot
 #    configuration.
 #
-# Copyright (C) 2010-2013 Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
-# Copyright (C) 2019 Yann E. MORIN <yann.morin.1998@free.fr>
-
 import logging
 import sys
 import argparse

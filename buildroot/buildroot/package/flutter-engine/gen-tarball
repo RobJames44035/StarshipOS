@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 # Call gclient and generate a flutter-engine source tarball if one does not
 # already exist.
 set -eu

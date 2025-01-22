@@ -1,4 +1,8 @@
 <?xml version="1.1" encoding="ISO-8859-1" standalone="no"?>
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
 <!DOCTYPE HTMLlat1 SYSTEM "XSLDTD.dtd">
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 

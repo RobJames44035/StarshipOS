@@ -1,4 +1,7 @@
 #! /usr/bin/env python3
+
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 #
 # This script generates a MIDI file with only 3 notes: A2, E3, A3
 # usage: gen_midi_file.py [output-filename]

@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 #compatibility script for openvmtools
 if [ "$1" == "-r" ]; then
 /sbin/reboot

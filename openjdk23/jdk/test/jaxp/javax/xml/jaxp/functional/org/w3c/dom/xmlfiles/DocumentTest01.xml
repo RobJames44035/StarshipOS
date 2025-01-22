@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
- <html xmlns:h="http://www.w3.org/TR/REC-html40"
+<!--
+ ~ StarshipOS Copyright (c) 2025. R.A. James
+ -->
+
+<html xmlns:h="http://www.w3.org/TR/REC-html40"
        xmlns:b="urn:BooksAreUs.org:BookInfo">
    <h:head>
      <h:title>Typography</h:title>

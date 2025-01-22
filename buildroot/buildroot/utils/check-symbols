@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#  StarshipOS Copyright (c) 2025. R.A. James
+
 import argparse
 import os
 import sys

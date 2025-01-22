@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R.A. James
+ */
+
 function display_activity(result, activity) {
     let loaded = 0;
     let nb_display = 8;

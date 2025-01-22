@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R.A. James
+#
+
 OUTPUT_DIR=$1
 
 if ! test -d "${OUTPUT_DIR}" ; then

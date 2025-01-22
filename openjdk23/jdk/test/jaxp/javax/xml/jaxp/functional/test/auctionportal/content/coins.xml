@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<im:coin 
+<!--
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  -->
+
+<im:coin
      xmlns:im="http://www.hibid.com/items" 
      xmlns="http://www.hibid.com/items" 
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
