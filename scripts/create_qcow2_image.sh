@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # StarshipOS Copyright (c) 2025. R.A. James
 #
@@ -26,8 +25,6 @@ cleanup() {
     fi
     rm -rf /mnt/qcow2
 }
-
-# Trap for cleanup on exit
 trap cleanup EXIT
 
 # Step 1: Create the QCOW2 Image
@@ -80,7 +77,37 @@ menuentry "StarshipOS" {
 EOF
 
 sync
+cat <<'EOF' > /init
+#!/bin/sh
 
+# Set debugging options (optional)
+set -e
+set -x
+
+# Mount essential filesystems
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+mdev -s  # Populate /dev using mdev
+
+# Console setup
+[ -c /dev/console ] || mknod /dev/console c 5 1
+exec </dev/console >/dev/console 2>/dev/console
+
+echo "Init script: Setting up devices and consoles."
+
+# Placeholder: Additional setup tasks
+# Add specific device setup commands or filesystem mounting if required
+echo "Custom setup done."
+
+# Execute the custom init process
+exec /bin/sh
+EOF
+
+chmod +x /init
+chown root:root /init
+
+sync
 # Step 8: Cleanup
 echo "Finalizing and unmounting QCOW2..."
 sudo umount /mnt/qcow2

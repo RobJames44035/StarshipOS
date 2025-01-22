@@ -124,6 +124,31 @@
                 </executions>
             </plugin>
 
+
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-assembly-plugin</artifactId>-->
+<!--                <version>3.5.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>package-system-bridge</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>single</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <descriptors>-->
+<!--                                <descriptor>init.xml</descriptor>-->
+<!--                            </descriptors>-->
+<!--                            <formats>-->
+<!--                                <format>tgz</format>-->
+<!--                            </formats>-->
+<!--                            <finalName>${project.artifactId}-${project.version}</finalName>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
         </plugins>
     </build>
 </project>
