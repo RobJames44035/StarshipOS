@@ -1,5 +1,6 @@
 //file:noinspection unused
 //file:noinspection GroovyAssignabilityCheck
+//file:noinspection GroovyInfiniteLoopStatement
 package org.starship.init
 
 import com.sun.jna.Native
@@ -13,6 +14,13 @@ import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
+/**
+ * Main class responsible for initializing and managing the Starship system services.
+ *
+ * This class includes methods for managing the lifecycle of the BundleManager, 
+ * handling heartbeats, and loading configuration files. Upon failure to 
+ * initialize critical components, the system triggers a panic.
+ */
 @Slf4j
 class Init {
     // Configuration paths
@@ -31,7 +39,7 @@ class Init {
 
     // List of running child processes
     static List<Process> childProcesses = [].asSynchronized() as List<Process>
-    static Set<String> mountedResources = ConcurrentHashMap.newKeySet()
+    private static final Set<String> mountedResources = ConcurrentHashMap.newKeySet()
 
     /**
      * Start the BundleManager as a subprocess.
@@ -75,7 +83,6 @@ class Init {
             throw new PanicException("BundleManager failed to initialize.")
         }
     }
-
 
     /**
      * Stop the BundleManager process if it is running.
@@ -159,7 +166,11 @@ class Init {
         return (System.currentTimeMillis() - lastHeartbeatTimestamp) < HEARTBEAT_TIMEOUT_MS
     }
 
-    // Load a configuration file dynamically
+    /**
+     * Load a configuration file dynamically
+     *
+     * @param configPath Path to config file.
+     */
     static void loadConfig(String configPath) {
         try {
             File configFile = new File(configPath)
@@ -185,13 +196,31 @@ class Init {
         }
     }
 
-    // Include directive for additional configuration files
+    /**
+     * Includes additional configuration files for processing.
+     *
+     * @param path The path to the configuration file to include.
+     */
     static void include(String path) {
         log.info("Including configuration from: ${path}")
         loadConfig(path) // Recursive call to load the included configuration
     }
 
-    // Reap zombie processes (PID 1 responsibility)
+    /**
+     * Reaps zombie processes spawned by the application. 
+     * This is a responsibility of a process running with PID 1, 
+     * typically in containerized or similar restricted environments.
+     *
+     * Ensures that defunct child processes are properly reaped by checking their status.
+     * If a child process has exited:
+     * - Logs its status,
+     * - Removes it from the `childProcesses` list. 
+     *
+    * Processes with PID 1 are safeguarded from being reaped.
+    *
+    * If any errors occur during the operation, they are logged, but the process
+    * continues to ensure all manageable child processes are reaped.
+    */
     static void reapZombies() {
         childProcesses.removeIf { process ->
             try {
@@ -212,7 +241,18 @@ class Init {
         }
     }
 
-    // Shutdown hook for cleanup during SIGTERM or errors
+    /**
+    * Sets up a shutdown hook that performs necessary cleanup when the 
+    * application terminates. 
+    *
+    * Registered actions include:
+    * - Logging the shutdown signal,
+    * - Terminating all spawned child processes,
+    * - Logging the completion of the shutdown process.
+    *
+    * This ensures that all system resources are gracefully released during
+    * application shutdown.
+    */
     static void setupShutdownHook() {
         Runtime.runtime.addShutdownHook(new Thread({
             log.info("Shutdown signal received. Cleaning up...")
@@ -221,7 +261,18 @@ class Init {
         }))
     }
 
-    // Spawn a child process and register it
+    /**
+    * Spawns a new process using the provided command and associates it 
+    * with a logical name for logging and tracking purposes.
+    *
+    * This method uses a `ProcessBuilder` to execute the command, tracks 
+    * the process, and logs the details of the spawned process.
+    *
+    * If the process fails to start, it logs an error detailing the cause.
+    *
+    * @param command The command to execute as a new process.
+    * @param name A logical name to associate with the spawned process for tracking.
+    */
     static void spawnProcess(String command, String name) {
         try {
             log.info("Spawning process '${name}': ${command}")
@@ -234,7 +285,18 @@ class Init {
         }
     }
 
-    // Evaluate the configuration for the init process
+    /**
+    * Evaluates a Groovy configuration file using a GroovyShell. 
+    *
+    * This method ensures that the configuration file provided is valid and exists, 
+    * and then processes it by evaluating its contents. If there are any issues 
+    * during evaluation, such as syntax errors or runtime exceptions, the error 
+    * is logged and rethrown.
+    *
+    * @param configFile The configuration file to evaluate.
+    * @throws IllegalArgumentException if the configuration file is null or does not exist.
+    * @throws Exception if an error occurs during the evaluation of the configuration file.
+    */
     static void evaluate(File configFile) {
         if (configFile == null || !configFile.exists()) {
             throw new IllegalArgumentException("Configuration file ${configFile?.name} does not exist or is null.")
@@ -256,7 +318,21 @@ class Init {
         }
     }
 
-    @SuppressWarnings('GroovySynchronizationOnNonFinalField')
+    /**
+    * Unmounts a specified resource from the system.
+    *
+    * This method ensures synchronized access to the list of mounted resources,
+    * verifies if the specified resource is currently mounted, and attempts to
+    * unmount it. If a regular unmount fails and forced unmount is specified, 
+    * it retries with a forced unmount.
+    *
+    * - Logs warnings if the resource is not found or already unmounted.
+    * - Uses kernel calls to perform the unmount operation.
+    * - Handles potential errors and retries as necessary for forced unmount. 
+    *
+    * @param mountPoint The mount point of the resource to unmount.
+    * @param force A boolean indicating whether the unmount should be forced.
+    */
     static void unmountResource(String mountPoint, boolean force) {
         synchronized (mountedResources) {
             if (!mountedResources.contains(mountPoint)) {
@@ -298,7 +374,13 @@ class Init {
         }
     }
 
-
+    /**
+     * Registers a shutdown hook to ensure graceful cleanup during application termination.
+     *
+     * This method creates and registers a shutdown hook that triggers the `shutdown` method
+     * when the JVM is shutting down. This ensures that critical resources, such as child processes
+     * and mounted filesystems, are properly released even during unexpected exits or termination signals.
+     */
     static void shutdown() {
         try {
             log.info("System shutdown initiated...")
@@ -353,11 +435,42 @@ class Init {
         }
     }
 
-    // Main method for initialization
+    /**
+    * Handles configuring the JVM and loading the system libraries.
+    *
+    * This method is responsible for ensuring that the system libraries
+    * required to perform low-level operations are properly loaded and
+    * available to the runtime.
+    */
+    static void configureSystemLibraries() {
+        try {
+            log.info("Configuring JVM and loading system libraries...")
+
+            // Example of loading native library
+            System.loadLibrary("c") // Loads the libc library
+
+            log.info("System libraries loaded successfully.")
+        } catch (Exception e) {
+            log.error("Failed to load system libraries: {}", e.message, e)
+            throw new RuntimeException("Critical error: Unable to load necessary libraries.", e)
+        }
+    }
+
+    /**
+    * This method is responsible for configuring the JVM and ensuring that the necessary system libraries
+    * (such as libc) are properly loaded and available for use during runtime.
+    *
+    * Key functionalities:
+    * - Logs the start and successful completion of the library loading process.
+    * - Uses System.loadLibrary to load required native libraries.
+    * - If library loading fails, logs the error and throws a RuntimeException to terminate execution.
+    *
+    * @throws RuntimeException if critical libraries cannot be loaded, halting the program.
+    */
     static void main(String[] args) {
         // Check running as PID 1
         if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
-            log.warn("Warning: This script is not running as PID 1.")
+            log.warn("Warning: This program is not running as PID 1.")
         }
 
         try {

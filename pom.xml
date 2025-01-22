@@ -21,7 +21,7 @@
 
     <modules>
         <module>buildroot</module>
-        <module>openjdk23</module>
+    <!--<module>openjdk23</module>-->
         <module>starship-init</module>
         <module>starship-sdk</module>
         <module>starship-userland</module>
@@ -52,6 +52,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.4.12</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>5.16.0</version>
         </dependency>
     </dependencies>
 
