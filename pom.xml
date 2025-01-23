@@ -21,12 +21,10 @@
 
     <modules>
         <module>buildroot</module>
-        <!--<module>openjdk23</module>-->
+        <module>openjdk23</module>
         <module>starship-init</module>
-        <!--
         <module>starship-sdk</module>
         <module>starship-userland</module>
-        -->
     </modules>
 
     <dependencies>

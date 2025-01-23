@@ -463,3 +463,9 @@ build/
 /openjdk23/jdk-23.0.1/legal/java.xml/xalan.md
 /openjdk23/jdk-23.0.1/legal/java.xml/xerces.md
 /openjdk23/jdk-23.0.1/legal/java.desktop/xwd.md
+/starship-init/init/dependency-reduced-pom.xml
+/.mvn/wrapper/maven-wrapper.jar
+/.mvn/wrapper/maven-wrapper.properties
+/.mvn/wrapper/MavenWrapperDownloader.java
+/mvnw
+/mvnw.cmd
