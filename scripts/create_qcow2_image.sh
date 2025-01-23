@@ -29,13 +29,13 @@ trap cleanup EXIT
 
 # Step 1: Create the QCOW2 Image
 echo "Creating QCOW2 image..."
-rm "$QCOW2_IMAGE"
+# if [ -f "$QCOW_IMAGE" ] rm "$QCOW2_IMAGE"; fi
 qemu-img create -f qcow2 "$QCOW2_IMAGE" "$QCOW2_SIZE" || { echo "ERROR: Could not create disk image"; exit 1; }
 
 # Step 2: Connect QCOW2 to a network block device (nbd)
 echo "Connecting QCOW2 image to /dev/nbd0..."
 modprobe nbd
-qemu-nbd --connect=/dev/nbd0 "$QCOW2_IMAGE" || { echo "ERROR: Could not connect=/dev/nbd0"; exit 1; }
+sudo qemu-nbd --connect=/dev/nbd0 "$QCOW2_IMAGE" || { echo "ERROR: Could not connect=/dev/nbd0"; exit 1; }
 
 # Step 3: Format the QCOW2 Image
 echo "Partitioning and formatting the QCOW2 image..."
@@ -110,11 +110,11 @@ chown root:root /init
 sync
 # Step 8: Cleanup
 echo "Finalizing and unmounting QCOW2..."
-sudo umount /mnt/qcow2
-qemu-nbd --disconnect /dev/nbd0
+umount /mnt/qcow2
+sudo qemu-nbd --disconnect /dev/nbd0
 rm -rf /mnt/qcow2
 echo "QCOW2 image $QCOW2_IMAGE created successfully!"
 
 echo "Launching QEMU with $QCOW2_IMAGE..."
-sudo chown "$(whoami)":"$(whoami)" "$QCOW2_IMAGE" || { echo "ERROR: Could not fix ownership"; exit 1; }
-#qemu-system-x86_64 -drive file="$QCOW2_IMAGE" -m 2048 -cpu host -smp 2 || { echo "ERROR: See starship-os.log"; exit 1; }
+chown "$(whoami)":"$(whoami)" "$QCOW2_IMAGE" || { echo "ERROR: Could not fix ownership"; exit 1; }
+qemu-system-x86_64 -kernel $KERNEL_IMAGE -hda "buildroot/buildroot/output/images/rootfs.qcow2" -m 4096 -cpu qemu64 -smp 2
