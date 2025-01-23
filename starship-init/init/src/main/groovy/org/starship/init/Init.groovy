@@ -11,7 +11,7 @@ import com.sun.jna.Native
 import groovy.util.logging.Slf4j
 import org.starship.jna.CLib
 import org.starship.sys.PanicException
-import sun.misc.Signal
+import org.starship.sys.SignalProcessor
 
 import java.lang.management.ManagementFactory
 import java.nio.file.Path
@@ -35,6 +35,7 @@ class Init {
     static long bundleManagerPid = -1            // Track PID of the BundleManager
     static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
     static final String FALLBACK_CONFIG_PATH = "resources/default-init.config"
+    static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
@@ -111,35 +112,36 @@ class Init {
      */
     static void startHeartbeatListener() {
         new Thread({
-            try {
-                // Clean up the socket file if it exists
-                Path socketPath = Path.of(BUNDLE_MANAGER_SOCKET_PATH)
-                Files.deleteIfExists(socketPath)
+            while(true) {
+                try {
+                    // Clean up the socket file if it exists
+                    Path socketPath = Path.of(BUNDLE_MANAGER_SOCKET_PATH)
+                    Files.deleteIfExists(socketPath)
 
-                ServerSocket serverSocket = new ServerSocket()
-                serverSocket.bind(new InetSocketAddress(BUNDLE_MANAGER_SOCKET_PATH, 0))
+                    ServerSocket serverSocket = new ServerSocket()
+                    serverSocket.bind(new InetSocketAddress(BUNDLE_MANAGER_SOCKET_PATH, 0))
 
-                log.info("Listening for heartbeats on UDS: ${BUNDLE_MANAGER_SOCKET_PATH}")
+                    log.info("Listening for heartbeats on UDS: ${BUNDLE_MANAGER_SOCKET_PATH}")
 
-                while (true) {
-                    try (Socket clientSocket = serverSocket.accept()) {
-                        log.info("Client connected to heartbeat socket.")
+                    while (true) {
+                        try (Socket clientSocket = serverSocket.accept()) {
+                            log.info("Client connected to heartbeat socket.")
 
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                        String message
-                        while ((message = reader.readLine()) != null) {
-                            if (message.trim() == "heartbeat") {
-                                lastHeartbeatTimestamp = System.currentTimeMillis()
-                                log.debug("Received heartbeat at ${lastHeartbeatTimestamp}")
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+                            String message
+                            while ((message = reader.readLine()) != null) {
+                                if (message.trim() == "heartbeat") {
+                                    lastHeartbeatTimestamp = System.currentTimeMillis()
+                                    log.debug("Received heartbeat at ${lastHeartbeatTimestamp}")
+                                }
                             }
+                        } catch (Exception e) {
+                            log.error("Error reading from UDS: ${e.message}", e)
                         }
-                    } catch (Exception e) {
-                        log.error("Error reading from UDS: ${e.message}", e)
                     }
+                } catch (Exception e) {
+                    log.error("Heartbeat listener failed. Restarting...", e)
                 }
-            } catch (Exception e) {
-                log.error("Failed to start heartbeat listener: ${e.message}", e)
-                throw new PanicException("Heartbeat listener failed to initialize.")
             }
         }).start()
     }
@@ -220,11 +222,11 @@ class Init {
      * - Logs its status,
      * - Removes it from the `childProcesses` list. 
      *
-    * Processes with PID 1 are safeguarded from being reaped.
-    *
-    * If any errors occur during the operation, they are logged, but the process
-    * continues to ensure all manageable child processes are reaped.
-    */
+     * Processes with PID 1 are safeguarded from being reaped.
+     *
+     * If any errors occur during the operation, they are logged, but the process
+     * continues to ensure all manageable child processes are reaped.
+     */
     static void reapZombies() {
         childProcesses.removeIf { process ->
             try {
@@ -246,17 +248,17 @@ class Init {
     }
 
     /**
-    * Sets up a shutdown hook that performs necessary cleanup when the 
-    * application terminates. 
-    *
-    * Registered actions include:
-    * - Logging the shutdown signal,
-    * - Terminating all spawned child processes,
-    * - Logging the completion of the shutdown process.
-    *
-    * This ensures that all system resources are gracefully released during
-    * application shutdown.
-    */
+     * Sets up a shutdown hook that performs necessary cleanup when the
+     * application terminates.
+     *
+     * Registered actions include:
+     * - Logging the shutdown signal,
+     * - Terminating all spawned child processes,
+     * - Logging the completion of the shutdown process.
+     *
+     * This ensures that all system resources are gracefully released during
+     * application shutdown.
+     */
     static void setupShutdownHook() {
         Runtime.runtime.addShutdownHook(new Thread({
             log.info("Shutdown signal received. Cleaning up...")
@@ -266,17 +268,17 @@ class Init {
     }
 
     /**
-    * Spawns a new process using the provided command and associates it 
-    * with a logical name for logging and tracking purposes.
-    *
-    * This method uses a `ProcessBuilder` to execute the command, tracks 
-    * the process, and logs the details of the spawned process.
-    *
-    * If the process fails to start, it logs an error detailing the cause.
-    *
-    * @param command The command to execute as a new process.
-    * @param name A logical name to associate with the spawned process for tracking.
-    */
+     * Spawns a new process using the provided command and associates it
+     * with a logical name for logging and tracking purposes.
+     *
+     * This method uses a `ProcessBuilder` to execute the command, tracks
+     * the process, and logs the details of the spawned process.
+     *
+     * If the process fails to start, it logs an error detailing the cause.
+     *
+     * @param command The command to execute as a new process.
+     * @param name A logical name to associate with the spawned process for tracking.
+     */
     static void spawnProcess(String command, String name) {
         try {
             log.info("Spawning process '${name}': ${command}")
@@ -290,17 +292,17 @@ class Init {
     }
 
     /**
-    * Evaluates a Groovy configuration file using a GroovyShell. 
-    *
-    * This method ensures that the configuration file provided is valid and exists, 
-    * and then processes it by evaluating its contents. If there are any issues 
-    * during evaluation, such as syntax errors or runtime exceptions, the error 
-    * is logged and rethrown.
-    *
-    * @param configFile The configuration file to evaluate.
-    * @throws IllegalArgumentException if the configuration file is null or does not exist.
-    * @throws Exception if an error occurs during the evaluation of the configuration file.
-    */
+     * Evaluates a Groovy configuration file using a GroovyShell.
+     *
+     * This method ensures that the configuration file provided is valid and exists,
+     * and then processes it by evaluating its contents. If there are any issues
+     * during evaluation, such as syntax errors or runtime exceptions, the error
+     * is logged and rethrown.
+     *
+     * @param configFile The configuration file to evaluate.
+     * @throws IllegalArgumentException if the configuration file is null or does not exist.
+     * @throws Exception if an error occurs during the evaluation of the configuration file.
+     */
     static void evaluate(File configFile) {
         if (configFile == null || !configFile.exists()) {
             throw new IllegalArgumentException("Configuration file ${configFile?.name} does not exist or is null.")
@@ -323,20 +325,20 @@ class Init {
     }
 
     /**
-    * Unmounts a specified resource from the system.
-    *
-    * This method ensures synchronized access to the list of mounted resources,
-    * verifies if the specified resource is currently mounted, and attempts to
-    * unmount it. If a regular unmount fails and forced unmount is specified, 
-    * it retries with a forced unmount.
-    *
-    * - Logs warnings if the resource is not found or already unmounted.
-    * - Uses kernel calls to perform the unmount operation.
-    * - Handles potential errors and retries as necessary for forced unmount. 
-    *
-    * @param mountPoint The mount point of the resource to unmount.
-    * @param force A boolean indicating whether the unmount should be forced.
-    */
+     * Unmounts a specified resource from the system.
+     *
+     * This method ensures synchronized access to the list of mounted resources,
+     * verifies if the specified resource is currently mounted, and attempts to
+     * unmount it. If a regular unmount fails and forced unmount is specified,
+     * it retries with a forced unmount.
+     *
+     * - Logs warnings if the resource is not found or already unmounted.
+     * - Uses kernel calls to perform the unmount operation.
+     * - Handles potential errors and retries as necessary for forced unmount.
+     *
+     * @param mountPoint The mount point of the resource to unmount.
+     * @param force A boolean indicating whether the unmount should be forced.
+     */
     static void unmountResource(String mountPoint, boolean force) {
         synchronized (mountedResources) {
             if (!mountedResources.contains(mountPoint)) {
@@ -440,18 +442,23 @@ class Init {
     }
 
     /**
-    * Handles configuring the JVM and loading the system libraries.
-    *
-    * This method is responsible for ensuring that the system libraries
-    * required to perform low-level operations are properly loaded and
-    * available to the runtime.
-    */
+     * Handles configuring the JVM and loading the system libraries.
+     *
+     * This method is responsible for ensuring that the system libraries
+     * required to perform low-level operations are properly loaded and
+     * available to the runtime.
+     */
     static void configureSystemLibraries() {
         try {
             log.info("Configuring JVM and loading system libraries...")
 
             // Example of loading native library
-            System.loadLibrary("c") // Loads the libc library
+            System.loadLibrary("c")         // Loads the libc library
+            System.loadLibrary("pthread")   // POSIX threads
+            System.loadLibrary("rt")        // Real-Time Extensions
+            System.loadLibrary("dl")        // Dynamic loading
+            System.loadLibrary("m")         // Math
+            System.loadLibrary("stdc++")    // std C++
 
             log.info("System libraries loaded successfully.")
         } catch (Exception e) {
@@ -461,16 +468,16 @@ class Init {
     }
 
     /**
-    * This method is responsible for configuring the JVM and ensuring that the necessary system libraries
-    * (such as libc) are properly loaded and available for use during runtime.
-    *
-    * Key functionalities:
-    * - Logs the start and successful completion of the library loading process.
-    * - Uses System.loadLibrary to load required native libraries.
-    * - If library loading fails, logs the error and throws a RuntimeException to terminate execution.
-    *
-    * @throws RuntimeException if critical libraries cannot be loaded, halting the program.
-    */
+     * This method is responsible for configuring the JVM and ensuring that the necessary system libraries
+     * (such as libc) are properly loaded and available for use during runtime.
+     *
+     * Key functionalities:
+     * - Logs the start and successful completion of the library loading process.
+     * - Uses System.loadLibrary to load required native libraries.
+     * - If library loading fails, logs the error and throws a RuntimeException to terminate execution.
+     *
+     * @throws RuntimeException if critical libraries cannot be loaded, halting the program.
+     */
     static void main(String[] args) {
         // Check running as PID 1
         if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
@@ -479,21 +486,11 @@ class Init {
 
         try {
             log.info("Initializing StarshipOS as PID 1...")
+            SignalProcessor.getInstance().init()
             setupShutdownHook()
             startHeartbeatListener() // Start UDS listener for heartbeats
             startBundleManager()
             loadConfig(PRIMARY_CONFIG_PATH)
-
-            // Signal handlers
-            Signal.handle(new Signal("TERM"), signal -> {
-                log.info("Caught SIGTERM, shutting down gracefully...")
-                shutdown()
-            })
-
-            Signal.handle(new Signal("INT"), signal -> {
-                log.info("Caught SIGINT, shutting down gracefully...")
-                shutdown()
-            })
 
             // Supervision loop
             while (true) {
@@ -509,7 +506,6 @@ class Init {
                     Thread.sleep(1000) // Supervisor polling interval
                 } catch (Exception e) {
                     log.error("Error in supervisor loop: ${e.message}", e)
-                    throw new PanicException("Fatal error in supervisor loop.")
                 }
             }
         } catch (Exception e) {
