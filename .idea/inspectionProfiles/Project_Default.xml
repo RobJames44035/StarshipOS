@@ -7,16 +7,22 @@
         <list>
           <option value="init" />
           <option value="init" />
+          <option value="event-core" />
+          <option value="event-api" />
         </list>
       </option>
       <option name="ignoredPackages">
         <list>
           <option value="io.netty:netty-common:4.1.106.Final" />
           <option value="io.netty:netty-codec-http:4.1.106.Final" />
+          <option value="org.testng:testng:7.5" />
+          <option value="org.testng:testng:7.5" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />
         </list>

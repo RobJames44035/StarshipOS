@@ -9,6 +9,10 @@
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/starship-init/bundle-manager/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/starship-init/bundle-manager/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starship-init/event-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starship-init/event-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starship-init/event-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starship-init/event-core/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/starship-init/init/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/starship-init/init/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/starship-init/src/main/java" charset="UTF-8" />

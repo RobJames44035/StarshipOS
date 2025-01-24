@@ -16,6 +16,8 @@
     <artifactId>starship-init</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>event-api</module>
+        <module>event-core</module>
         <module>init</module>
         <module>bundle-manager</module>
     </modules>

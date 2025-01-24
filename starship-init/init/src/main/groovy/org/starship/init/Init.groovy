@@ -9,6 +9,8 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
+import io.vertx.core.Vertx
+import io.vertx.core.eventbus.EventBus
 import org.starship.jna.CLib
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
@@ -36,6 +38,8 @@ class Init {
     static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
     static final String FALLBACK_CONFIG_PATH = "resources/default-init.config"
     static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
+    static final Vertx vertx = Vertx.vertx()
+    static final EventBus eventBus = vertx.eventBus()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
@@ -112,7 +116,7 @@ class Init {
      */
     static void startHeartbeatListener() {
         new Thread({
-            while(true) {
+            while (true) {
                 try {
                     // Clean up the socket file if it exists
                     Path socketPath = Path.of(BUNDLE_MANAGER_SOCKET_PATH)
@@ -465,6 +469,60 @@ class Init {
             log.error("Failed to load system libraries: {}", e.message, e)
             throw new RuntimeException("Critical error: Unable to load necessary libraries.", e)
         }
+    }
+
+    static void initializeEventBus() {
+        eventBus.consumer("init.commands", { message ->
+            log.info("Received command from EventBus: ${message.body()}")
+            switch (message.body()?.toString()?.toLowerCase()) {
+                case "shutdown":
+                    log.info("Shutdown command received. Stopping all processes...")
+
+                    def listenerAddresses = BundleManager.getProcessList() // Replace with your actual method
+                    if (!listenerAddresses || listenerAddresses.isEmpty()) {
+                        log.warn("No active listeners found in BundleManager. Proceeding with shutdown.")
+                    }
+
+                    log.info("Found ${listenerAddresses.size()} active listeners: $listenerAddresses")
+
+                    // Collect futures for responses from listeners via EventBus
+                    def futures = listenerAddresses.collect { address ->
+                        def promise = Promise.promise()
+
+                        // Send "going down" notification to each listener
+                        eventBus.request(address, "going down") { reply ->
+                            if (reply.succeeded()) {
+                                log.info("Listener [$address] confirmed shutdown: ${reply.result().body()}")
+                                promise.complete()  // Mark success
+                            } else {
+                                log.error("Listener [$address] failed to respond: ${reply.cause()}")
+                                promise.complete() // Mark complete on failure to avoid hanging future
+                            }
+                        }
+
+                        return promise.future()
+                    }
+
+                    // Wait until all listeners have responded
+                    CompositeFuture.all(futures).onComplete { result ->
+                        if (result.succeeded()) {
+                            log.info("All listeners responded successfully. Proceeding with final shutdown.")
+                        } else {
+                            log.warn("One or more listeners failed to respond, but proceeding with final shutdown anyway.")
+                        }
+                    }
+                    stopBundleManager()
+                    shutdown()
+                    break
+                case "reload":
+                    break
+                default:
+                    log.warn("Unknown command: ${message.body()}")
+                    message.reply("Unknown command")
+            }
+        })
+
+        log.info("Event bus initialized and listening for messages.")
     }
 
     /**

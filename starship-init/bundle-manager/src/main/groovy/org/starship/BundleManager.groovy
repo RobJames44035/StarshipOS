@@ -56,7 +56,15 @@ class BundleManager {
         BundleManager bundleManager = new BundleManager()
         runServer(socketPath, heartbeatIntervalMs)
 
-        log.info("BundleManager process shutting down.")
+        while(true) {
+            try {
+
+// TODO Main logic to manage bundles
+                Thread.sleep(1000) // Supervisor polling interval
+            } catch (Exception e) {
+                log.error("Error in supervisor loop: ${e.message}", e)
+            }
+        }
     }
     
     /**
