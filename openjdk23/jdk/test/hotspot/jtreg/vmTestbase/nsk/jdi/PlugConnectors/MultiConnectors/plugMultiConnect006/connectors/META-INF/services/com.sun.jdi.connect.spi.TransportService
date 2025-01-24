@@ -1,8 +1,0 @@
-#
-# StarshipOS Copyright (c) 2007-2025. R.A. James
-#
-
-# -- used by nsk/jdi/PlugConnectors/MultiConnectors/plugMultiConnect005 test
-nsk.jdi.PlugConnectors.MultiConnectors.plugMultiConnect006.connectors.PlugTransportService006_01
-nsk.jdi.PlugConnectors.MultiConnectors.plugMultiConnect006.connectors.PlugTransportService006_03
-nsk.jdi.PlugConnectors.MultiConnectors.plugMultiConnect006.connectors.PlugTransportService006_02

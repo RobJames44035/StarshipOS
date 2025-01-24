@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-# StarshipOS Copyright (c) 2018-2025. R.A. James
-#
-
-# Simple wrapper script to call Java with the pandoc filter
-
-@@JAVA_SMALL@@ -cp @@BUILDTOOLS_OUTPUTDIR@@/jdk_tools_classes \
-    build.tools.pandocfilter.PandocManPageTroffFilter

@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<!--
-  ~ StarshipOS Copyright (c) 2025. R.A. James
-  -->
-
-<!DOCTYPE personnel SYSTEM "unparsedEntity.dtd">
-<A attr="blah" unparsedEntityAttr="myUnparsedEntity">
-</A>

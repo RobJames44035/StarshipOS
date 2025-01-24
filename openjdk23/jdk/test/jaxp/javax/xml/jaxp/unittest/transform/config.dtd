@@ -1,6 +1,0 @@
-<!--
-  - StarshipOS Copyright (c) 2025. R.A. James
-  -->
-
-<!ELEMENT config (subConfig)*>
-<!ATTLIST config type CDATA #REQUIRED>

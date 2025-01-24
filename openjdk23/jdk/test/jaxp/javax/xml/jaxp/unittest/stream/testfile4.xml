@@ -1,8 +1,0 @@
-<?xml version="1.0"  encoding="utf-8" ?>
-<!--
-  ~ StarshipOS Copyright (c) 2025. R.A. James
-  -->
-
-<ns1:foo  attr1="defaultAttr1" xmlns:ns1="http://ns1.java.com"  xmlns:ns2="http://ns2.java.com">
-</ns1:foo>
-

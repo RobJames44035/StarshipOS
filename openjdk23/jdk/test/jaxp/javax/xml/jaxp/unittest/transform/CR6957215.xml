@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ StarshipOS Copyright (c) 2025. R.A. James
-  -->
-
-<aaa name="aaa-name" package="aaa-package">
-  <bbb name="bbb-name" />
-</aaa>
-

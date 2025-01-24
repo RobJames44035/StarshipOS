@@ -12,7 +12,6 @@ import groovy.util.logging.Slf4j
 import org.starship.jna.CLib
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
-import org.starship.eventapi.EventMessage
 import org.starship.eventcore.SystemEventBus
 
 import java.lang.management.ManagementFactory
@@ -28,7 +27,8 @@ import java.util.concurrent.TimeUnit
  * initialize critical components, the system triggers a panic.
  */
 @Slf4j
-class Init {
+class Init implements EventListener {
+    
     // Configuration paths
     static final long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
     static final int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
