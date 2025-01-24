@@ -8,9 +8,8 @@ set -e
 
 # Variables (modify as needed)
 QCOW2_IMAGE="buildroot/buildroot/output/images/rootfs.qcow2"
-QCOW2_SIZE="40G"
-ROOTFS_TAR="buildroot/buildroot/output/images/rootfs.tar"
-ROOTFS_IMAGE="buildroot/buildroot/output/images/rootfs.ext4"
+QCOW2_SIZE="90G"
+ROOTFS_TAR="buildroot/buildroot/output/images/rootfs.tar.gz"
 KERNEL_IMAGE="buildroot/buildroot/output/images/bzImage"
 GRUB_TIMEOUT=15
 
@@ -51,10 +50,10 @@ mount /dev/nbd0p1 /mnt/qcow2 || { echo "ERROR: Could not mount /dev/nbd0p1 /mnt/
 if [[ -f "$ROOTFS_TAR" ]]; then
     echo "Extracting root filesystem from $ROOTFS_TAR..."
     tar -xpf "$ROOTFS_TAR" -C /mnt/qcow2
-elif [[ -f "$ROOTFS_IMAGE" ]]; then
-    echo "Copying root filesystem from $ROOTFS_IMAGE..."
-    dd if="$ROOTFS_IMAGE" of=/dev/nbd0p1 bs=4M
-else
+#elif [[ -f "$ROOTFS_IMAGE" ]]; then
+#    echo "Copying root filesystem from $ROOTFS_IMAGE..."
+#    dd if="$ROOTFS_IMAGE" of=/dev/nbd0p1 bs=4M
+#else
     echo "Error: No rootfs.tar or rootfs.ext4 found!"
     exit 1
 fi
