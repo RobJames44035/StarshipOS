@@ -1,7 +1,0 @@
-<component name="CopyrightManager">
-  <copyright>
-    <option name="allowReplaceRegexp" value=".*" />
-    <option name="notice" value="StarshipOS Copyright (c) &amp;#36;originalComment.match(&quot;Copyright \(c\) (\d+)&quot;, 1, &quot;-&quot;, &quot;&amp;#36;today.year&quot;)&amp;#36;today.year. R.A. James" />
-    <option name="myName" value="StarshipOS" />
-  </copyright>
-</component>

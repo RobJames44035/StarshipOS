@@ -1,9 +1,12 @@
+//file:noinspection GroovyInfiniteLoopStatement
 package org.starship
 
 import groovy.util.logging.Slf4j
 
 import java.nio.file.Files
 import java.nio.file.Path
+import org.starship.eventapi.EventListener
+import org.starship.eventapi.EventMessage
 
 /**
  * BundleManager is the main class responsible for managing the server-side logic. 
@@ -22,7 +25,7 @@ import java.nio.file.Path
  */
 @Slf4j
 
-class BundleManager {
+class BundleManager implements EventListener {
 
     // Constants
     private static final long DEFAULT_HEARTBEAT_INTERVAL_MS = 1000
@@ -134,4 +137,25 @@ class BundleManager {
             }
         }
     }
+
+    /**
+    * Processes incoming event messages handled by the BundleManager.
+    *
+    * This method is an implementation of the `onEvent` method from the
+    * `EventListener` interface. It processes event messages received
+    * by the BundleManager, performs the necessary operations, and
+    * acknowledges the event using the provided `ackHandler`.
+    *
+    * @param message The event message received by the BundleManager.
+    * @param ackHandler A closure used to acknowledge (ACK) or negatively
+    *                   acknowledge (NACK) the event. Call `ackHandler(true)`
+    *                   for an ACK and `ackHandler(false)` for a NACK.
+    */
+    @Override
+    void onEvent(EventMessage message, Closure ackHandler) {
+        println "BundleManager received: ${message.payload}"
+        // Process and ACK/NACK
+        ackHandler.call(true)
+    }
+
 }

@@ -9,11 +9,11 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
-import io.vertx.core.Vertx
-import io.vertx.core.eventbus.EventBus
 import org.starship.jna.CLib
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
+import org.starship.eventapi.EventMessage
+import org.starship.eventcore.SystemEventBus
 
 import java.lang.management.ManagementFactory
 import java.nio.file.Path
@@ -38,8 +38,7 @@ class Init {
     static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
     static final String FALLBACK_CONFIG_PATH = "resources/default-init.config"
     static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
-    static final Vertx vertx = Vertx.vertx()
-    static final EventBus eventBus = vertx.eventBus()
+    static final SystemEventBus eventBus = new SystemEventBus()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
