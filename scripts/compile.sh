@@ -5,3 +5,6 @@
 
 # Ensure the script exits on unexpected errors
 set -e
+figlet StarshipOS
+./mvnw install
+figlet Installed!

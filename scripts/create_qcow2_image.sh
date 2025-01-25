@@ -8,8 +8,8 @@ set -e
 
 # Variables (modify as needed)
 QCOW2_IMAGE="buildroot/buildroot/output/images/rootfs.qcow2"
-QCOW2_SIZE="90G"
-ROOTFS_TAR="buildroot/buildroot/output/images/rootfs.tar.gz"
+QCOW2_SIZE="80G"
+ROOTFS_TAR="buildroot/buildroot/output/images/rootfs.tar"
 KERNEL_IMAGE="buildroot/buildroot/output/images/bzImage"
 GRUB_TIMEOUT=15
 
@@ -17,66 +17,56 @@ GRUB_TIMEOUT=15
 cleanup() {
     echo "Cleaning up..."
     if mountpoint -q /mnt/qcow2; then
-        umount /mnt/qcow2 || { echo "ERROR: Could not umount /mnt/qcow2"; exit 1; }
+        sudo umount /mnt/qcow2 || { echo "ERROR: Could not unmount /mnt/qcow2"; exit 1; }
     fi
     if lsblk | grep -q "nbd0"; then
-        qemu-nbd --disconnect /dev/nbd0 || { echo "ERROR: Could not qemu-nbd --disconnect /dev/nbd0"; exit 1; }
+        sudo qemu-nbd --disconnect /dev/nbd0 || { echo "ERROR: Could not disconnect /dev/nbd0"; exit 1; }
     fi
-    rm -rf /mnt/qcow2
+    sudo rm -rf /mnt/qcow2
 }
 trap cleanup EXIT
 
 # Step 1: Create the QCOW2 Image
 echo "Creating QCOW2 image..."
-# if [ -f "$QCOW_IMAGE" ] rm "$QCOW2_IMAGE"; fi
-qemu-img create -f qcow2 "$QCOW2_IMAGE" "$QCOW2_SIZE" || { echo "ERROR: Could not create disk image"; exit 1; }
+qemu-img create -f qcow2 "$QCOW2_IMAGE" "$QCOW2_SIZE" || { echo "ERROR: Could not create QCOW2 image"; exit 1; }
 
-# Step 2: Connect QCOW2 to a network block device (nbd)
+# Step 2: Connect QCOW2 to NBD
 echo "Connecting QCOW2 image to /dev/nbd0..."
-modprobe nbd
-sudo qemu-nbd --connect=/dev/nbd0 "$QCOW2_IMAGE" || { echo "ERROR: Could not connect=/dev/nbd0"; exit 1; }
+sudo modprobe nbd
+sudo qemu-nbd --connect=/dev/nbd0 "$QCOW2_IMAGE" || { echo "ERROR: Could not connect QCOW2 to /dev/nbd0"; exit 1; }
 
-# Step 3: Format the QCOW2 Image
-echo "Partitioning and formatting the QCOW2 image..."
-echo -e "o\nn\np\n1\n\n\nw" | fdisk /dev/nbd0 || { echo "ERROR: Could not create and/or format partition(s)"; exit 1; }
-mkfs.ext4 /dev/nbd0p1 || { echo "ERROR: Could not make ext4 filesystem"; exit 1; }
+# Step 3: Partition and Format the QCOW2 Image
+echo "Partitioning and formatting the QCOW2 image with parted..."
 
-# Step 4: Mount the Formatted QCOW2 Image
-echo "Mounting the QCOW2 image..."
-mkdir -p /mnt/qcow2
-mount /dev/nbd0p1 /mnt/qcow2 || { echo "ERROR: Could not mount /dev/nbd0p1 /mnt/qcow2"; exit 1; }
+# Create a GPT partition table
+sudo parted -s /dev/nbd0 mklabel gpt || { echo "ERROR: Could not create partition table"; exit 1; }
 
-# Step 5: Extract the Root Filesystem
-if [[ -f "$ROOTFS_TAR" ]]; then
-    echo "Extracting root filesystem from $ROOTFS_TAR..."
-    tar -xpf "$ROOTFS_TAR" -C /mnt/qcow2
-#elif [[ -f "$ROOTFS_IMAGE" ]]; then
-#    echo "Copying root filesystem from $ROOTFS_IMAGE..."
-#    dd if="$ROOTFS_IMAGE" of=/dev/nbd0p1 bs=4M
-#else
-    echo "Error: No rootfs.tar or rootfs.ext4 found!"
-    exit 1
-fi
+# Create a BIOS boot partition (1 MiB, no filesystem needed)
+sudo parted -s /dev/nbd0 mkpart primary 1MiB 2MiB || { echo "ERROR: Could not create BIOS Boot Partition"; exit 1; }
+sudo parted -s /dev/nbd0 set 1 bios_grub on || { echo "ERROR: Could not set BIOS Boot Partition flag"; exit 1; }
 
-sync
+# Create the primary ext4 root partition (remaining space)
+sudo parted -s /dev/nbd0 mkpart primary ext4 2MiB 100% || { echo "ERROR: Could not create root partition"; exit 1; }
 
-# Step 6: Install GRUB
-echo "Installing GRUB bootloader..."
-grub-install --target=i386-pc /dev/nbd0
+# Inform the kernel of partition table changes
+sudo partprobe /dev/nbd0 || sleep 2
 
-# Step 7: Create GRUB Configuration
-echo "Configuring GRUB..."
-cat <<EOF > /mnt/qcow2/boot/grub/grub.cfg
-set default=0
-set timeout=$GRUB_TIMEOUT
+# Format the root partition as ext4
+sudo mkfs.ext4 /dev/nbd0p2 || { echo "ERROR: Could not format root partition as ext4"; exit 1; }
 
-menuentry "StarshipOS" {
-    linux /boot/bzImage root=/dev/sda1 rw waitroot console=ttyS0
-}
-EOF
+# Step 4: Mount the Formatted Partition
+echo "Mounting the partition..."
+sudo mkdir -p /mnt/qcow2
+sudo fsck.ext4 /dev/nbd0p2  # Check the root partition instead
+sudo mount /dev/nbd0p2 /mnt/qcow2 || { echo "ERROR: Could not mount /dev/nbd0p2"; exit 1; }
 
-sync
-cat <<'EOF' > /init
+# Step 5: Extract Root Filesystem and Add /init Script
+echo "Extracting root filesystem from $ROOTFS_TAR..."
+sudo tar -xpf "$ROOTFS_TAR" -C /mnt/qcow2 || { echo "ERROR: Could not extract root filesystem"; exit 1; }
+
+# Add the /init script
+echo "Adding custom /init script..."
+cat <<'EOF' | sudo tee /mnt/qcow2/init > /dev/null
 #!/bin/sh
 
 # Set debugging options (optional)
@@ -103,17 +93,42 @@ echo "Custom setup done."
 exec /bin/sh
 EOF
 
-chmod +x /init
-chown root:root /init
+# Ensure /init has the correct permissions
+sudo mount -o remount,rw /mnt/qcow2
+sudo chmod +x /mnt/qcow2/init
+sudo chown root:root /mnt/qcow2/init
+echo "/init script added successfully!"
+
+# Sync changes to disk
+sync
+
+# Step 6: Install GRUB
+echo "Installing GRUB bootloader..."
+sudo grub-install --target=i386-pc /dev/nbd0 --boot-directory=/mnt/qcow2/boot || { echo "ERROR: GRUB installation failed"; exit 1; }
+
+# Step 7: Configure GRUB
+echo "Configuring GRUB menu..."
+cat <<'EOF' | sudo tee /mnt/qcow2/boot/grub/grub.cfg > /dev/null
+set default=0
+set timeout=$GRUB_TIMEOUT
+
+menuentry "StarshipOS" {
+    set root=(hd0,1)
+    linux /boot/bzImage root=/dev/sda1 rw console=ttyS0
+    init=/init
+}
+EOF
 
 sync
-# Step 8: Cleanup
-echo "Finalizing and unmounting QCOW2..."
-umount /mnt/qcow2
-sudo qemu-nbd --disconnect /dev/nbd0
-rm -rf /mnt/qcow2
-echo "QCOW2 image $QCOW2_IMAGE created successfully!"
 
+# Step 8: Cleanup
+echo "Unmounting and cleaning up..."
+sudo umount /mnt/qcow2
+sudo qemu-nbd --disconnect /dev/nbd0
+sudo rm -rf /mnt/qcow2
+echo "QCOW2 image created successfully!"
+
+# Step 9: Launch QEMU
 echo "Launching QEMU with $QCOW2_IMAGE..."
-chown "$(whoami)":"$(whoami)" "$QCOW2_IMAGE" || { echo "ERROR: Could not fix ownership"; exit 1; }
-qemu-system-x86_64 -kernel $KERNEL_IMAGE -hda "buildroot/buildroot/output/images/rootfs.qcow2" -m 4096 -cpu qemu64 -smp 2
+sudo chown "$(whoami)":"$(whoami)" "$QCOW2_IMAGE"
+qemu-system-x86_64 -drive file="$QCOW2_IMAGE",format=qcow2 -m 4096 -cpu qemu64 -smp 2

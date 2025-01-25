@@ -1,9 +1,9 @@
+package org.starship.eventcore
 /*
  * StarshipOS Copyright (c) 2025. R.A. James
  */
 
-package org.starship.eventcore
-
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.starship.eventapi.EventMessage
 import org.starship.eventapi.EventListener
@@ -39,7 +39,12 @@ import java.util.concurrent.*
  *}</pre>
  */
 @Slf4j
-class SystemEventBus {
+@CompileStatic
+class SystemEventBus implements Serializable {
+
+    @SuppressWarnings('unused')
+    static final long serialVersionUID = 42L
+
     Map<String, List<EventListener>> topicSubscribers = [:].withDefault { [] }
     Map<String, EventListener> directRecipients = [:]
     Map<String, Closure> ackCallbacks = [:]

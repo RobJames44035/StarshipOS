@@ -9,16 +9,17 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
+import org.starship.eventcore.SystemEventBus
 import org.starship.jna.CLib
+import org.starship.sdk.process.ProcessWrapper
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
-import org.starship.eventcore.SystemEventBus
 
 import java.lang.management.ManagementFactory
+import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-
 /**
  * Main class responsible for initializing and managing the Starship system services.
  *
@@ -27,27 +28,29 @@ import java.util.concurrent.TimeUnit
  * initialize critical components, the system triggers a panic.
  */
 @Slf4j
+@CompileStatic
 class Init implements EventListener {
     
-    // Configuration paths
-    static final long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
-    static final int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
-    static final String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
+    // Configurations
+    static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
+    static int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
+    static String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
+    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
+    static String FALLBACK_CONFIG_PATH = "resources/default-init.config"
+    static String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
     static Process bundleManagerProcess = null   // Track the BundleManager process
     static long bundleManagerPid = -1            // Track PID of the BundleManager
-    static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
-    static final String FALLBACK_CONFIG_PATH = "resources/default-init.config"
+
     static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
     static final SystemEventBus eventBus = new SystemEventBus()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
 
-    static final String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
-
     // List of running child processes
     static List<Process> childProcesses = [].asSynchronized() as List<Process>
     private static final Set<String> mountedResources = ConcurrentHashMap.newKeySet()
+
 
     /**
      * Start the BundleManager as a subprocess.
@@ -64,11 +67,9 @@ class Init implements EventListener {
 
             try {
                 // Spawn the BundleManager process
-                bundleManagerProcess = new ProcessBuilder(BUNDLE_MANAGER_COMMAND.split(" "))
-                        .inheritIO() // Redirect output (optional, to log startup issues)
-                        .start()
-
-                bundleManagerPid = bundleManagerProcess.pid()
+                bundleManagerProcess = new ProcessWrapper(BUNDLE_MANAGER_COMMAND.split(" "),
+                        ["org.starship.eventcore.SystemEventBus":eventBus]
+                ).start()
                 log.info("Spawned BundleManager with PID: ${bundleManagerPid}")
 
                 // Monitor the first heartbeat
@@ -285,8 +286,10 @@ class Init implements EventListener {
     static void spawnProcess(String command, String name) {
         try {
             log.info("Spawning process '${name}': ${command}")
-            ProcessBuilder builder = new ProcessBuilder(command.split(" "))
-            Process process = builder.start()
+            ProcessWrapper wrapper = new ProcessWrapper(command.split(" "),
+                    ["org.starship.eventcore.SystemEventBus":eventBus]
+            )
+            Process process = wrapper.start()
             childProcesses.add(process)
             log.info("Process '${name}' spawned with PID: ${process.pid()}.")
         } catch (Exception e) {
@@ -470,60 +473,6 @@ class Init implements EventListener {
         }
     }
 
-    static void initializeEventBus() {
-        eventBus.consumer("init.commands", { message ->
-            log.info("Received command from EventBus: ${message.body()}")
-            switch (message.body()?.toString()?.toLowerCase()) {
-                case "shutdown":
-                    log.info("Shutdown command received. Stopping all processes...")
-
-                    def listenerAddresses = BundleManager.getProcessList() // Replace with your actual method
-                    if (!listenerAddresses || listenerAddresses.isEmpty()) {
-                        log.warn("No active listeners found in BundleManager. Proceeding with shutdown.")
-                    }
-
-                    log.info("Found ${listenerAddresses.size()} active listeners: $listenerAddresses")
-
-                    // Collect futures for responses from listeners via EventBus
-                    def futures = listenerAddresses.collect { address ->
-                        def promise = Promise.promise()
-
-                        // Send "going down" notification to each listener
-                        eventBus.request(address, "going down") { reply ->
-                            if (reply.succeeded()) {
-                                log.info("Listener [$address] confirmed shutdown: ${reply.result().body()}")
-                                promise.complete()  // Mark success
-                            } else {
-                                log.error("Listener [$address] failed to respond: ${reply.cause()}")
-                                promise.complete() // Mark complete on failure to avoid hanging future
-                            }
-                        }
-
-                        return promise.future()
-                    }
-
-                    // Wait until all listeners have responded
-                    CompositeFuture.all(futures).onComplete { result ->
-                        if (result.succeeded()) {
-                            log.info("All listeners responded successfully. Proceeding with final shutdown.")
-                        } else {
-                            log.warn("One or more listeners failed to respond, but proceeding with final shutdown anyway.")
-                        }
-                    }
-                    stopBundleManager()
-                    shutdown()
-                    break
-                case "reload":
-                    break
-                default:
-                    log.warn("Unknown command: ${message.body()}")
-                    message.reply("Unknown command")
-            }
-        })
-
-        log.info("Event bus initialized and listening for messages.")
-    }
-
     /**
      * This method is responsible for configuring the JVM and ensuring that the necessary system libraries
      * (such as libc) are properly loaded and available for use during runtime.
@@ -555,7 +504,7 @@ class Init implements EventListener {
                     reapZombies() // Clean up zombie processes
 
                     // Check if BundleManager is alive and sending heartbeats
-                    if (!isBundleManagerAlive()) {
+                    if (!isHeartbeatReceived()) {
                         log.warn("BundleManager is not running. Attempting to restart...")
                         startBundleManager()
                     }
