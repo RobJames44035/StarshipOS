@@ -2,10 +2,8 @@
 #
 # StarshipOS Copyright (c) 2025. R.A. James
 #
-figlet "Init install."
 
-
-function mount() {
+function mount_rootfs() {
   LOOPDEV=$(sudo losetup -fP --show ../../buildroot/buildroot/output/images/rootfs.ext4)
   sudo mount -o loop ../../buildroot/buildroot/output/images/rootfs.ext4 /mnt/rootfs
 }
@@ -23,15 +21,15 @@ function copy_files() {
   sudo chmod +x /mnt/rootfs/init
 }
 
-function unmount() {
+function unmount_rootfs() {
   sudo sync
   sudo umount /mnt/rootfs/
 }
 
 function main() {
-  mount
+  mount_rootfs
   make_dirs
   copy_files
-  unmount
+  unmount_rootfs
 }
 main
