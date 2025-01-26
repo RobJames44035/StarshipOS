@@ -6,6 +6,8 @@ Welcome to **Starship Operating System (StarshipOS)**! This project reimagines w
 
 ## Table of Contents
 
+- [StarshipOS: A New Dawn](#starshipos-a-new-dawn)
+- [Roadmap](Roadmap.md)
 - [A Vision for Empowerment](#a-vision-for-empowerment)
 - [Project Vision](#project-vision)
 - [Key Features](#key-features)
@@ -15,7 +17,13 @@ Welcome to **Starship Operating System (StarshipOS)**! This project reimagines w
 - [License](#license)
 
 ---
+---
 
+## StarshipOS: A New Dawn
+
+Today marks a monumental milestone in the journey of StarshipOS: the **First Boot**. For the first time, our custom-built operating system has successfully initialized, launching from concept to reality in breathtaking fashion. The heart of the system, aptly named `Init`, has proven itself as the "brain" of the OS, seamlessly orchestrating the startup sequence and laying the foundation for everything else to come. From its initial process management to its heartbeat supervision and recovery mechanisms, Init has stepped up as a shining example of what’s possible when innovation and persistence converge.
+
+In the very first look, StarshipOS has shown not just potential, but clear evidence of functionality in action. This is no small feat—every line of code, every design choice, and every debugging session has led to this pivotal moment. While it’s still
 ## A Vision for Empowerment
 
 The **Starship Operating System** project is grounded not just in technological innovation but also in its potential for **transformative societal impact**. By providing a platform for education and skill-building in programming, **StarshipOS** aims to empower underserved communities—particularly those within the prison system. Teaching modern software development skills fosters rehabilitation and creates pathways to meaningful employment after release. This system is built for empowerment, growth, and creating new opportunities for all.
