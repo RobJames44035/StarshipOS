@@ -17,7 +17,7 @@ echo "Booting..." > /dev/console
 # Start the Uberjar
 echo "Starting init jar..." > /dev/console
 # shellcheck disable=SC2093
-exec java -jar /var/lib/starship/init-0.1.0-SNAPSHOT.jar
+exec java -Xmx2g -Xms1g -Xss8m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /var/lib/starship/init.jar
 
 # If exec fails, drop to a shell
 echo "Exec failed, dropping to shell." > /dev/console
