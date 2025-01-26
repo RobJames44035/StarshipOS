@@ -21,11 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.starship</groupId>
-            <artifactId>event-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
     </dependencies>
 
 </project>

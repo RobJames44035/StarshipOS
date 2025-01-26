@@ -24,16 +24,6 @@
     <dependencies>
         <dependency>
             <groupId>org.starship</groupId>
-            <artifactId>event-api</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.starship</groupId>
-            <artifactId>event-core</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.starship</groupId>
             <artifactId>starship-sdk</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
