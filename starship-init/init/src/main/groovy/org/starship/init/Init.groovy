@@ -9,7 +9,7 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
-import org.starship.eventcore.SystemEventBus
+//import org.starship.eventcore.SystemEventBus
 import org.starship.jna.CLib
 import org.starship.sdk.process.ProcessWrapper
 import org.starship.sys.PanicException
@@ -28,8 +28,7 @@ import java.util.concurrent.TimeUnit
  * initialize critical components, the system triggers a panic.
  */
 @Slf4j
-@CompileStatic
-class Init implements EventListener {
+class Init {
     
     // Configurations
     static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
@@ -42,7 +41,7 @@ class Init implements EventListener {
     static long bundleManagerPid = -1            // Track PID of the BundleManager
 
     static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
-    static final SystemEventBus eventBus = new SystemEventBus()
+//    static final SystemEventBus eventBus = new SystemEventBus()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
@@ -68,8 +67,8 @@ class Init implements EventListener {
             try {
                 // Spawn the BundleManager process
                 bundleManagerProcess = new ProcessWrapper(BUNDLE_MANAGER_COMMAND.split(" "),
-                        ["org.starship.eventcore.SystemEventBus":eventBus]
-                ).start()
+                        [:]
+                ).start() as Process
                 log.info("Spawned BundleManager with PID: ${bundleManagerPid}")
 
                 // Monitor the first heartbeat
@@ -286,9 +285,7 @@ class Init implements EventListener {
     static void spawnProcess(String command, String name) {
         try {
             log.info("Spawning process '${name}': ${command}")
-            ProcessWrapper wrapper = new ProcessWrapper(command.split(" "),
-                    ["org.starship.eventcore.SystemEventBus":eventBus]
-            )
+            ProcessWrapper wrapper = new ProcessWrapper(command.split(" "), [:])
             Process process = wrapper.start()
             childProcesses.add(process)
             log.info("Process '${name}' spawned with PID: ${process.pid()}.")

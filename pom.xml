@@ -26,7 +26,6 @@
         <module>starship-sdk</module>
         <module>starship-userland</module>
     </modules>
-
     <dependencies>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
