@@ -13,12 +13,14 @@ fi
 
 # Redirect kernel messages to the console
 echo "Booting..." > /dev/console
-
+# shellcheck disable=SC3045
+ulimit -s unlimited
 # Start the Uberjar
-echo "Starting init jar..." > /dev/console
+echo "Starting Init.groovy..." > /dev/console
 # shellcheck disable=SC2093
-exec java -Xmx2g -Xms1g -Xss8m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar /var/lib/starship/init.jar || exec /bin/sh
+exec java -Xmx2g -Xms1g -Xss16m -jar /var/lib/starship/init.jar || exec /bin/sh
 
+#  -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
 # If exec fails, drop to a shell
 echo "Exec failed, dropping to shell." > /dev/console
 exec sh

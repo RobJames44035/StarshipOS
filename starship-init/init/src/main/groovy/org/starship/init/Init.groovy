@@ -14,6 +14,8 @@ import org.starship.jna.CLib
 import org.starship.sdk.process.ProcessWrapper
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
+import sun.misc.Signal
+import sun.misc.SignalHandler
 
 import java.lang.management.ManagementFactory
 import java.nio.file.Files
@@ -35,7 +37,7 @@ class Init {
     static int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
     static String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
     static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
-    static String FALLBACK_CONFIG_PATH = "resources/default-init.config"
+    static String FALLBACK_CONFIG_PATH = "/default-init.config"
     static String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
     static Process bundleManagerProcess = null   // Track the BundleManager process
     static long bundleManagerPid = -1            // Track PID of the BundleManager
@@ -57,96 +59,96 @@ class Init {
      * Retry starting the BundleManager if it fails, up to MAX_RETRY_ATTEMPTS.
      */
     static void startBundleManager() {
-        int attempts = 0
-        boolean started = false
-
-        while (attempts < MAX_RETRY_ATTEMPTS) {
-            attempts++
-            log.info("Attempting to start BundleManager (attempt ${attempts} of ${MAX_RETRY_ATTEMPTS})...")
-
-            try {
-                // Spawn the BundleManager process
-                bundleManagerProcess = new ProcessWrapper(BUNDLE_MANAGER_COMMAND.split(" "),
-                        [:]
-                ).start() as Process
-                log.info("Spawned BundleManager with PID: ${bundleManagerPid}")
-
-                // Monitor the first heartbeat
-                if (waitForHeartbeat()) {
-                    log.info("BundleManager is running and healthy (heartbeat received).")
-                    started = true
-                    break
-                } else {
-                    log.warn("No heartbeat received from BundleManager within timeout. Retrying...")
-                    stopBundleManager() // Clean up before retrying
-                }
-            } catch (Exception e) {
-                log.error("Failed to start BundleManager: ${e.message}", e)
-                stopBundleManager()
-            }
-        }
-
-        if (!started) {
-            log.error("Failed to start BundleManager after ${MAX_RETRY_ATTEMPTS} attempts. Triggering kernel panic.")
-            throw new PanicException("BundleManager failed to initialize.")
-        }
+//        int attempts = 0
+//        boolean started = false
+//
+//        while (attempts < MAX_RETRY_ATTEMPTS) {
+//            attempts++
+//            log.info("Attempting to start BundleManager (attempt ${attempts} of ${MAX_RETRY_ATTEMPTS})...")
+//
+//            try {
+//                // Spawn the BundleManager process
+//                bundleManagerProcess = new ProcessWrapper(BUNDLE_MANAGER_COMMAND.split(" "),
+//                        [:]
+//                ).start() as Process
+//                log.info("Spawned BundleManager with PID: ${bundleManagerPid}")
+//
+//                // Monitor the first heartbeat
+//                if (waitForHeartbeat()) {
+//                    log.info("BundleManager is running and healthy (heartbeat received).")
+//                    started = true
+//                    break
+//                } else {
+//                    log.warn("No heartbeat received from BundleManager within timeout. Retrying...")
+//                    stopBundleManager() // Clean up before retrying
+//                }
+//            } catch (Exception e) {
+//                log.error("Failed to start BundleManager: ${e.message}", e)
+//                stopBundleManager()
+//            }
+//        }
+//
+//        if (!started) {
+//            log.error("Failed to start BundleManager after ${MAX_RETRY_ATTEMPTS} attempts. Triggering kernel panic.")
+//            throw new PanicException("BundleManager failed to initialize.")
+//        }
     }
 
     /**
      * Stop the BundleManager process if it is running.
      */
     static void stopBundleManager() {
-        if (bundleManagerProcess?.isAlive()) {
-            log.info("Stopping BundleManager (PID: ${bundleManagerPid})...")
-            bundleManagerProcess.destroy()
-            if (!bundleManagerProcess.waitFor(5, TimeUnit.SECONDS)) {
-                log.warn("Forcefully killing BundleManager (PID: ${bundleManagerPid})...")
-                bundleManagerProcess.destroyForcibly()
-            }
-            bundleManagerProcess = null
-            bundleManagerPid = -1
-        } else {
-            log.info("No active BundleManager process to stop.")
-        }
+//        if (bundleManagerProcess?.isAlive()) {
+//            log.info("Stopping BundleManager (PID: ${bundleManagerPid})...")
+//            bundleManagerProcess.destroy()
+//            if (!bundleManagerProcess.waitFor(5, TimeUnit.SECONDS)) {
+//                log.warn("Forcefully killing BundleManager (PID: ${bundleManagerPid})...")
+//                bundleManagerProcess.destroyForcibly()
+//            }
+//            bundleManagerProcess = null
+//            bundleManagerPid = -1
+//        } else {
+//            log.info("No active BundleManager process to stop.")
+//        }
     }
 
     /**
      * Start listening for heartbeats over a UDS.
      */
     static void startHeartbeatListener() {
-        new Thread({
-            while (true) {
-                try {
-                    // Clean up the socket file if it exists
-                    Path socketPath = Path.of(BUNDLE_MANAGER_SOCKET_PATH)
-                    Files.deleteIfExists(socketPath)
-
-                    ServerSocket serverSocket = new ServerSocket()
-                    serverSocket.bind(new InetSocketAddress(BUNDLE_MANAGER_SOCKET_PATH, 0))
-
-                    log.info("Listening for heartbeats on UDS: ${BUNDLE_MANAGER_SOCKET_PATH}")
-
-                    while (true) {
-                        try (Socket clientSocket = serverSocket.accept()) {
-                            log.info("Client connected to heartbeat socket.")
-
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
-                            String message
-                            while ((message = reader.readLine()) != null) {
-                                if (message.trim() == "heartbeat") {
-                                    lastHeartbeatTimestamp = System.currentTimeMillis()
-                                    log.debug("Received heartbeat at ${lastHeartbeatTimestamp}")
-                                }
-                            }
-                        } catch (Exception e) {
-                            log.error("Error reading from UDS: ${e.message}", e)
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Heartbeat listener failed. Restarting...", e)
-                }
-            }
-        }).start()
+//        new Thread({
+//            while (true) {
+//                try {
+//                    // Clean up the socket file if it exists
+//                    Path socketPath = Path.of(BUNDLE_MANAGER_SOCKET_PATH)
+//                    Files.deleteIfExists(socketPath)
+//
+//                    ServerSocket serverSocket = new ServerSocket()
+//                    serverSocket.bind(new InetSocketAddress(BUNDLE_MANAGER_SOCKET_PATH, 0))
+//
+//                    log.info("Listening for heartbeats on UDS: ${BUNDLE_MANAGER_SOCKET_PATH}")
+//
+//                    while (true) {
+//                        try (Socket clientSocket = serverSocket.accept()) {
+//                            log.info("Client connected to heartbeat socket.")
+//
+//                            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
+//                            String message
+//                            while ((message = reader.readLine()) != null) {
+//                                if (message.trim() == "heartbeat") {
+//                                    lastHeartbeatTimestamp = System.currentTimeMillis()
+//                                    log.debug("Received heartbeat at ${lastHeartbeatTimestamp}")
+//                                }
+//                            }
+//                        } catch (Exception e) {
+//                            log.error("Error reading from UDS: ${e.message}", e)
+//                        }
+//                    }
+//                } catch (Exception e) {
+//                    log.error("Heartbeat listener failed. Restarting...", e)
+//                }
+//            }
+//        }).start()
     }
 
     /**
@@ -155,15 +157,15 @@ class Init {
      * @return true if heartbeat is received within the timeout, false otherwise.
      */
     static boolean waitForHeartbeat() {
-        long startTime = System.currentTimeMillis()
-
-        while ((System.currentTimeMillis() - startTime) < HEARTBEAT_TIMEOUT_MS) {
-            if (isHeartbeatReceived()) {
-                return true
-            }
-            Thread.sleep(500) // Poll every 500ms to reduce CPU usage
-        }
-        return false
+//        long startTime = System.currentTimeMillis()
+//
+//        while ((System.currentTimeMillis() - startTime) < HEARTBEAT_TIMEOUT_MS) {
+//            if (isHeartbeatReceived()) {
+//                return true
+//            }
+//            Thread.sleep(500) // Poll every 500ms to reduce CPU usage
+//        }
+//        return false
     }
 
     /**
@@ -172,7 +174,7 @@ class Init {
      * @return true if a recent heartbeat was received, false otherwise.
      */
     static boolean isHeartbeatReceived() {
-        return (System.currentTimeMillis() - lastHeartbeatTimestamp) < HEARTBEAT_TIMEOUT_MS
+//        return (System.currentTimeMillis() - lastHeartbeatTimestamp) < HEARTBEAT_TIMEOUT_MS
     }
 
     /**
@@ -189,7 +191,16 @@ class Init {
                 // Attempt to load fallback config from the classpath
                 URL fallbackConfigUrl = Init.class.getClassLoader().getResource(FALLBACK_CONFIG_PATH)
                 if (fallbackConfigUrl == null) {
-                    throw new PanicException("Fallback configuration not found in classpath: ${FALLBACK_CONFIG_PATH}")
+                    try {
+                        log.warn("Fallback configuration not found. Starting interactive shell: /bin/sh")
+                        Process process = new ProcessBuilder("/bin/sh").inheritIO().start()
+
+                        // Wait for the shell process to exit
+                        int exitCode = process.waitFor()
+                        log.info("Interactive shell exited with code: $exitCode")
+                    } catch (Exception e) {
+                        throw new PanicException("Failed to start interactive shell: ${e.getMessage()}", e)
+                    }
                 } else {
                     log.info("Using fallback configuration from: ${fallbackConfigUrl}")
                     evaluate(new File(fallbackConfigUrl.toURI()))
@@ -471,6 +482,42 @@ class Init {
     }
 
     /**
+    * Launches the system shell (`/bin/sh`) and waits for the user to exit the shell.
+    *
+    * This method is useful for interactive debugging or as an emergency fallback
+    * mechanism to provide a shell environment for troubleshooting.
+    *
+    * - Launches `/bin/sh` using `ProcessBuilder`.
+    * - Redirects I/O of the child process to the current process using `inheritIO()`.
+    * - Waits for the shell process to terminate before returning control.
+    *
+    * Any exceptions thrown during this process are caught and printed to the error stream.
+    *
+    * Example usage:
+    * ```
+    * dropToShell()
+    * ```
+    *
+    * Notes:
+    * - Ensure adequate permissions are in place to execute `/bin/sh`.
+    * - `println` is used to indicate when the process returns to the main application.
+    *
+    * @throws Exception if an error occurs during the shell launch or execution.
+    */
+    static void dropToShell() {
+        try {
+            // Launch /bin/sh to drop to a shell
+            ProcessBuilder pb = new ProcessBuilder("/bin/sh")
+            pb.inheritIO() // Ensures input/output redirection works properly
+            Process shell = pb.start()
+            shell.waitFor() // Wait for the shell to exit
+            println "Returning to Init..."
+        } catch (Exception e) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
      * This method is responsible for configuring the JVM and ensuring that the necessary system libraries
      * (such as libc) are properly loaded and available for use during runtime.
      *
@@ -495,16 +542,26 @@ class Init {
             startBundleManager()
             loadConfig(PRIMARY_CONFIG_PATH)
 
+            Signal.handle(new Signal("INT"), new SignalHandler() {
+                @Override
+                void handle(Signal sig) {
+                    println "\nCaught CTRL-C (SIGINT)! Dropping to /bin/sh..."
+                    dropToShell()
+                }
+            })
+
+            
             // Supervision loop
             while (true) {
+                log.info("Supervision loop...")
                 try {
                     reapZombies() // Clean up zombie processes
 
                     // Check if BundleManager is alive and sending heartbeats
-                    if (!isHeartbeatReceived()) {
-                        log.warn("BundleManager is not running. Attempting to restart...")
-                        startBundleManager()
-                    }
+//                    if (!isHeartbeatReceived()) {
+//                        log.warn("BundleManager is not running. Attempting to restart...")
+//                        startBundleManager()
+//                    }
 
                     Thread.sleep(1000) // Supervisor polling interval
                 } catch (Exception e) {
