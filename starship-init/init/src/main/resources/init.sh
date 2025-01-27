@@ -16,9 +16,9 @@ echo "Booting..." > /dev/console
 # shellcheck disable=SC3045
 ulimit -s unlimited
 # Start the Uberjar
-echo "Starting Init.groovy..." > /dev/console
+echo "Starting Init..." > /dev/console
 # shellcheck disable=SC2093
-exec java -Xmx2g -Xms1g -Xss16m -jar /var/lib/starship/init.jar || exec /bin/sh
+exec java -Xmx2g -Xms1g -Xss16m -XX:+PrintGCDetails -jar /var/lib/starship/init.jar || exec /bin/sh
 
 #  -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
 # If exec fails, drop to a shell

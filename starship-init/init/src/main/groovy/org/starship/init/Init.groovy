@@ -36,8 +36,8 @@ class Init {
     static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
     static int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
     static String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
-    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.config"
-    static String FALLBACK_CONFIG_PATH = "/default-init.config"
+    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.groovy"
+    static String FALLBACK_CONFIG_PATH = "/default-init.groovy"
     static String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
     static Process bundleManagerProcess = null   // Track the BundleManager process
     static long bundleManagerPid = -1            // Track PID of the BundleManager
@@ -465,55 +465,18 @@ class Init {
     static void configureSystemLibraries() {
         try {
             log.info("Configuring JVM and loading system libraries...")
-
             // Example of loading native library
-            System.loadLibrary("c")         // Loads the libc library
-            System.loadLibrary("pthread")   // POSIX threads
-            System.loadLibrary("rt")        // Real-Time Extensions
-            System.loadLibrary("dl")        // Dynamic loading
-            System.loadLibrary("m")         // Math
-            System.loadLibrary("stdc++")    // std C++
+            System.loadLibrary("libc")         // Loads the libc library
+//            System.loadLibrary("pthread")   // POSIX threads
+//            System.loadLibrary("rt")        // Real-Time Extensions
+//            System.loadLibrary("dl")        // Dynamic loading
+//            System.loadLibrary("m")         // Math
+//            System.loadLibrary("stdc++")    // std C++
 
             log.info("System libraries loaded successfully.")
         } catch (Exception e) {
             log.error("Failed to load system libraries: {}", e.message, e)
             throw new RuntimeException("Critical error: Unable to load necessary libraries.", e)
-        }
-    }
-
-    /**
-    * Launches the system shell (`/bin/sh`) and waits for the user to exit the shell.
-    *
-    * This method is useful for interactive debugging or as an emergency fallback
-    * mechanism to provide a shell environment for troubleshooting.
-    *
-    * - Launches `/bin/sh` using `ProcessBuilder`.
-    * - Redirects I/O of the child process to the current process using `inheritIO()`.
-    * - Waits for the shell process to terminate before returning control.
-    *
-    * Any exceptions thrown during this process are caught and printed to the error stream.
-    *
-    * Example usage:
-    * ```
-    * dropToShell()
-    * ```
-    *
-    * Notes:
-    * - Ensure adequate permissions are in place to execute `/bin/sh`.
-    * - `println` is used to indicate when the process returns to the main application.
-    *
-    * @throws Exception if an error occurs during the shell launch or execution.
-    */
-    static void dropToShell() {
-        try {
-            // Launch /bin/sh to drop to a shell
-            ProcessBuilder pb = new ProcessBuilder("/bin/sh")
-            pb.inheritIO() // Ensures input/output redirection works properly
-            Process shell = pb.start()
-            shell.waitFor() // Wait for the shell to exit
-            println "Returning to Init..."
-        } catch (Exception e) {
-            e.printStackTrace()
         }
     }
 
@@ -537,20 +500,12 @@ class Init {
         try {
             log.info("Initializing StarshipOS as PID 1...")
             SignalProcessor.getInstance().init()
+            configureSystemLibraries()
             setupShutdownHook()
             startHeartbeatListener() // Start UDS listener for heartbeats
             startBundleManager()
             loadConfig(PRIMARY_CONFIG_PATH)
 
-            Signal.handle(new Signal("INT"), new SignalHandler() {
-                @Override
-                void handle(Signal sig) {
-                    println "\nCaught CTRL-C (SIGINT)! Dropping to /bin/sh..."
-                    dropToShell()
-                }
-            })
-
-            
             // Supervision loop
             while (true) {
                 log.info("Supervision loop...")
