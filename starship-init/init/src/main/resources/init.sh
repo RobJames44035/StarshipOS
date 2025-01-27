@@ -1,26 +1,59 @@
 #!/bin/sh
-# The init script to set up system mounts, console, and start the jar
+# The init script to set up system mounts, console, and start the jar.
 
-# Mount necessary filesystems
-mount -t proc proc /proc
-mount -t sysfs sys /sys
-#mount -t devtmpfs dev /dev
+# Step 1: Mount required filesystems
+echo "Mounting filesystems..." > /dev/console
 
-# Create a console device if it doesn't exist
+mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
+mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
+
+# Skip mounting /dev if it's already mounted
+if ! mountpoint -q /dev; then
+    echo "/dev is not mounted. Mounting /dev..." > /dev/console
+    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
+else
+    echo "/dev is already mounted. Skipping..." > /dev/console
+fi
+
+# Mount additional temporary filesystems
+mkdir -p /tmp /run
+mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
+mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
+
+# Step 2: Create /dev/console if missing
 if [ ! -e /dev/console ]; then
+    echo "/dev/console missing, creating..." > /dev/console
     mknod /dev/console c 5 1
 fi
 
-# Redirect kernel messages to the console
-echo "Booting..." > /dev/console
-# shellcheck disable=SC3045
-ulimit -s unlimited
-# Start the Uberjar
-echo "Starting Init..." > /dev/console
-# shellcheck disable=SC2093
-exec java -Xmx2g -Xms1g -Xss16m -XX:+PrintGCDetails -jar /var/lib/starship/init.jar || exec /bin/sh
+# Step 3: Set kernel logging and debugging options
+echo "Booting Starship OS..." > /dev/console
+echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern  # Enable core dumps
+ulimit -s unlimited  # Avoid stack issues
 
-#  -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
-# If exec fails, drop to a shell
-echo "Exec failed, dropping to shell." > /dev/console
-exec sh
+# Step 4: Set PATH and LD_LIBRARY_PATH explicitly
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export LD_LIBRARY_PATH=/lib:/usr/lib
+
+# Debugging variables (optional logs for confirmation)
+echo "Environment verification:" > /dev/console
+echo "PATH=$PATH" > /dev/console
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" > /dev/console
+
+# Step 5: Start the Java application
+echo "Starting the Java application..." > /dev/console
+
+exec java \
+    -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
+    -Xmx2g -Xms1g -Xss32m \
+    -XX:+PrintGCDetails \
+    -Djna.debug_load=true \
+    -Djna.dump_memory=true \
+    -jar /var/lib/starship/init.jar || {
+        echo "Java application failed, dropping to shell." > /dev/console
+        exec /bin/sh
+    }
+
+# Fallback: Launch shell if all else fails
+echo "Exec failed. Dropping to shell." > /dev/console
+exec /bin/sh

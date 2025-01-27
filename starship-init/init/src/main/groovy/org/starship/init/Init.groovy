@@ -212,7 +212,7 @@ class Init {
             }
         } catch (Exception e) {
             // Handle unexpected errors and call kernel panic
-            throw new PanicException("Failed to load configuration due to an error: ${e.message}", e)
+//            throw new PanicException("Failed to load configuration due to an error: ${e.message}", e)
         }
     }
 
@@ -242,6 +242,7 @@ class Init {
      * continues to ensure all manageable child processes are reaped.
      */
     static void reapZombies() {
+        log.info("Zombie Reaper.")
         childProcesses.removeIf { process ->
             try {
                 // Safeguard to prevent reaping PID 1
@@ -254,9 +255,12 @@ class Init {
                     log.info("Reaped zombie process with PID: {} and exit code: {}", process.pid(), process.exitValue())
                     return true // Process successfully reaped and should be removed
                 }
+
             } catch (Exception e) {
                 log.error("Error while attempting to reap process (PID: {}): {}", process?.pid(), e.message, e)
             }
+
+            log.info("\tFinished Reaping Zombies.")
             return false // Process was not reaped or encountered an error
         }
     }
@@ -498,34 +502,34 @@ class Init {
         }
 
         try {
-            log.info("Initializing StarshipOS as PID 1...")
-            SignalProcessor.getInstance().init()
-            configureSystemLibraries()
+            log.info("Initializing StarshipOS...")
+//            SignalProcessor.getInstance().init()
             setupShutdownHook()
             startHeartbeatListener() // Start UDS listener for heartbeats
             startBundleManager()
             loadConfig(PRIMARY_CONFIG_PATH)
+            supervisorLoop()
+        } catch (Exception e) {
+            log.error("Error in supervisor loop: ${e.message}", e)
+//            throw new PanicException("Fatal error in supervisor loop.", e)
+        }
+    }
 
-            // Supervision loop
-            while (true) {
-                log.info("Supervision loop...")
-                try {
-                    reapZombies() // Clean up zombie processes
+    static void supervisorLoop() {
+        while (true) {
+            log.info("Supervision loop...")
+            try {
+                reapZombies() // Clean up zombie processes
 
-                    // Check if BundleManager is alive and sending heartbeats
+                // Check if BundleManager is alive and sending heartbeats
 //                    if (!isHeartbeatReceived()) {
 //                        log.warn("BundleManager is not running. Attempting to restart...")
 //                        startBundleManager()
 //                    }
-
-                    Thread.sleep(1000) // Supervisor polling interval
-                } catch (Exception e) {
-                    log.error("Error in supervisor loop: ${e.message}", e)
-                }
+                Thread.sleep(1000) // Supervisor polling interval
+            } catch (Exception e) {
+                log.error("Error in supervisor loop: ${e.message}", e)
             }
-        } catch (Exception e) {
-            log.error("Error in supervisor loop: ${e.message}", e)
-            throw new PanicException("Fatal error in supervisor loop.")
         }
     }
 }

@@ -8,6 +8,14 @@ import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 
+/**
+ * Interface representing native system-level functionalities via JNA (Java Native Access).
+ * This interface provides methods to interact with system-level libraries and operations,
+ * such as file system management, process control, time functions, and system information retrieval.
+ *
+ * <p>All methods typically map to their corresponding C library (libc) functions, and errors
+ * are generally indicated by a return value of -1, with errno set appropriately.</p>
+ */
 interface CLib extends Library {
     // Load the C library
     CLib INSTANCE = Native.load("c", CLib.class)
