@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>init-c-wrapper</artifactId>
+    <packaging>pom</packaging>
 
     <dependencies>
 
