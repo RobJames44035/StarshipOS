@@ -65,3 +65,5 @@ exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
     echo "Init.groovy failed, dropping to emergency shell." > /dev/console
     exec /bin/sh
 }
+exec /sbin/init
+

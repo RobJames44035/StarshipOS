@@ -10,6 +10,7 @@ int main() {
         "-Xms1g",
         "-Xss32m",
         "-jar",
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
         "/var/lib/starship/init.jar",
         NULL
     };
