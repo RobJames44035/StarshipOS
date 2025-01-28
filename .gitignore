@@ -471,3 +471,4 @@ build/
 /mvnw.cmd
 /.idea/
 /boot.log
+/build.log

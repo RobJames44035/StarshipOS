@@ -43,17 +43,12 @@ echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH" > /dev/console
 # Step 5: Start the Java application
 echo "Starting the Java application..." > /dev/console
 
-exec java \
-    -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
-    -Xmx2g -Xms1g -Xss32m \
-    -XX:+PrintGCDetails \
-    -Djna.debug_load=true \
-    -Djna.dump_memory=true \
-    -jar /var/lib/starship/init.jar || {
-        echo "Java application failed, dropping to shell." > /dev/console
-        exec /bin/sh
-    }
+#exec java -Xmx2g -Xms1g -Xss32m \
+#    -jar /var/lib/starship/init.jar || {
+#        echo "Init.groovy failed, dropping to emergency shell." > /dev/console
+#        exec /bin/jshell
+#    }
 
 # Fallback: Launch shell if all else fails
-echo "Exec failed. Dropping to shell." > /dev/console
-exec /bin/sh
+echo "Exec failed. Dropping to jshell." > /dev/console
+exec /bin/jshell

@@ -5,6 +5,7 @@
 package org.starship.config
 
 import groovy.util.logging.Slf4j
+import org.starship.jna.CLib
 
 /**
  * SystemConfig is responsible for configuring the system through a custom DSL.
@@ -34,23 +35,25 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class SystemConfig {
     String hostname                        // Stores the hostname
-    List mounts = []                       // Stores mount points
-    List tasks = []                        // Stores spawned tasks
+//    List mounts = []                       // Stores mount points
+//    List tasks = []                        // Stores spawned tasks
 
     // Set the system hostname
     void hostname(String name) {
+        log.info "Setting hostname to: ${hostname}"
         hostname = name
+        CLib.INSTANCE.sethostname(hostname, hostname.length())
     }
 
     // Define a mount point
-    void mount(String type, Map options) {
-        mounts << [type: type, on: options.on]
-    }
+//    void mount(String type, Map options) {
+//        mounts << [type: type, on: options.on]
+//    }
 
     // Spawn a task
-    void spawn(String command, Map args) {
-        tasks << [command: command, name: args.name]
-    }
+//    void spawn(String command, Map args) {
+//        tasks << [command: command, name: args.name]
+//    }
 
     /**
     * Applies the configurations specified through the DSL.
@@ -66,8 +69,8 @@ class SystemConfig {
     */
     void apply() {
         if (hostname) {
-            log.info "Setting hostname to: ${hostname} (stubbed)"
-            // Stub: Simulate hostname change
+            log.info "Setting hostname to: ${hostname}"
+            CLib.INSTANCE.sethostname(hostname, hostname.length())
         }
 
         mounts.each { mount ->

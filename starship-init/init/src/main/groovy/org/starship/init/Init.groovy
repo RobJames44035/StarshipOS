@@ -36,7 +36,7 @@ class Init {
     static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
     static int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
     static String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
-    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/default.groovy"
+    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
     static String FALLBACK_CONFIG_PATH = "/default-init.groovy"
     static String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
     static Process bundleManagerProcess = null   // Track the BundleManager process
@@ -185,11 +185,13 @@ class Init {
     static void loadConfig(String configPath) {
         try {
             File configFile = new File(configPath)
+            log.info(configFile.canonicalPath)
             if (!configFile.exists()) {
                 log.warn("Configuration file not found: ${configPath}. Attempting fallback configuration...")
 
                 // Attempt to load fallback config from the classpath
                 URL fallbackConfigUrl = Init.class.getClassLoader().getResource(FALLBACK_CONFIG_PATH)
+                log.info(fallbackConfigUrl.toString())
                 if (fallbackConfigUrl == null) {
                     try {
                         log.warn("Fallback configuration not found. Starting interactive shell: /bin/sh")
@@ -207,12 +209,17 @@ class Init {
                 }
             } else {
                 // Evaluate primary configuration
-                log.info("Loading configuration from: ${configPath}")
-                evaluate(configFile)
+                try {
+                    log.info("Loading configuration from: ${configPath}")
+                    evaluate(configFile)
+                } catch(Exception e) {
+                    log.error("Failed to load configuration due to an error: ${e.message}\n\tFallback to sh")
+//                    Process process = new ProcessBuilder("/bin/sh").inheritIO().start()
+                }
             }
         } catch (Exception e) {
             // Handle unexpected errors and call kernel panic
-//            throw new PanicException("Failed to load configuration due to an error: ${e.message}", e)
+            throw new PanicException("Failed to load configuration due to an error: ${e.message}", e)
         }
     }
 
