@@ -472,3 +472,6 @@ build/
 /.idea/
 /boot.log
 /build.log
+/boot-Init.groovy.log
+/build-Init.groovy.log
+/build-Init.starship.log

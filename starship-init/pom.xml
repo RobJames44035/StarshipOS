@@ -18,6 +18,7 @@
 
     <modules>
         <module>init</module>
+        <module>init-c-wrapper</module>
         <module>bundle-manager</module>
     </modules>
 
