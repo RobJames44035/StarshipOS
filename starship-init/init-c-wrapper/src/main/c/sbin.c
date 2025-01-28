@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-    const char *java_binary = "/bin/java";
+    const char *java_binary = "/usr/bin/java";
     char *const java_args[] = {
         "java",
         "-Xmx2g",
@@ -21,7 +21,7 @@ int main() {
 
     // If execv() fails, fallback to an emergency shell
     fprintf(stderr, "Dropping to emergency shell...\n");
-    char *const shell_args[] = { "/bin/sh", NULL };
+    char *const shell_args[] = { NULL };
     execv("/bin/sh", shell_args);
 
     // If even the shell fails, exit with a failure code
