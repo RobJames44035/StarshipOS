@@ -13,7 +13,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>bundle-manager</artifactId>
+    <artifactId>event-core</artifactId>
 
     <dependencies>
         <dependency>
@@ -22,40 +22,33 @@
             <version>3.0.19</version>
             <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.starship</groupId>
-            <artifactId>event-api</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.13.1</version>
+                <version>3.0.2</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>compileTests</goal>
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy</artifactId>
-                        <version>3.0.19</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <scripts>
-                        <script>src/main/groovy/Main.groovy</script>
-                    </scripts>
-                </configuration>
             </plugin>
         </plugins>
     </build>

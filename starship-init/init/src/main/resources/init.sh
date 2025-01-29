@@ -39,19 +39,19 @@ fi
 dd if=/dev/urandom of="$RANDOM_SEED_FILE" bs=256 count=1 > /dev/null 2>&1 &
 
 # Step 4: Start logging services (syslogd, klogd)
-echo "Starting syslogd..." > /dev/console
-syslogd || echo "Failed to start syslogd" > /dev/console
+#echo "Starting syslogd..." > /dev/console
+#syslogd || echo "Failed to start syslogd" > /dev/console
 
-echo "Starting klogd..." > /dev/console
-klogd || echo "Failed to start klogd" > /dev/console
+#echo "Starting klogd..." > /dev/console
+#klogd || echo "Failed to start klogd" > /dev/console
 
 # Step 5: Start system message bus (D-Bus)
-echo "Starting system message bus..." > /dev/console
-dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
+#echo "Starting system message bus..." > /dev/console
+#dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
 
 # Step 6: Configure network (simplified for DHCP setup)
 echo "Starting network..." > /dev/console
-ifconfig eth0 up
+#ifconfig eth0 up
 udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 
 # Optional: Start graphical environment

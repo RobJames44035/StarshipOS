@@ -7,15 +7,14 @@
 //file:noinspection GroovyInfiniteLoopStatement
 package org.starship.init
 
-
+import com.sun.jna.Native
 import groovy.util.logging.Slf4j
+import org.starship.config.LoggingConfig
 import org.starship.config.SystemConfig
 import org.starship.jna.CLib
-import com.sun.jna.Native
+import org.starship.sys.SignalProcessor
 
 //import org.starship.eventcore.SystemEventBus
-
-import org.starship.sys.SignalProcessor
 
 import java.lang.management.ManagementFactory
 import java.util.concurrent.ConcurrentHashMap
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeUnit
  * initialize critical components, the system triggers a panic.
  */
 @Slf4j
-class Init implements SystemConfig {
+class Init implements SystemConfig, SystemConfig, LoggingConfig {
 
     // Configurations
     static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
@@ -192,7 +191,9 @@ class Init implements SystemConfig {
         try {
             log.info("Initializing StarshipOS...")
             setupShutdownHook()
-            configureSystem()
+            // A SINGLE method to consume the DSL and initialize StarshipOS.
+            // Reads the DSL, parses it and handles ALL that's in the DSL.
+//            configureSystem() <- TODO: This is where we configure the system at startup
             log.info("System up.")
             supervisorLoop()
         } catch (Exception e) {
@@ -415,32 +416,17 @@ class Init implements SystemConfig {
     * @return true if the method succeeded or false if it didn't.
     */
     static boolean configureSystem() {
-        boolean success = false
+        boolean success = false // start with a `failing` system init
         try {
-            File primaryConfig = new File(PRIMARY_CONFIG_PATH)
-            ConfigObject configObject = null
-
-            if (primaryConfig.exists()) {
-                log.info("Loading DSL from: {}", primaryConfig.getAbsolutePath())
-                configObject = new ConfigSlurper().parse(primaryConfig.toURI().toURL())
-            } else {
-                log.warn("Primary configuration file not found: {}", primaryConfig.getAbsolutePath())
-                URL fallbackConfig = getClass().getResource(FALLBACK_CONFIG_PATH)
-                if (fallbackConfig != null) {
-                    log.info("Loading DSL from resource: {}", fallbackConfig.toString())
-                    configObject = new ConfigSlurper().parse(fallbackConfig)
-                } else {
-                    log.error("Fallback configuration resource not found: /default-init.groovy")
-                }
+            // Load and Evaluate the DSL
+            boolean loadConfig = InitUtil.loadConfig(PRIMARY_CONFIG_PATH, FALLBACK_CONFIG_PATH)
+            if (!InitUtil.dslContent) {
+                log.error("No configuration file available to initialize the system.")
+                success = false
             }
 
-            if (configObject != null) {
-                // Perform additional operations on the configuration if needed
-                log.info("Configuration successfully loaded.")
-                success = true
-            } else {
-                log.error("Failed to load configuration from both primary and fallback locations.")
-            }
+            // Parse and Execute DSL
+            success = InitUtil.executeDsl(InitUtil.dslContent)
         } catch (Exception e) {
             log.error("Error occurred while configuring the system: {}", e.message, e)
         }

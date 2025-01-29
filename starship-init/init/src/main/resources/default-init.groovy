@@ -1,43 +1,42 @@
-// Init.config: Groovy DSL for system initialization
+// init.groovy: Groovy DSL for system initialization of PID 1 (Init.groovy)
+init {
+    system {
+        // Set the hostname via glibc
+        hostname "starship-os"
 
-system {
-    hostname "starship-os"
-    heartbeatTimeoutMs 5000
-    maxRetryAttempts 5
-    bundleManagerSocketPath "/tmp/bundlemanager.sock"
-    bundleManagerCmd "java -jar /var/lib/starship/bundlemanager.jar"
-    primaryConfigPath "/etc/starship/config.d/default.groovy"
-    fallbackConfigPath "resources/default-init.groovy"
-    mount "proc", "/proc", "proc", 0L, null
-    mount "sysfs", "/sys", "sysfs", 0L, null
-    if(!mountpoint("/dev")) {
+        // Define the /dev/console special device
+        makeConsole
+
+        // Mount needed/required filesystems
+        mount "proc", "/proc", "proc", 0L, null
+        mount "sysfs", "/sys", "sysfs", 0L, null
         mount "devtmpfs", "/dev", "devtmpfs", 0L, null
+        mount "tmpfs", "/tmp", "tmpfs", 0L, null
+        mount "tmpfs", "/run", "tmpfs", 0L, null
+
+        // Spawn any required processes.
+        spawn command: "syslogd", name: "Syslog Demon"
+        spawn command: "klogd", name: "Klog Demon"
+        spawn command: "dbus-daemon --system", name: "Dbus Demon"
+        spawn command: "ifconfig eth0 up", name: "Inet Up"
+        spawn command: "udhcpc -i eth0", name: "DHCP Uo"
+
+        // Start System Services
+        services {
+            service {
+                name "Fake service"
+                restartPolicy "always"
+                command "java -version" //Simulated service -jar /custom-daemon/daemon.jar
+            }
+        }
+
+        // Configure logger from provided (Slf4J) logger
+        logging {
+            level = "DEBUG"                        // Set the log level to DEBUG
+            location = "/var/log/starship-os.log"  // Set the log file location
+        }
+
+        // Start our single user (No login) shell
+        interactiveShell "Welcome to StarshipOS!", "/bin/sh"
     }
-    mount "tmpfs", "/tmp", "tmpfs", 0L, null
-    mount "tmpfs", "/run", "tmpfs", 0L, null
-    makeConsole
-
-
-//    mount "proc", on: "/proc"
-//    mount "sys", on: "/sys"
-//    mount "tmpfs", on: "/dev/shm"
-//
-//    log(level: "DEBUG", location: "/var/log/starship.log")
-
-
-//     spawn "java -jar /usr/local/lib/my-java-service.jar", name: "JavaService"
-//     spawn "dhclient", name: "NetworkManager"
-
-//     service {
-//         name "CustomDaemon"
-//         restartPolicy "always"
-//         command "java -jar /custom-daemon/daemon.jar"
-//     }
-
-//    logging {
-//        level = "DEBUG"                   // Set the log level to DEBUG
-//        location = "/var/log/starship-os.log"  // Set the log file location
-//    }
-
-//    interactiveShell "Welcome to StarshipOS!"
 }
