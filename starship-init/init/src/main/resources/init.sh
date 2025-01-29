@@ -1,24 +1,25 @@
 #!/bin/sh
 # The init script to set up system mounts, console, and start the jar.
-
+# shellcheck disable=SC3045
+#ulimit -c unlimited
 # Step 1: Mount required filesystems
-echo "Mounting filesystems..." > /dev/console
+#echo "Mounting filesystems..." > /dev/console
 
-mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
-mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
+#mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
+#mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
 
 # Skip mounting /dev if it's already mounted
-if ! mountpoint -q /dev; then
-    echo "/dev is not mounted. Mounting /dev..." > /dev/console
-    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
-else
-    echo "/dev is already mounted. Skipping..." > /dev/console
-fi
+#if ! mountpoint -q /dev; then
+#    echo "/dev is not mounted. Mounting /dev..." > /dev/console
+#    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
+#else
+#    echo "/dev is already mounted. Skipping..." > /dev/console
+#fi
 
 # Mount additional temporary filesystems
-mkdir -p /tmp /run
-mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
-mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
+#mkdir -p /tmp /run
+#mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
+#mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
 
 # Step 2: Create /dev/console if missing
 if [ ! -e /dev/console ]; then
@@ -54,16 +55,18 @@ ifconfig eth0 up
 udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 
 # Optional: Start graphical environment
-if [ -e "/usr/bin/startx" ]; then
-    echo "Starting Xorg..." > /dev/console
-    startx || echo "Failed to start Xorg" > /dev/console
-fi
+#if [ -e "/usr/bin/startx" ]; then
+#    echo "Starting Xorg..." > /dev/console
+#    startx || echo "Failed to start Xorg" > /dev/console
+#fi
 
-# Step 7: Start the Java application
-echo "Starting the Java application..." > /dev/console
-exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
-    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
-    exec /bin/sh
-}
-exec /sbin/init
+# Step 7: Start the init system
+#echo "Starting the Java application..." > /dev/console
+#exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
+#    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
+#    exec /bin/sh
+#}
+echo "Running /sbin/init to launch Init main(){}"
+ulimit -c unlimited
+exec /sbin/init // start Init.groovy
 

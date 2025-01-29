@@ -7,6 +7,7 @@ package org.starship.jna
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
+import com.sun.jna.Structure
 
 /**
  * Interface representing native system-level functionalities via JNA (Java Native Access).
@@ -17,12 +18,49 @@ import com.sun.jna.Pointer
  * are generally indicated by a return value of -1, with errno set appropriately.</p>
  */
 interface CLib extends Library {
+
+    // Define the missing constant manually
+    static final long MNT_FORCE = 1L  // Usually 0x1
+    static final long MS_RDONLY = 1L  // Example of other standard mount flags
+    static final long MS_NOEXEC = 8L  // Another standard mount flag
+    static final long DEV_CONSOLE = (5L << 8) | 1L // Device ID for /dev/console: c 5 1
+    static final int S_IFCHR = 0x2000 // Character special file
+    static final int S_IRUSR = 0x0100 // Read permission, owner
+    static final int S_IWUSR = 0x0080 // Write permission, owner
+
     // Load the C library
     CLib INSTANCE = Native.load("c", CLib.class)
 
     //---------------------------------
     // File System Management
     //---------------------------------
+
+    int lstat(String path, Stat stat)
+
+    class Stat extends Structure {
+        public long st_dev  // Device ID
+        public long st_ino  // Inode number (not needed here specifically)
+
+        @Override
+        protected List<String> getFieldOrder() {
+            return ["st_dev", "st_ino"]
+        }
+    }
+
+
+    /**
+    * Creates a special or ordinary file on the filesystem.
+    *
+    * <p>This method invokes the {@code mknod()} system call to create a new file
+    * on the filesystem. It can be used to create special files such as device
+    * nodes, FIFOs, or ordinary files.</p>
+    *
+    * @param pathname The path where the special or ordinary file is to be created.
+    * @param mode The mode specifying the type of file to be created (e.g., {@code S_IFREG} for a regular file, {@code S_IFIFO} for a FIFO).
+    * @param dev The device number for special device files. For regular files, this should typically be 0.
+    * @return Returns 0 on success or -1 on failure (with {@code errno} set appropriately).
+    */
+    int mknod(String pathname, int mode, long dev)
 
     /**
      * Mount a filesystem.

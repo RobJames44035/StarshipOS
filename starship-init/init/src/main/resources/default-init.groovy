@@ -1,13 +1,21 @@
 // Init.config: Groovy DSL for system initialization
-{
-    system {
-        hostname "starship-os"
-//    heartbeatTimeoutMs  5000
-//    maxRetryAttempts    5
-//    bundleManagerSocketPath "/tmp/bundlemanager.sock"
-//    bundleManagerCmd        "java -jar /var/lib/starship/bundlemanager.jar"
-//    primaryConfigPath       "/etc/starship/config.d/default.groovy"
-//    fallbackConfigPath      "resources/default-init.groovy"
+
+system {
+    hostname "starship-os"
+    heartbeatTimeoutMs 5000
+    maxRetryAttempts 5
+    bundleManagerSocketPath "/tmp/bundlemanager.sock"
+    bundleManagerCmd "java -jar /var/lib/starship/bundlemanager.jar"
+    primaryConfigPath "/etc/starship/config.d/default.groovy"
+    fallbackConfigPath "resources/default-init.groovy"
+    mount "proc", "/proc", "proc", 0L, null
+    mount "sysfs", "/sys", "sysfs", 0L, null
+    if(!mountpoint("/dev")) {
+        mount "devtmpfs", "/dev", "devtmpfs", 0L, null
+    }
+    mount "tmpfs", "/tmp", "tmpfs", 0L, null
+    mount "tmpfs", "/run", "tmpfs", 0L, null
+    makeConsole
 
 
 //    mount "proc", on: "/proc"
@@ -32,5 +40,4 @@
 //    }
 
 //    interactiveShell "Welcome to StarshipOS!"
-    }
 }

@@ -4,9 +4,6 @@
 
 package org.starship.config
 
-import groovy.util.logging.Slf4j
-import org.starship.jna.CLib
-
 /**
  * SystemConfig is responsible for configuring the system through a custom DSL.
  * It allows setting the hostname, defining mount points, spawning tasks, 
@@ -32,55 +29,33 @@ import org.starship.jna.CLib
  *
  * Logs are provided using the Slf4j annotation for better traceability.
  */
-@Slf4j
-class SystemConfig {
-    String hostname                        // Stores the hostname
-//    List mounts = []                       // Stores mount points
-//    List tasks = []                        // Stores spawned tasks
-
-    // Set the system hostname
-    void hostname(String name) {
-        log.info "Setting hostname to: ${hostname}"
-        hostname = name
-        CLib.INSTANCE.sethostname(hostname, hostname.length())
-    }
-
-    // Define a mount point
-//    void mount(String type, Map options) {
-//        mounts << [type: type, on: options.on]
-//    }
-
-    // Spawn a task
-//    void spawn(String command, Map args) {
-//        tasks << [command: command, name: args.name]
-//    }
+interface SystemConfig {
 
     /**
-    * Applies the configurations specified through the DSL.
-    *
-    * This method logs the operations to be performed for setting the
-    * hostname, mounting filesystems, and spawning tasks. All operations
-    * are stubbed and do not perform actual system changes.
-    *
-    * Logs:
-    * - Hostname configuration if a hostname is set.
-    * - Each mount point with its type and target location.
-    * - Each spawned task with its name and command.
-    */
-    void apply() {
-        if (hostname) {
-            log.info "Setting hostname to: ${hostname}"
-            CLib.INSTANCE.sethostname(hostname, hostname.length())
-        }
+     * Mount a filesystem.
+     * @param type the source of the mount (e.g., "proc", "sysfs")
+     * @param path the mount point (e.g., "/proc", "/sys")
+     * @param fsType the filesystem type (e.g., "proc", "sysfs")
+     * @param flags optional mount flags
+     * @param data optional data passed to the mount
+     */
+    void mount(String type, String path, String fsType, long flags, String data)
 
-        mounts.each { mount ->
-            log.info "Mounting ${mount.type} on ${mount.on} (stubbed)"
-            // Stub: Simulate mounting filesystems
-        }
+    /**
+     * Unmount a filesystem at the specified path.
+     * @param path the mount point path to unmount
+     */
+    void umount(String path)
 
-        tasks.each { task ->
-            log.info "Spawning task '${task.name}': ${task.command} (stubbed)"
-            // Stub: Simulate starting processes
-        }
-    }
+    /**
+     * Check if a given path is already mounted.
+     * @param path the mount point path to check
+     * @return true if mounted, false otherwise
+     */
+    boolean mountpoint(String path)
+
+    /**
+     * Create the /dev/console device, if it does not exist.
+     */
+    void makeConsole()
 }

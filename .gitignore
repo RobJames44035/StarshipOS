@@ -476,3 +476,4 @@ build/
 /build-Init.groovy.log
 /build-Init.starship.log
 /usb-image/install.log
+/run.log
