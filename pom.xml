@@ -22,21 +22,10 @@
 
     <modules>
         <module>buildroot</module>
-        <module>starship-api</module>
         <module>starship-init</module>
         <module>starship-sdk</module>
         <module>starship-userland</module>
-        <!--<module>usb-image</module>-->
     </modules>
-
-    <!--
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
--->
 
     <dependencies>
         <dependency>
@@ -51,22 +40,15 @@
             <version>2.2</version>
             <scope>test</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>com.github.hypfvieh</groupId>-->
-        <!--            <artifactId>dbus-java</artifactId>-->
-        <!--            <version>3.3.2</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.9</version>
         </dependency>
-
-        <!-- Logback as the implementation -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.13</version>
+            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
@@ -86,12 +68,10 @@
                     <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
                 <version>3.0.2</version>
-
                 <executions>
                     <execution>
                         <goals>
@@ -103,7 +83,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>
