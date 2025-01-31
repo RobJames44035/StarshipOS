@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.starship</groupId>
         <artifactId>starship-api</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>event-api</artifactId>
