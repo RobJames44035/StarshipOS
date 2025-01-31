@@ -12,11 +12,11 @@ import groovy.util.logging.Slf4j
 import org.starship.config.LoggingConfig
 import org.starship.config.SystemConfig
 import org.starship.jna.CLib
-import org.starship.sys.SignalProcessor
+
+import java.lang.management.ManagementFactory
 
 //import org.starship.eventcore.SystemEventBus
 
-import java.lang.management.ManagementFactory
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -30,26 +30,16 @@ import java.util.concurrent.TimeUnit
 @Slf4j
 class Init implements SystemConfig, SystemConfig, LoggingConfig {
 
-    // Configurations
-    static long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
-    static int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
-    static String BUNDLE_MANAGER_COMMAND = "java -cp /path/to/bundlemanager.jar com.starship.BundleManager"
     static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
     static String FALLBACK_CONFIG_PATH = "/default-init.groovy"
 
-    static String BUNDLE_MANAGER_SOCKET_PATH = "/tmp/bundlemanager.sock"
-    static Process bundleManagerProcess = null   // Track the BundleManager process
-    static long bundleManagerPid = -1            // Track PID of the BundleManager
-
-    static final SignalProcessor signalProcessor = SignalProcessor.getInstance()
-//    static final SystemEventBus eventBus = new SystemEventBus()
+    // List of running child processes
+    static final ConcurrentHashMap<String, Object> processTable = new ConcurrentHashMap<>()
+    static final ConcurrentHashMap<String, Object> resourceTable = new ConcurrentHashMap<>()
 
     // Track the last heartbeat time
     static volatile long lastHeartbeatTimestamp = 0
 
-    // List of running child processes
-    static List<Process> childProcesses = [].asSynchronized() as List<Process>
-    private static final Set<String> mountedResources = ConcurrentHashMap.newKeySet()
 
     /**
      * Reaps zombie processes spawned by the application. 
@@ -186,6 +176,8 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
         // Check running as PID 1
         if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
             log.warn("Warning: This program is not running as PID 1.")
+        } else {
+            processTable.put("org.starship.init.Init", this)
         }
 
         try {

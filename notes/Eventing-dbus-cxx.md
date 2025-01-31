@@ -2068,7 +2068,7 @@ qemu-system-x86_64 -drive file="$QCOW2_IMAGE",format=qcow2 -m 1024 -nographic
 
 Good luck with your **custom init system**! Let me know if you need help with debugging boot scripts, adding features, or shaving off even more overhead. This is exciting—I love seeing someone take full control over their boot process! 
 
-User: 
+User:
 
 ```groovy
 /*
@@ -2085,7 +2085,6 @@ import groovy.util.logging.Slf4j
 import org.starship.jna.CLib
 import org.starship.sys.PanicException
 import org.starship.sys.SignalProcessor
-import org.starship.eventcore.SystemEventBus
 
 import java.lang.management.ManagementFactory
 import java.nio.file.Path
@@ -2101,7 +2100,7 @@ import java.util.concurrent.TimeUnit
  */
 @Slf4j
 class Init implements EventListener {
-    
+
     // Configuration paths
     static final long HEARTBEAT_TIMEOUT_MS = 5000 // Time to wait for a heartbeat in ms
     static final int MAX_RETRY_ATTEMPTS = 3      // Retry attempts to start the BundleManager
