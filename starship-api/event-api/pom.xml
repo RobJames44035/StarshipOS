@@ -9,8 +9,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.starship</groupId>
-        <artifactId>starship-os</artifactId>
-        <version>1.0.0</version>
+        <artifactId>starship-api</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>event-api</artifactId>

@@ -9,16 +9,14 @@ package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
-import org.starship.config.LoggingConfig
 import org.starship.config.SystemConfig
 import org.starship.jna.CLib
 
 import java.lang.management.ManagementFactory
-
-//import org.starship.eventcore.SystemEventBus
-
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+
+//import org.starship.eventcore.SystemEventBus
 
 /**
  * Main class responsible for initializing and managing the Starship system services.
@@ -28,7 +26,7 @@ import java.util.concurrent.TimeUnit
  * initialize critical components, the system triggers a panic.
  */
 @Slf4j
-class Init implements SystemConfig, SystemConfig, LoggingConfig {
+class Init implements SystemConfig {
 
     static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
     static String FALLBACK_CONFIG_PATH = "/default-init.groovy"
@@ -36,10 +34,6 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
     // List of running child processes
     static final ConcurrentHashMap<String, Object> processTable = new ConcurrentHashMap<>()
     static final ConcurrentHashMap<String, Object> resourceTable = new ConcurrentHashMap<>()
-
-    // Track the last heartbeat time
-    static volatile long lastHeartbeatTimestamp = 0
-
 
     /**
      * Reaps zombie processes spawned by the application. 
@@ -58,7 +52,7 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
      */
     static void reapZombies() {
         log.info("Zombie Reaper.")
-        childProcesses.removeIf { process ->
+        processTable.removeIf { process ->
             try {
                 // Safeguard to prevent reaping PID 1
                 if (process.pid() == 1) {
@@ -112,10 +106,10 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
             log.info("System shutdown initiated...")
 
             // 1. Stop all spawned child processes
-            if (childProcesses.isEmpty()) {
+            if (processTable.isEmpty()) {
                 log.info("No active child processes to terminate.")
             } else {
-                childProcesses.each { process ->
+                processTable.each { process ->
                     try {
                         if (process.isAlive()) {
                             log.info("Terminating child process (pid: {})...", process.pid())
@@ -131,15 +125,15 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
                     }
                 }
                 // Clear the list of child processes
-                childProcesses.clear()
+                processTable.clear()
                 log.info("All child processes terminated.")
             }
 
             // 2. Unmount filesystems (example implementation for mounted resources)
-            if (mountedResources.isEmpty()) {
+            if (resourceTable.isEmpty()) {
                 log.info("No mounted resources to unmount.")
             } else {
-                mountedResources.each { mountPoint ->
+                resourceTable.each { mountPoint ->
                     try {
                         log.info("Unmounting resource: {}...", mountPoint)
                         umount(mountPoint)
@@ -148,7 +142,7 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
                         log.error("Failed to unmount resource {}: {}", mountPoint, e.message, e)
                     }
                 }
-                mountedResources.clear()
+                resourceTable.clear()
                 log.info("All mounted resources unmounted.")
             }
 
@@ -411,7 +405,7 @@ class Init implements SystemConfig, SystemConfig, LoggingConfig {
         boolean success = false // start with a `failing` system init
         try {
             // Load and Evaluate the DSL
-            boolean loadConfig = InitUtil.loadConfig(PRIMARY_CONFIG_PATH, FALLBACK_CONFIG_PATH)
+//            boolean loadConfig = InitUtil.loadConfig(PRIMARY_CONFIG_PATH, FALLBACK_CONFIG_PATH)
             if (!InitUtil.dslContent) {
                 log.error("No configuration file available to initialize the system.")
                 success = false
