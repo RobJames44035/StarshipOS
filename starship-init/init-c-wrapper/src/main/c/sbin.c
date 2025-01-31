@@ -6,11 +6,13 @@ int main() {
     const char *java_binary = "/usr/bin/java";
     char *const java_args[] = {
         "java",
-//        "-Xmx2g",
-//        "-Xms1g",
-//        "-Xss32m",
+        /*
+        "-Xmx2g",
+        "-Xms1g",
+        "-Xss32m",
+        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+        */
         "-jar",
-//        "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
         "/var/lib/starship/init.jar",
         NULL
     };

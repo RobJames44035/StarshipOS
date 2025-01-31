@@ -4,5 +4,6 @@
 #
 cp -pv scripts/default.config buildroot/.config
 cd buildroot
+make oldconfig
 make all
 cd ../
