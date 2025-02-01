@@ -52,7 +52,7 @@ class Init implements SystemConfig {
      */
     static void reapZombies() {
         log.info("Zombie Reaper.")
-        processTable.removeIf { process ->
+        processTable.remove { process ->
             try {
                 // Safeguard to prevent reaping PID 1
                 if (process.pid() == 1) {

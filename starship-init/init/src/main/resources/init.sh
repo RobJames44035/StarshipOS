@@ -1,25 +1,26 @@
 #!/bin/sh
 # The init script to set up system mounts, console, and start the jar.
 # shellcheck disable=SC3045
-#ulimit -c unlimited
+ulimit -c unlimited
 # Step 1: Mount required filesystems
-#echo "Mounting filesystems..." > /dev/console
+echo "Mounting filesystems..." > /dev/console
 
-#mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
-#mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
+mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
+mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
 
 # Skip mounting /dev if it's already mounted
-#if ! mountpoint -q /dev; then
-#    echo "/dev is not mounted. Mounting /dev..." > /dev/console
-#    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
-#else
-#    echo "/dev is already mounted. Skipping..." > /dev/console
-#fi
+if ! mountpoint -q /dev; then
+    echo "/dev is not mounted. Mounting /dev..." > /dev/console
+    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
+else
+    echo "/dev is already mounted. Skipping..." > /dev/console
+fi
 
 # Mount additional temporary filesystems
-#mkdir -p /tmp /run
-#mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
-#mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
+mkdir -p /tmp /run /run/dbus
+sudo chmod 755 /run/dbus
+mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
+mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
 
 # Step 2: Create /dev/console if missing
 if [ ! -e /dev/console ]; then
@@ -39,20 +40,25 @@ fi
 dd if=/dev/urandom of="$RANDOM_SEED_FILE" bs=256 count=1 > /dev/null 2>&1 &
 
 # Step 4: Start logging services (syslogd, klogd)
-#echo "Starting syslogd..." > /dev/console
-#syslogd || echo "Failed to start syslogd" > /dev/console
+echo "Starting syslogd..." > /dev/console
+syslogd || echo "Failed to start syslogd" > /dev/console
 
-#echo "Starting klogd..." > /dev/console
-#klogd || echo "Failed to start klogd" > /dev/console
+echo "Starting klogd..." > /dev/console
+klogd || echo "Failed to start klogd" > /dev/console
 
 # Step 5: Start system message bus (D-Bus)
-#echo "Starting system message bus..." > /dev/console
-#dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
+echo "Starting system message bus..." > /dev/console
+rm /run/messagebus.pid
+dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
 
 # Step 6: Configure network (simplified for DHCP setup)
 echo "Starting network..." > /dev/console
-#ifconfig eth0 up
+ifconfig eth0 up
 udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
+
+#echo "Running /sbin/init to launch Init main(){}"
+ulimit -c unlimited
+exec /sbin/init # start Busybox.
 
 # Optional: Start graphical environment
 #if [ -e "/usr/bin/startx" ]; then
@@ -66,7 +72,5 @@ udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 #    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
 #    exec /bin/sh
 #}
-echo "Running /sbin/init to launch Init main(){}"
-ulimit -c unlimited
-exec /sbin/init // start Init.groovy
+#exec /sbin/init # start Init.groovy
 
