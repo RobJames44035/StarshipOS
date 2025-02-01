@@ -56,10 +56,6 @@ echo "Starting network..." > /dev/console
 ifconfig eth0 up
 udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 
-#echo "Running /sbin/init to launch Init main(){}"
-ulimit -c unlimited
-exec /sbin/init # start Busybox.
-
 # Optional: Start graphical environment
 #if [ -e "/usr/bin/startx" ]; then
 #    echo "Starting Xorg..." > /dev/console
@@ -67,10 +63,10 @@ exec /sbin/init # start Busybox.
 #fi
 
 # Step 7: Start the init system
-#echo "Starting the Java application..." > /dev/console
-#exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
-#    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
-#    exec /bin/sh
-#}
-#exec /sbin/init # start Init.groovy
+echo "Starting the Java application..." > /dev/console
+exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
+    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
+    exec /bin/sh
+}
+exec /sbin/init # start Init.groovy
 

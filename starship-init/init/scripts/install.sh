@@ -19,7 +19,7 @@ function make_dirs() {
 function copy_files() {
   echo "Copy files."
   sudo cp -v "target/init-1.0.0.jar" "/mnt/rootfs/var/lib/starship/init.jar"
-  sudo cp -v "src/main/resources/default-init.groovy" "/mnt/rootfs/etc/starship/config.d/init.groovy"
+  sudo cp -v "src/main/resources/default-init.cfg" "/mnt/rootfs/etc/starship/config.d/init.cfg"
   sudo cp -v "src/main/resources/init.sh" "/mnt/rootfs/init"
   sudo rm -v "/mnt/rootfs/linuxrc"
   sudo chmod +x "/mnt/rootfs/init"

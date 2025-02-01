@@ -22,6 +22,10 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.github.hypfvieh</groupId>
+            <artifactId>dbus-java</artifactId>
+            <version>3.3.2</version>
+        </dependency>
     </dependencies>
 </project>

@@ -9,26 +9,23 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
 
-/**
- * Interface representing native system-level functionalities via JNA (Java Native Access).
- * This interface provides methods to interact with system-level libraries and operations,
- * such as file system management, process control, time functions, and system information retrieval.
- *
- * <p>All methods typically map to their corresponding C library (libc) functions, and errors
- * are generally indicated by a return value of -1, with errno set appropriately.</p>
- */
 interface CLib extends Library {
 
-    // Define the missing constant manually
-    static final long MNT_FORCE = 1L  // Usually 0x1
-    static final long MS_RDONLY = 1L  // Example of other standard mount flags
-    static final long MS_NOEXEC = 8L  // Another standard mount flag
-    static final long DEV_CONSOLE = (5L << 8) | 1L // Device ID for /dev/console: c 5 1
-    static final int S_IFCHR = 0x2000 // Character special file
-    static final int S_IRUSR = 0x0100 // Read permission, owner
-    static final int S_IWUSR = 0x0080 // Write permission, owner
+    // Mount-related constants
+    long MNT_FORCE = 1L
+    long MS_RDONLY = 1L
+    long MS_NOEXEC = 8L
+    long DEV_CONSOLE = (5L << 8) | 1L // Device ID for /dev/console: c 5 1
 
-    // Load the C library
+    // File permission constants
+    int S_IFCHR = 0x2000 // Character special file
+    int S_IRUSR = 0x0100 // Read permission, owner
+    int S_IWUSR = 0x0080 // Write permission, owner
+
+    // Reboot command
+    int LINUX_REBOOT_CMD_HALT = 0xCDEF0123
+
+    // Load the native library
     CLib INSTANCE = Native.load("c", CLib.class)
 
     //---------------------------------
@@ -38,162 +35,58 @@ interface CLib extends Library {
     int lstat(String path, Stat stat)
 
     class Stat extends Structure {
-        public long st_dev  // Device ID
-        public long st_ino  // Inode number (not needed here specifically)
+        long st_dev // Device ID
+        long st_ino // Inode number
 
         @Override
         protected List<String> getFieldOrder() {
-            return ["st_dev", "st_ino"]
+            ["st_dev", "st_ino"]
         }
     }
 
-
-    /**
-    * Creates a special or ordinary file on the filesystem.
-    *
-    * <p>This method invokes the {@code mknod()} system call to create a new file
-    * on the filesystem. It can be used to create special files such as device
-    * nodes, FIFOs, or ordinary files.</p>
-    *
-    * @param pathname The path where the special or ordinary file is to be created.
-    * @param mode The mode specifying the type of file to be created (e.g., {@code S_IFREG} for a regular file, {@code S_IFIFO} for a FIFO).
-    * @param dev The device number for special device files. For regular files, this should typically be 0.
-    * @return Returns 0 on success or -1 on failure (with {@code errno} set appropriately).
-    */
     int mknod(String pathname, int mode, long dev)
 
-    /**
-     * Mount a filesystem.
-     *
-     * @param source - The block device or directory to mount
-     * @param target - The mount point
-     * @param filesystemType - The type of the file system (e.g., "ext4", "tmpfs")
-     * @param mountFlags - Special mount flags (e.g., read-only, noexec)
-     * @param data - Additional data passed to the file system
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
     int mount(String source, String target, String filesystemType, long mountFlags, String data)
 
-    /**
-     * Unmount a filesystem.
-     *
-     * @param target - The mount point to unmount
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
     int umount(String target)
 
-    /**
-     * Forcefully unmount a filesystem.
-     *
-     * @param target - The mount point to unmount
-     * @param flags - Additional flags for unmounting (e.g., MNT_FORCE)
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
     int umount2(String target, int flags)
 
-    /**
-     * Change the hostname of the system.
-     *
-     * @param name - The new hostname
-     * @param len - The length of the hostname
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
+    //---------------------------------
+    // System Information
+    //---------------------------------
+
     int sethostname(String name, int len)
+
+    int gethostname(byte[] name, int len)
 
     //---------------------------------
     // Process and Signal Management
     //---------------------------------
 
-    /**
-     * Send a signal to a process.
-     *
-     * @param pid - The process ID
-     * @param sig - The signal to send
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
     int kill(int pid, int sig)
 
-    /**
-     * Wait for a child process to change state.
-     *
-     * @param pid - The process ID to wait for (or -1 for any child process)
-     * @param status - A pointer to an int for the child process’s exit status
-     * @param options - Options for waitpid behavior (e.g., WNOHANG, WUNTRACED)
-     * @return The process ID of the child that changed state, or -1 on failure
-     */
     int waitpid(int pid, Pointer status, int options)
 
-    /**
-     * Fork the current process.
-     *
-     * @return The process ID of the child to the parent, or 0 to the child process,
-     *         or -1 if the fork failed.
-     */
     int fork()
 
-    /**
-     * Execute a program (replacing the current process).
-     *
-     * @param filename - Path to the executable
-     * @param argv - Argument list (null-terminated array of strings)
-     *               e.g., ["/bin/ls", "-l", NULL]
-     * @param envp - Environment list (null-terminated array of strings)
-     *               e.g., ["PATH=/usr/bin", NULL]
-     * @return Does not return on success, -1 on failure (errno set appropriately)
-     */
     int execve(String filename, String[] argv, String[] envp)
 
-    /**
-     * Exit the current process.
-     *
-     * @param status - Exit status
-     */
     void _exit(int status)
 
     //---------------------------------
     // Time & Timing Functions
     //---------------------------------
 
-    /**
-     * Sleep for the specified number of seconds.
-     *
-     * @param seconds - Number of seconds to sleep
-     * @return Remaining seconds left to sleep if interrupted, or 0 on success
-     */
     int sleep(int seconds)
 
-    /**
-     * Get the current time in seconds since the Epoch.
-     *
-     * @param tloc - Pointer to a long to store the time. (Optional)
-     * @return The current time in seconds since the Epoch
-     */
     long time(Pointer tloc)
 
     //---------------------------------
-    // System Information
+    // System Utility Functions
     //---------------------------------
 
-    /**
-     * Get the current hostname.
-     *
-     * @param name - A buffer to store the hostname
-     * @param len - The size of the buffer
-     * @return 0 on success, -1 on failure (errno set appropriately)
-     */
-    int gethostname(byte[] name, int len)
+    void sync()
 
-    /**
-     * Retrieve the system's uptime.
-     * This method reads directly from `/proc/uptime` for Linux.
-     *
-     * @param uptimeBuffer A buffer to store the uptime information.
-     * @param len The size of the buffer.
-     * @return 0 on success, -1 on failure.
-     */
-//    int get_system_uptime(byte[] uptimeBuffer, int len)
-
-    void sync() // Maps the native sync() method
-
-    int reboot(int magic) // Maps the native reboot() method, accepts an integer as the parameter
+    int reboot(int magic)
 }

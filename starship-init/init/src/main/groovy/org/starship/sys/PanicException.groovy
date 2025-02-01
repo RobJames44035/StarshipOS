@@ -1,8 +1,3 @@
-/*
- * StarshipOS Copyright (c) 2025. R.A. James
- */
-
-//file:noinspection unused
 package org.starship.sys
 
 import com.sun.jna.Native
@@ -11,106 +6,109 @@ import org.starship.jna.CLib
 
 /**
  * Exception class representing a kernel panic in the system.
- * This exception triggers critical system actions such as filesystem syncing 
+ * This exception triggers critical system actions such as filesystem syncing
  * and rebooting, designed to handle unrecoverable errors.
  *
  * <p><strong>Note:</strong> Only one panic can be triggered per runtime session
  * to prevent duplicates.</p>
- *
- * <p>Usage:</p>
- * <ul>
- *     <li>Throwing this exception with a message will initiate a panic.</li>
- *     <li>Optionally, a cause can be provided for additional context.</li>
- * </ul>
- *
- * Example usage:
- * <pre>{@code
- * if (someCriticalError) {
- *     throw new PanicException("Critical error occurred");
- * }
- *}</pre>
  */
 @Slf4j
 class PanicException extends RuntimeException {
 
     /**
-    * Static flag that tracks if the panic has been triggered during
-    * the current runtime session. This ensures that only one
-    * kernel panic is initiated per session, avoiding duplicate triggers
-    * and redundant system shutdowns.
-    *
-    * <p>When this flag is set to {@code true}, subsequent attempts to
-    * trigger a panic are skipped with a log message indicating that
-    * a panic has already been triggered.</p>
-    */
+     * Static flag to prevent multiple panics in a single runtime session.
+     * Ensures only one kernel panic is triggered.
+     */
     private static boolean panicTriggered = false
 
-    
     /**
-    * Creates a new {@code PanicException} with the specified detail message.
-    * This exception triggers a kernel panic in the system, ensuring a controlled
-    * shutdown or reset in response to critical errors. The panic action
-    * synchronizes the filesystem and attempts a reboot using Linux-specific
-    * mechanisms.
-    *
-    * <p>The constructor invokes the {@code triggerPanic} method to initiate
-    * the system panic. If a panic has already been triggered in the runtime session,
-    * the method will log the duplicate attempt and skip further actions.</p>
-    *
-    * @param message the detail message describing the reason for the panic
-    */
+     * Constructs a new {@code PanicException} with the specified detail message.
+     * This constructor triggers a system panic, which is a critical action.
+     *
+     * @param message the detail message, saved for later retrieval
+     */
     PanicException(String message) {
         super(message)
         triggerPanic(message)
     }
-    
+
     /**
-    * Constructs a new {@code PanicException} with the specified detail message
-    * and cause. This constructor triggers a system panic, which is a critical
-    * action involving filesystem syncing and rebooting.
-    *
-    * @param message the detail message, saved for later retrieval by the
-    * {@link Throwable#getMessage()} method
-    * @param cause the cause (saved for later retrieval by the
-    * {@link Throwable#getCause()} method). A {@code null} value
-    *                is permitted, indicating the cause is nonexistent or unknown.
-    */
+     * Constructs a new {@code PanicException} with the specified detail message
+     * and cause. This constructor also triggers a system panic.
+     *
+     * @param message the detail message
+     * @param cause   the cause of the panic
+     */
     PanicException(String message, Throwable cause) {
         super(message, cause)
         triggerPanic(message)
     }
-    
+
     /**
-    * Triggers a kernel panic in the system. This synchronized method ensures that
-    * only one panic is initiated per runtime session by using the {@code panicTriggered}
-    * flag. Upon triggering, the method:
-    * <ul>
-    *     <li>Logs the panic message to the console.</li>
-    *     <li>Attempts to call libc routines to sync the filesystem and initiate 
-    *         a kernel panic using a Linux-specific reboot magic number.</li>
-    *     <li>Catches and logs any exceptions that may occur during the process.</li>
-    * </ul>
-    *
-    * @param message the panic message that describes the critical failure
-    */
+     * Triggers a kernel panic in the system. This synchronized method ensures that
+     * only one panic is triggered per runtime session. It performs the following:
+     * <ul>
+     *     <li>Logs the panic message to the console</li>
+     *     <li>Prints an 80x24 ASCII-art panic screen to stdout</li>
+     *     <li>Attempts to sync the filesystem and reboot the system</li>
+     * </ul>
+     *
+     * @param message the panic message describing the error
+     */
     private synchronized void triggerPanic(String message) {
         if (panicTriggered) {
-            log.info("Panic already triggered. Skipping.")
+            log.info("Panic already triggered. Skipping further actions.")
             return
         }
-        //noinspection GroovyAccessToStaticFieldLockedOnInstance
         panicTriggered = true // Mark panic as triggered
 
-        println "KERNEL PANIC: ${message}"
+        // Capture system info and timestamp for the panic screen
+        String timestamp = new Date().toString()
+        String systemInfo = "${System.getProperty('os.name')} ${System.getProperty('os.version')}"
 
+        // Generate the 80x24 panic screen
+        String panicScreen = """
+********************************************************************************
+*                                                                              *
+*                                  KERNEL PANIC                                *
+*                                                                              *
+********************************************************************************
+*                                                                              *
+*                Oops! Something went horribly wrong in the system.           *
+*                                                                              *
+*                                                                              *
+*                Reason: ${message.padRight(60)}           *
+*                                                                              *
+*                Timestamp: ${timestamp.padRight(54)}           *
+*                System Info: ${systemInfo.padRight(54)}           *
+*                                                                              *
+*                                                                              *
+*                We're syncing filesystems and shutting down now.             *
+*                                                                              *
+********************************************************************************
+*                                                                              *
+*                   !!! SYSTEM WILL NOT ATTEMPT TO REBOOT !!!                  *
+*                                                                              *
+********************************************************************************
+"""
+        // Print the panic screen to stdout (console)
+        println panicScreen
+
+        // Attempt critical system actions (file sync and reboot)
         try {
-            // Load libc dynamically and execute panic-related calls
-            //noinspection GroovyAssignabilityCheck
+            // Load libc dynamically
             CLib libc = Native.load("c", CLib)
-            libc.sync()                     // Sync filesystems
-            libc.reboot(0xfee1dead as int)  // Trigger Linux kernel panic using the magic number
+
+            // Sync the filesystem
+            log.info("Syncing filesystems...")
+            libc.sync()
+
+            // Trigger a Linux-specific kernel panic via magic keys
+            log.info(this.message, this)
+            libc.reboot(CLib.LINUX_REBOOT_CMD_HALT)
         } catch (Exception e) {
-            log.error("Failed to execute kernel panic: ${e.message}", e)
+            // Log any failures during panic procedures
+            log.error("Failed to complete panic sequence: ${e.message}", e)
         }
     }
 }
