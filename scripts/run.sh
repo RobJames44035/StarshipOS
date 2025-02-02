@@ -1,4 +1,7 @@
 #!/bin/sh
+clear
+figlet "Building & Running"
+figlet "StarshipOS QEMU"
 ./mvnw clean install
 qemu-system-x86_64 -m 4096 -smp 2 -kernel buildroot/buildroot/output/images/bzImage \
   -drive file=buildroot/buildroot/output/images/rootfs.ext4,if=ide,format=raw \

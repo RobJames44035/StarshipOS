@@ -1,13 +1,15 @@
 // InitUtil.groovy
 //file:noinspection unused
+//file:noinspection GroovyInfiniteLoopStatement
+//file:noinspection GroovyAssignabilityCheck
 package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
 import org.starship.jna.CLibWrapper
+import org.starship.osgi.OSGiManager
 
 import static groovy.lang.Closure.DELEGATE_FIRST
-
 /**
  * Utility class for system initialization tasks.
  */
@@ -32,6 +34,112 @@ class InitUtil {
             instance = new InitUtil()
         }
         return instance
+    }
+
+    /**
+     * Handles the `services` block in the DSL.
+     *
+     * Parses and defines all services using the provided closure.
+     *
+     * @param closure The closure defining all services.
+     */
+    void services(Closure closure) {
+        log.info("Beginning service configuration...")
+        closure.delegate = this // Bind closure to InitUtil instance
+        closure.resolveStrategy = DELEGATE_FIRST
+        closure.call() // Execute the closure block
+        log.info("Service configuration completed. ${Init.serviceTable.size()} service(s) defined.")
+    }
+
+    /**
+     * Configures a single service within the `services` block.
+     *
+     * Adds the service definition to the `serviceTable` from `Init.groovy`.
+     *
+     * @param serviceArgs A map containing service properties (e.g., name, command, policy).
+     */
+    @SuppressWarnings('GroovyAssignabilityCheck')
+    static void service(Map serviceArgs) {
+        if (!serviceArgs.name || !serviceArgs.command) {
+            log.error("Service definition failed: 'name' or 'command' is missing.")
+            throw new IllegalArgumentException("Service 'name' and 'command' are required.")
+        }
+
+        // Default values for optional fields
+        serviceArgs.descr = serviceArgs.descr ?: "No description available"
+
+        // Enforce RestartPolicy enumeration
+        serviceArgs.policy = serviceArgs.policy ?: OSGiManager.RestartPolicy.NO
+        if (!(serviceArgs.policy instanceof OSGiManager.RestartPolicy)) {
+            throw new IllegalArgumentException("Invalid 'policy' value. Must use RestartPolicy enumeration.")
+        }
+
+        serviceArgs.restartDelay = serviceArgs.restartDelay ?: 0
+
+        log.info("Defining service: ${serviceArgs.name} with command: ${serviceArgs.command} and policy: ${serviceArgs.policy}")
+
+        // Add service definition to the serviceTable
+        if (Init.serviceTable.containsKey(serviceArgs.name)) {
+            log.warn("Service ${serviceArgs.name} is already defined. Overwriting definition.")
+        }
+        Init.serviceTable.put(serviceArgs.name, serviceArgs)
+    }
+
+    /**
+     * Starts all services defined in the `serviceTable`.
+     *
+     * Spawns each service process and tracks them in `processTable`.
+     */
+    static void startServices() {
+        log.info("Starting ${Init.serviceTable.size()} service(s)...")
+
+        Init.serviceTable.each { serviceName, service ->
+            try {
+                log.info("Starting service: $serviceName")
+
+                // Spawn the process for this service
+                Process process = service.command.execute()
+                log.info("Service '$serviceName' started successfully.")
+
+                // Track the process in processTable
+                Init.processTable.put(serviceName, process)
+
+                // Handle restart policy
+                if (service.policy.toLowerCase() == "restart-always") {
+                    handleServiceRestart(service as Map)
+                }
+            } catch (Exception e) {
+                log.error("Failed to start service '$serviceName': ${e.message}", e)
+            }
+        }
+    }
+
+    /**
+     * Handles automatic restart for services with a "restart-always" policy.
+     *
+     * @param service The service definition map.
+     */
+    private static void handleServiceRestart(Map service) {
+        Thread.start {
+            while (true) {
+                try {
+                    // Wait for the process to finish
+                    Process process = Init.processTable.get(service.name) as Process
+                    process.waitFor()
+                    log.warn("Service '${service.name}' has terminated unexpectedly. Restarting...")
+
+                    // Delay before restarting
+                    Thread.sleep(service.restartDelay * 1000)
+
+                    // Restart the service
+                    Process restartedProcess = service.command.execute()
+                    Init.processTable.put(service.name, restartedProcess) // Replace old process reference
+                    log.info("Service '${service.name}' restarted successfully.")
+                } catch (Exception e) {
+                    log.error("Error while restarting service '${service.name}': ${e.message}", e)
+                }
+            }
+        }
     }
 
     /**
