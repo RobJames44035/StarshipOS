@@ -27,9 +27,17 @@ function unmount_rootfs() {
   sudo umount "/mnt/rootfs/"
 }
 
+function dbus() {
+  echo "dbus-uuidgen --ensure=/mnt/rootfs/var/lib/dbus/machine-id"
+  dbus-uuidgen --ensure=/mnt/rootfs/var/lib/dbus/machine-id
+  sudo  chmod 644 "/mnt/rootfs/var/lib/dbus/machine-id"
+  sudo cp -pv "/mnt/rootfs/var/lib/dbus/machine-id" "/etc/machine-id"
+}
+
 function main() {
   mount_rootfs
   make_dirs
+  dbus
   copy_files
   unmount_rootfs
 }

@@ -8,6 +8,8 @@ import org.starship.sdk.dbus.DBusServiceRegistry
 import org.starship.sys.PanicException
 
 import java.lang.management.ManagementFactory
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
@@ -41,6 +43,7 @@ class Init {
             log.info("Initializing StarshipOS...")
 
             // Initialize the D-Bus registry
+            initializeMachineId()
             dbusRegistry.initialize()
             log.info("DBusServiceRegistry initialized.")
 
@@ -55,6 +58,27 @@ class Init {
         } catch (Exception e) {
             log.error("Critical error during system initialization: ${e.message}", e)
             throw new PanicException("PANIC: ${e.message ?: 'Unknown error'}", e)
+        }
+    }
+
+    static void initializeMachineId() {
+        def machineIdPath = Paths.get("/etc/machine-id")
+        try {
+            if (!Files.exists(machineIdPath)) {
+                log.info("machine-id file is missing. Generating...")
+                String machineId = UUID.randomUUID().toString().replace("-", "")
+                Files.write(machineIdPath, machineId.bytes)
+                // Set appropriate permissions
+                machineIdPath.toFile().setReadable(true, false)
+                machineIdPath.toFile().setWritable(true, true) // Writable by root
+                log.info("Generated new machine-id: $machineId")
+            } else {
+                String existingMachineId = Files.readAllLines(machineIdPath).get(0)
+                log.info("machine-id exists: $existingMachineId")
+            }
+        } catch (Exception e) {
+            log.error("Failed to verify or generate machine-id: ${e.message}", e)
+            throw new IllegalStateException("Could not initialize machine-id", e)
         }
     }
 

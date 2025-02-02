@@ -117,6 +117,13 @@ class OSGiManager {
      * These can be moved to a shared module if required globally.
      */
     static class OSGiManagerSignals {
+
+        static class OSGiHeartbeatSignal extends DBusSignal {
+            OSGiHeartbeatSignal(String objectPath) throws DBusException {
+                super(objectPath)
+            }
+        }
+
         static class OSGiReadySignal extends DBusSignal {
             OSGiReadySignal(String objectPath) throws DBusException {
                 super(objectPath)

@@ -32,10 +32,10 @@ function unmount_rootfs() {
 }
 
 function dbus() {
-  sudo dbus-uuidgen --ensure=/mnt/rootfs/var/lib/dbus/machine-id
-  sudo cat "/mnt/rootfs/var/lib/dbus/machine-id"
-  sudo cp -pv "/mnt/rootfs/var/lib/dbus/machine-id" "/mnt/rootfs/etc/machine-id"
+  echo "dbus-uuidgen --ensure=/mnt/rootfs/var/lib/dbus/machine-id"
+  dbus-uuidgen --ensure=/mnt/rootfs/var/lib/dbus/machine-id
   sudo  chmod 644 "/mnt/rootfs/var/lib/dbus/machine-id"
+  sudo cp -pv "/mnt/rootfs/var/lib/dbus/machine-id" "/etc/machine-id"
 }
 
 function main() {
