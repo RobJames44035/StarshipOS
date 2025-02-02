@@ -18,7 +18,7 @@ function make_dirs() {
 
 function copy_files() {
   echo "Copy files."
-  sudo cp -v "target/init-1.0.0.jar" "/mnt/rootfs/var/lib/starship/bundle-manager.jar"
+  sudo cp -v "target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar"
 }
 
 function unmount_rootfs() {

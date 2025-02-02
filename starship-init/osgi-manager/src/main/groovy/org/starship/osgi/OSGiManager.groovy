@@ -1,6 +1,7 @@
 package org.starship.osgi
 
 import groovy.util.logging.Slf4j
+import org.freedesktop.dbus.exceptions.DBusException
 import org.freedesktop.dbus.messages.DBusSignal
 import org.starship.sdk.dbus.DBusServiceRegistry
 
@@ -28,7 +29,7 @@ class OSGiManager {
             // Simulating the main loop of OSGiManager
             runMainLoop()
 
-        } catch (Exception e) {
+        } catch (DBusException e) {
             log.error("Fatal error in OSGiManager: ${e.message}", e)
             emitServiceFailureSignal(e.message)
             System.exit(1)
@@ -117,7 +118,7 @@ class OSGiManager {
      */
     static class OSGiManagerSignals {
         static class OSGiReadySignal extends DBusSignal {
-            OSGiReadySignal(String objectPath) {
+            OSGiReadySignal(String objectPath) throws DBusException {
                 super(objectPath)
             }
         }
@@ -125,7 +126,7 @@ class OSGiManager {
         static class OSGiFailureSignal extends DBusSignal {
             final String errorMessage
 
-            OSGiFailureSignal(String objectPath, String errorMessage) {
+            OSGiFailureSignal(String objectPath, String errorMessage) throws DBusException {
                 super(objectPath)
                 this.errorMessage = errorMessage
             }
@@ -140,7 +141,7 @@ class OSGiManager {
         static class RestartServiceSignal extends DBusSignal {
             final String serviceName
 
-            RestartServiceSignal(String objectPath, String serviceName) {
+            RestartServiceSignal(String objectPath, String serviceName) throws DBusException {
                 super(objectPath)
                 this.serviceName = serviceName
             }
@@ -149,7 +150,7 @@ class OSGiManager {
         static class ShutdownServiceSignal extends DBusSignal {
             final String serviceName
 
-            ShutdownServiceSignal(String objectPath, String serviceName) {
+            ShutdownServiceSignal(String objectPath, String serviceName) throws DBusException {
                 super(objectPath)
                 this.serviceName = serviceName
             }

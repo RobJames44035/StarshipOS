@@ -1,6 +1,7 @@
 package org.starship.init
 
 import groovy.util.logging.Slf4j
+import org.freedesktop.dbus.exceptions.DBusException
 import org.freedesktop.dbus.messages.DBusSignal
 import org.starship.osgi.OSGiManager
 import org.starship.sdk.dbus.DBusServiceRegistry
@@ -16,10 +17,10 @@ class Init {
     static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.cfg"
     static String FALLBACK_CONFIG_PATH = "/default-init.cff"
 
-    // Tables for managing resources and services
-    static final ConcurrentHashMap<String, Object> processTable = new ConcurrentHashMap<>()
-    static final ConcurrentHashMap<String, Object> resourceTable = new ConcurrentHashMap<>()
-    static final ConcurrentHashMap<String, Object> serviceTable = new ConcurrentHashMap<>(["OSGiManager": null]) // Add other services as needed
+    // Tables for dynamically managing resources and services
+    static ConcurrentHashMap<String, Object> processTable = new ConcurrentHashMap<>()
+    static ConcurrentHashMap<String, Object> resourceTable = new ConcurrentHashMap<>()
+    static ConcurrentHashMap<String, Object> serviceTable = new ConcurrentHashMap<>()
 
     // Last heartbeat timestamp from OSGiManager
     static volatile long osgiManagerLastHeartbeat = System.currentTimeMillis()
@@ -209,14 +210,14 @@ class Init {
     static class ServiceControlSignals {
         static class RestartServiceSignal extends DBusSignal {
             final String serviceName
-            RestartServiceSignal(String objectPath, String serviceName) {
+            RestartServiceSignal(String objectPath, String serviceName) throws DBusException {
                 super(objectPath)
                 this.serviceName = serviceName
             }
         }
         static class ShutdownServiceSignal extends DBusSignal {
             final String serviceName
-            ShutdownServiceSignal(String objectPath, String serviceName) {
+            ShutdownServiceSignal(String objectPath, String serviceName) throws DBusException {
                 super(objectPath)
                 this.serviceName = serviceName
             }

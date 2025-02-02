@@ -30,7 +30,7 @@
         </dependency>
         <dependency>
             <groupId>org.starship</groupId>
-            <artifactId>bundle-manager</artifactId>
+            <artifactId>osgi-manager</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
