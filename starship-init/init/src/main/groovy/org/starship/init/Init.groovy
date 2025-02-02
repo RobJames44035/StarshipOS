@@ -61,6 +61,15 @@ class Init {
         }
     }
 
+
+    /**
+     * Initializes the machine-id for the system. 
+     * If the machine-id file does not exist, a new unique machine-id will be generated,
+     * saved to the designated file path, and proper permissions will be set.
+     * If the machine-id file exists, the existing identifier will be logged.
+     *
+     * @throws IllegalStateException if the initialization of the machine-id fails.
+     */
     static void initializeMachineId() {
         def machineIdPath = Paths.get("/etc/machine-id")
         try {
