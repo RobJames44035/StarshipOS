@@ -1,5 +1,5 @@
 #!/bin/sh
-./mvnw install
+./mvnw clean install
 qemu-system-x86_64 -m 4096 -smp 2 -kernel buildroot/buildroot/output/images/bzImage \
   -drive file=buildroot/buildroot/output/images/rootfs.ext4,if=ide,format=raw \
   -net user,id=net0,hostfwd=tcp::5005-:5005 -device e1000 -net nic \

@@ -4,9 +4,8 @@
 
 package org.starship.jna
 
-import com.sun.jna.Memory
+
 import com.sun.jna.Native
-import com.sun.jna.Pointer
 
 class CLibWrapper {
 
@@ -22,7 +21,7 @@ class CLibWrapper {
             throw new IllegalArgumentException("Hostname must not be null or empty")
         }
 
-        def result = C_LIB.sethostname(hostname, hostname.length())
+        def result = C_LIB.sethostname(hostname, hostname.length() + 1)
         if (result != 0) {
             throw new IllegalStateException("sethostname failed: ${Native.getLastError()}")
         }
@@ -41,6 +40,7 @@ class CLibWrapper {
         }
         new String(buffer).trim()
     }
+
 
     /**
      * Mounts a filesystem.
@@ -83,7 +83,7 @@ class CLibWrapper {
      *
      * @param target The target mount point to unmount.
      */
-    static void umountForcefully(String target) {
+    static void umount2(String target) {
         if (!target) {
             throw new IllegalArgumentException("Target must not be null")
         }
@@ -150,6 +150,7 @@ class CLibWrapper {
      * @param argv     Arguments (must be null-terminated).
      * @param envp     Environment variables (must be null-terminated).
      */
+    @SuppressWarnings('GroovyUnusedAssignment')
     static void execve(String filename, String[] argv, String[] envp) {
         if (!filename || !argv || !envp) {
             throw new IllegalArgumentException("Filename, argv, and envp must not be null")
@@ -158,4 +159,6 @@ class CLibWrapper {
         def result = C_LIB.execve(filename, argv, envp)
         throw new IllegalStateException("execve failed: ${Native.getLastError()}")
     }
+
+
 }

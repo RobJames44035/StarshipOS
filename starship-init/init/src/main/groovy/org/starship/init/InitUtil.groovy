@@ -1,9 +1,13 @@
-//file:noinspection GroovyAssignabilityCheck
+// InitUtil.groovy
+//file:noinspection unused
 package org.starship.init
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
 import org.starship.jna.CLibWrapper
+
+import static groovy.lang.Closure.DELEGATE_FIRST
+
 /**
  * Utility class for system initialization tasks.
  */
@@ -12,14 +16,15 @@ class InitUtil {
 
     private static InitUtil instance = null // Singleton instance
 
-    // Instance fields
-    private File configFile
+    // Instance fields for properties
+    private String logLevel
+    private String logLocation
 
-    // Private constructor (for singleton)
-    private InitUtil() {}
+    private InitUtil() {} // Private constructor for singleton
 
     /**
      * Returns the singleton instance of InitUtil.
+     *
      * @return the singleton InitUtil instance
      */
     static InitUtil getInstance() {
@@ -30,21 +35,75 @@ class InitUtil {
     }
 
     /**
-     * Loads and configures the system by parsing the DSL and executing tasks.
+     * Handles the `system` block in the DSL.
+     *
+     * @param closure the closure defining system configuration
+     */
+    void system(Closure closure) {
+        log.info("Configuring system block...")
+        closure.delegate = this  // Delegate the closure to this instance of InitUtil
+        closure.resolveStrategy = DELEGATE_FIRST
+        closure.call()            // Execute the closure logic
+    }
+
+    // ---- Properties ----
+
+    void setLevel(String level) {
+        this.logLevel = level
+        log.info("Log level set to $level")
+    }
+
+    String getLevel() {
+        return this.logLevel
+    }
+
+    void setLocation(String location) {
+        this.logLocation = location
+        log.info("Log location set to $location")
+    }
+
+    String getLocation() {
+        return this.logLocation
+    }
+
+    // ---- DSL Parsing ----
+
+    /**
+     * Loads and configures the system using a Groovy DSL script.
+     *
+     * @param configScript the parsed Groovy configuration script
+     */
+    private void parseConfiguration(def configScript) {
+        configScript.metaClass.init = { Closure closure ->
+            closure.delegate = this
+            closure.resolveStrategy = DELEGATE_FIRST
+            closure.call()
+        }
+
+        // Expose specific InitUtil static methods as callable in DSL
+        configScript.metaClass.makeConsole = { -> makeConsole() }
+        configScript.metaClass.setHostname = { String hostname -> setHostname(hostname) }
+        configScript.metaClass.mount = { String a, String b, String c, long d, String e ->
+            mount(a, b, c, d, e)
+        }
+        configScript.metaClass.spawn = { Map args -> spawn(args) }
+
+        // Execute the DSL configuration
+        configScript.run()
+    }
+
+    /**
+     * Configures the system using a configuration file.
      *
      * @param configFile the configuration file to parse
      */
     void configureSystem(File configFile) {
-        this.configFile = configFile
-
         try {
             log.info("Loading configuration from: ${configFile.absolutePath}")
             def configScript = new GroovyShell().parse(configFile)
-
-            // Execute the system configuration DSL
             parseConfiguration(configScript)
         } catch (Exception e) {
-            log.error("Error occurred while configuring the system with file: ${e.message}", e)
+            log.error("Error occurred while configuring the system: ${e.message}", e)
             throw new IllegalStateException("System configuration failed.", e)
         }
     }
@@ -58,107 +117,140 @@ class InitUtil {
         try {
             log.info("Loading configuration from in-memory string.")
             def configScript = new GroovyShell().parse(cfgStr)
-
-            // Execute the system configuration DSL
             parseConfiguration(configScript)
         } catch (Exception e) {
-            log.error("Error occurred while configuring the system with in-memory string: ${e.message}", e)
+            log.error("Error occurred while configuring the system: ${e.message}", e)
             throw new IllegalStateException("System configuration failed.", e)
         }
     }
 
-    /**
-     * Parses and executes the DSL from the provided configuration script.
-     *
-     * @param configScript the parsed Groovy script representing the system configuration
-     */
-    private void parseConfiguration(def configScript) {
-        // Define the init root method for the DSL
-        configScript.metaClass.init = { Closure closure ->
-            closure.delegate = this // Delegate the closure to the current instance
-            closure.resolveStrategy = DELEGATE_ONLY
-            closure.call() // Execute the closure
-        }
+    // ---- Static DSL Methods ----
 
-        // Execute the configuration script
-        configScript.run()
-    }
-
-    // ---- DSL Methods ----
-
-    /**
-     * Handles the `system` block in the DSL.
-     *
-     * @param closure the closure defining the system configuration
-     */
-    def system(Closure closure) {
-        closure.delegate = this
-        closure.resolveStrategy = Closure.DELEGATE_ONLY
-        closure.call() // Execute system-specific logic
-    }
-
-    /**
-     * Sets the system hostname.
-     *
-     * @param hostname the hostname to configure
-     */
     static void setHostname(String hostname) {
-        log.info("Setting hostname to: $hostname")
-        try {
-            CLibWrapper.setHostname(hostname ?: "starship-os")
-            log.info("Hostname successfully set to: $hostname")
-        } catch (Exception e) {
-            log.error("Error while setting hostname: ${e.message}")
-            throw new IllegalStateException("Unable to set hostname.", e)
+        if (!hostname) {
+            throw new IllegalArgumentException("Hostname must not be null or empty")
         }
+        log.info("Setting hostname to: $hostname")
+        // Call JNA or system-specific method for hostname setting
     }
 
-    /**
-     * Creates a console at /dev/console if it doesn't already exist.
-     */
-    static void makeConsole() {
-        log.info("Checking for /dev/console...")
 
-        File console = new File("/dev/console")
-        if (console.exists()) {
+    /**
+    * Creates the /dev/console device node if it does not exist.
+    *
+    * This method checks for the existence of the `/dev/console` device. If the device
+    * does not exist, it attempts to create it programmatically using system-specific
+    * methods. The device node is created with the appropriate mode and major/minor numbers
+    * based on Unix/Linux standards.
+    *
+    * @throws IllegalStateException if the node creation fails or encounters an error.
+    */
+    static void makeConsole() {
+        log.info("Checking and creating /dev/console if necessary...")
+
+        File consoleDevice = new File("/dev/console")
+        if (consoleDevice.exists()) {
             log.info("/dev/console already exists. No action needed.")
             return
         }
-        log.info("/dev/console does not exist. Creating it now...")
 
-        // Create the device node using libc's mknod method
         try {
-            CLibWrapper.mknod("/dev/console", 0x2000 | 0x600, Native.dev(5, 1))
-            log.info("/dev/console created successfully.")
-        } catch(Exception e)
-            throw new IllegalStateException("Failed to create /dev/console: ${Native.getLastError()}")
+            // Mode: Character device with 0600 permissions
+            int mode = 0x2000 /* S_IFCHR */ | 0x180 // 0x180 is hexadecimal for octal 0600
+            int dev = (5 << 8) | 1 // Major 5, Minor 1
+
+            // Call the mknod system function via our CLibWrapper
+            int result = CLibWrapper.mknod("/dev/console", mode, dev) as int
+            if (result == 0) {
+                log.info("/dev/console created successfully.")
+            } else {
+                log.error("Failed to create /dev/console. Error code: ${Native.getLastError()}")
+                throw new IllegalStateException("Error creating /dev/console. Check permissions!")
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating /dev/console: ${e.message}", e)
+            throw new IllegalStateException("Failed to create /dev/console", e)
         }
+    }
+
 
     /**
-     * Mounts a filesystem based on the provided arguments.
-     *
-     * @param source the source of the filesystem
-     * @param target the mount point
-     * @param type the filesystem type
-     * @param flags optional mount flags
-     * @param data optional mount data
-     */
-    void mount(String source, String target, String type, long flags = 0L, String data = null) {
+    * Mounts a file system if the target is not already mounted.
+    *
+    * This method uses the underlying system calls to mount the given source to the specified target.
+    * If the `target` is already mounted, it skips the mounting process.
+    *
+    * @param source the source of the file system to be mounted
+    * @param target the directory where the file system should be mounted
+    * @param type the type of the file system (e.g., ext4, nfs, etc.)
+    * @param flags (optional) the mount flags, default is 0L
+    * @param data (optional) additional data for mounting, default is null
+    * @throws IllegalStateException if an error occurs during the mounting process
+    */
+    static void mount(String source, String target, String type, long flags = 0L, String data = null) {
+        log.info("Checking if $target is already mounted...")
+
+        // Check if the target is already mounted
+        if (isMounted(target)) {
+            log.info("$target is already mounted. Skipping mounting.")
+            return
+        }
+
         log.info("Mounting filesystem: source=$source, target=$target, type=$type, flags=$flags, data=$data")
         try {
+            // Call to the actual mounting logic (backed by system calls or wrappers)
             CLibWrapper.mount(source, target, type, flags, data)
-        } catch(Exception e) {
-            throw new IllegalStateException("Failed to mount $source to $target: Error code ${Native.getLastError()}")
+            Init.resourceTable.put(target, [source, type]) // Track the mounted resource
+            log.info("Successfully mounted $source to $target")
+        } catch (Exception e) {
+            log.error("Failed to mount filesystem: ${e.message}", e)
+            throw new IllegalStateException("Error mounting $source to $target", e)
         }
-        Init.resourceTable.put(target, [source, type])
-        log.info("Mounted filesystem: $source -> $target")
     }
 
     /**
-     * Spawns a process with the provided command and name.
+     * Checks if the given target is already mounted.
      *
-     * @param spawnArgs a map containing `command` and `name`
+     * @param target the mount point to check
+     * @return true if the target is mounted, false otherwise
      */
+    static boolean isMounted(String target) {
+        try {
+            // Read the /proc/mounts file to check current mounts
+            File procMounts = new File("/proc/mounts")
+            if (!procMounts.exists()) {
+                log.warn("Could not find /proc/mounts file to validate mounts. Assuming $target is not mounted.")
+                return false // Fail-safe: assume not mounted
+            }
+
+            // Iterate through each line of /proc/mounts and check for the target
+            for (String line : procMounts.readLines()) {
+                def parts = line.split("\\s+") // Split the line into components
+                if (parts.size() >= 2 && parts[1] == target) {
+                    log.info("$target is already mounted.")
+                    return true
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while checking mount status for $target: ${e.message}", e)
+        }
+
+        return false // Default to not mounted
+    }
+
+    /**
+    * Spawns a new process based on the provided parameters.
+    *
+    * This method allows you to spawn a new process given a command and a name.
+    * It validates the required parameters and logs the process creation.
+    *
+    * @param spawnArgs a map containing the required spawn arguments.
+    *                  Must include the following keys:
+    *                  - `command`: The command to be executed (String).
+    *                  - `name`: The name to identify the spawned process (String).
+    * @throws IllegalArgumentException if mandatory parameters (`command` or `name`) are missing.
+    * @throws IOException if an I/O error occurs during command execution.
+    */
     static void spawn(Map spawnArgs) {
         String command = spawnArgs.command
         String name = spawnArgs.name
@@ -169,35 +261,8 @@ class InitUtil {
         }
 
         log.info("Spawning process: $name with command: $command")
+        //noinspection GroovyUnusedAssignment
         Process process = command.execute()
-        Init.processTable.put(name, process)
-
-        log.info("Process $name started successfully (PID: ${process.pid()})")
-    }
-
-    /**
-     * Starts an interactive shell with a welcome message.
-     *
-     * @param welcomeMessage the message to display on startup
-     * @param shellPath the path to the shell
-     */
-    static void startInteractiveShell(String welcomeMessage, String shellPath) {
-        log.info("Starting interactive shell with welcome message: \"$welcomeMessage\" and shell: $shellPath")
-        println("\n$welcomeMessage\n")
-
-        try {
-            Process shell = new ProcessBuilder(shellPath)
-                    .inheritIO()
-                    .start()
-
-            int exitCode = shell.waitFor()
-            log.info("Interactive shell exited with code: $exitCode")
-        } catch (IOException e) {
-            log.error("Failed to start interactive shell: ${e.message}", e)
-            throw new IllegalStateException("Could not start interactive shell at $shellPath.", e)
-        } catch (InterruptedException e) {
-            log.error("Interactive shell was interrupted: ${e.message}", e)
-            Thread.currentThread().interrupt()
-        }
+        log.info("Process $name started successfully.")
     }
 }

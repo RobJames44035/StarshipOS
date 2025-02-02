@@ -2,31 +2,12 @@
 # The init script to set up system mounts, console, and start the jar.
 # shellcheck disable=SC3045
 ulimit -c unlimited
-# Step 1: Mount required filesystems
-echo "Mounting filesystems..." > /dev/console
-
-mount -t proc proc /proc || echo "Failed to mount /proc" > /dev/console
-mount -t sysfs sys /sys || echo "Failed to mount /sys" > /dev/console
-
-# Skip mounting /dev if it's already mounted
-if ! mountpoint -q /dev; then
-    echo "/dev is not mounted. Mounting /dev..." > /dev/console
-    mount -t devtmpfs devtmpfs /dev || echo "Failed to mount /dev" > /dev/console
-else
-    echo "/dev is already mounted. Skipping..." > /dev/console
-fi
-
-# Mount additional temporary filesystems
-mkdir -p /tmp /run /run/dbus
-sudo chmod 755 /run/dbus
-mount -t tmpfs tmpfs /tmp || echo "Failed to mount /tmp" > /dev/console
-mount -t tmpfs tmpfs /run || echo "Failed to mount /run" > /dev/console
 
 # Step 2: Create /dev/console if missing
-if [ ! -e /dev/console ]; then
-    echo "/dev/console missing, creating..." > /dev/console
-    mknod /dev/console c 5 1
-fi
+#if [ ! -e /dev/console ]; then
+#    echo "/dev/console missing, creating..." > /dev/console
+#    mknod /dev/console c 5 1
+#fi
 
 # Step 3: Save random seed for entropy
 echo "Saving random seed..." > /dev/console
