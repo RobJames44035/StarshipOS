@@ -265,4 +265,55 @@ class InitUtil {
         Process process = command.execute()
         log.info("Process $name started successfully.")
     }
+
+    /**
+     * Starts the logon process for the system.
+     */
+    static void logon() {
+        try {
+            println("Starting logon process...")
+
+            // Display a simple welcome message or banner
+            println("Welcome to StarshipOS!")
+
+            // Simulate a login prompt (basic example, no authentication)
+            println("Please log in below:")
+            System.console().flush()
+
+            // Get the username (you can expand this with a password system)
+            String username = System.console().readLine("Username: ")
+
+            // Validate the username (add your own logic here)
+            if (username != null && !username.strip().isEmpty()) {
+                println("Hello, $username!")
+                println("Starting your shell...")
+                interactiveShell("Welcome to StarshipOS!", "/bin/sh")
+            } else {
+                println("Invalid username. Exiting system.")
+            }
+        } catch (Exception e) {
+            println("Logon process failed: ${e.message}")
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * Interactive shell adapted for logon.
+     */
+    static void interactiveShell(String welcomeMessage, String shellPath) {
+        try {
+            println(welcomeMessage)
+            File shellFile = new File(shellPath)
+            if (!shellFile.exists() || !shellFile.canExecute()) {
+                throw new IllegalArgumentException("Path to shell is invalid: $shellPath")
+            }
+            // Start a shell
+            ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh")
+            processBuilder.inheritIO()
+            Process loginProcess = processBuilder.start()
+            loginProcess.waitFor()
+        } catch (Exception e) {
+            println("Failed to launch shell: ${e.message}")
+        }
+    }
 }

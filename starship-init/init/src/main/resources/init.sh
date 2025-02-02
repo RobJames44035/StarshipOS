@@ -29,13 +29,13 @@ klogd || echo "Failed to start klogd" > /dev/console
 
 # Step 5: Start system message bus (D-Bus)
 echo "Starting system message bus..." > /dev/console
-rm /run/messagebus.pid
-dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
+#rm /run/messagebus.pid
+#dbus-daemon --system || echo "Failed to start dbus-daemon" > /dev/console
 
 # Step 6: Configure network (simplified for DHCP setup)
-echo "Starting network..." > /dev/console
-ifconfig eth0 up
-udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
+#echo "Starting network..." > /dev/console
+#ifconfig eth0 up
+#udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 
 # Optional: Start graphical environment
 #if [ -e "/usr/bin/startx" ]; then
@@ -45,9 +45,9 @@ udhcpc -i eth0 || echo "Network configuration failed." > /dev/console
 
 # Step 7: Start the init system
 echo "Starting the Java application..." > /dev/console
-exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
-    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
-    exec /bin/sh
-}
+#exec java -Xmx2g -Xms1g -Xss32m -jar /var/lib/starship/init.jar || {
+#    echo "Init.groovy failed, dropping to emergency shell." > /dev/console
+#    exec /bin/sh
+#}
 exec /sbin/init # start Init.groovy
 
