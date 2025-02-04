@@ -14,6 +14,10 @@
         <version>1.0.0</version>
     </parent>
     <artifactId>starship-userland</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>pre-packaged</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

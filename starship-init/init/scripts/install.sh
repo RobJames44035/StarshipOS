@@ -13,7 +13,7 @@ function mount_rootfs() {
 
 function make_dirs() {
   echo "Creating directories."
-  sudo mkdir -pv "/mnt/rootfs/var/lib/starship/" "/mnt/rootfs/etc/starship/config.d"
+  sudo mkdir -pf "/mnt/rootfs/var/lib/starship/" "/mnt/rootfs/etc/starship/config.d" "/mnt/rootfs/var/lib/dbus"
 }
 
 function copy_files() {

@@ -876,3 +876,4 @@ build/
 /lib/org/testng/testng/7.5.1/testng-7.5.1.pom.sha1
 /starship-init/osgi-manager/dependency-reduced-pom.xml
 /1
+/starship-userland/pre-packaged/dependency-reduced-pom.xml

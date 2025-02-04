@@ -4,7 +4,6 @@
 
 package org.starship.jna
 
-
 import com.sun.jna.Native
 
 class CLibWrapper {
@@ -160,5 +159,7 @@ class CLibWrapper {
         throw new IllegalStateException("execve failed: ${Native.getLastError()}")
     }
 
-
+    static void sync() {
+        C_LIB.sync()
+    }
 }
