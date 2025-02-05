@@ -77,9 +77,6 @@ function main() {
   make_dirs
   copy_files
   cleanup_litter
-#  tree "/mnt/rootfs"
-  echo "Paused..."
-  read -p "x"
   unmount_rootfs
 }
 

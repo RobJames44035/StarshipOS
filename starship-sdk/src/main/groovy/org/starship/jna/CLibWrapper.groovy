@@ -8,7 +8,10 @@ import com.sun.jna.Native
 
 class CLibWrapper {
 
-    private static final CLib C_LIB = CLib.INSTANCE
+    // Static boolean to switch between native calls and ProcessBuilder
+    static final boolean nativeCall = false // Set to `true` to use JNA native calls
+
+    private static final CLib C_LIB = null // CLib.INSTANCE
 
     /**
      * Changes the hostname of the system.
@@ -20,9 +23,24 @@ class CLibWrapper {
             throw new IllegalArgumentException("Hostname must not be null or empty")
         }
 
-        def result = C_LIB.sethostname(hostname, hostname.length() + 1)
-        if (result != 0) {
-            throw new IllegalStateException("sethostname failed: ${Native.getLastError()}")
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.sethostname(hostname, hostname.length() + 1)
+            if (result != 0) {
+                throw new IllegalStateException("sethostname failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder - Use traditional echo to /proc/sys/kernel/hostname
+            try {
+                def process = new ProcessBuilder("sh", "-c", "echo ${hostname} > /proc/sys/kernel/hostname").start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("setHostname failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to set hostname using ProcessBuilder")
+            }
         }
     }
 
@@ -32,14 +50,26 @@ class CLibWrapper {
      * @return The current hostname.
      */
     static String getHostname() {
-        def buffer = new byte[256] // Max hostname length on Linux
-        def result = C_LIB.gethostname(buffer, buffer.length)
-        if (result != 0) {
-            throw new IllegalStateException("gethostname failed: ${Native.getLastError()}")
+        if (nativeCall) {
+            // Native operation using JNA
+            def buffer = new byte[256] // Max hostname length on Linux
+            def result = C_LIB.gethostname(buffer, buffer.length)
+            if (result != 0) {
+                throw new IllegalStateException("gethostname failed: ${Native.getLastError()}")
+            }
+            return new String(buffer).trim()
+        } else {
+            // Fallback to ProcessBuilder
+            try {
+                def process = new ProcessBuilder("hostname").start()
+                def result = process.inputStream.text.trim()
+                return result
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to get hostname using ProcessBuilder")
+            }
         }
-        new String(buffer).trim()
     }
-
 
     /**
      * Mounts a filesystem.
@@ -55,9 +85,25 @@ class CLibWrapper {
             throw new IllegalArgumentException("Target and filesystem type must not be null")
         }
 
-        def result = C_LIB.mount(source, target, fsType, mountFlags, data)
-        if (result != 0) {
-            throw new IllegalStateException("mount failed: ${Native.getLastError()}")
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.mount(source, target, fsType, mountFlags, data)
+            if (result != 0) {
+                throw new IllegalStateException("mount failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder (requires explicit command-line mount invocation)
+            try {
+                def command = source ? ["mount", "-t", fsType, source, target] : ["mount", "-t", fsType, "none", target]
+                def process = new ProcessBuilder(command).start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("mount failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to mount using ProcessBuilder")
+            }
         }
     }
 
@@ -71,9 +117,24 @@ class CLibWrapper {
             throw new IllegalArgumentException("Target must not be null")
         }
 
-        def result = C_LIB.umount(target)
-        if (result != 0) {
-            throw new IllegalStateException("umount failed: ${Native.getLastError()}")
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.umount(target)
+            if (result != 0) {
+                throw new IllegalStateException("umount failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder
+            try {
+                def process = new ProcessBuilder("umount", target).start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("umount failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to unmount using ProcessBuilder")
+            }
         }
     }
 
@@ -87,79 +148,104 @@ class CLibWrapper {
             throw new IllegalArgumentException("Target must not be null")
         }
 
-        def result = C_LIB.umount2(target, (int) CLib.MNT_FORCE)
-        if (result != 0) {
-            throw new IllegalStateException("umount2 (force) failed: ${Native.getLastError()}")
-        }
-    }
-
-    /**
-     * Performs an lstat system call to retrieve file information.
-     *
-     * @param path The file path to analyze.
-     * @return A Stat object containing file information.
-     */
-    static CLib.Stat lstat(String path) {
-        if (!path) {
-            throw new IllegalArgumentException("Path must not be null")
-        }
-
-        def stat = new CLib.Stat()
-        def result = C_LIB.lstat(path, stat)
-        if (result != 0) {
-            throw new IllegalStateException("lstat failed for $path: ${Native.getLastError()}")
-        }
-        stat
-    }
-
-    /**
-     * Creates a special or ordinary file.
-     *
-     * @param pathname The path to create the file.
-     * @param mode     The file mode (e.g., CLib.S_IFCHR for a char device).
-     * @param dev      The device ID or 0 for regular files.
-     */
-    static void mknod(String pathname, int mode, long dev) {
-        if (!pathname) {
-            throw new IllegalArgumentException("Pathname must not be null")
-        }
-
-        def result = C_LIB.mknod(pathname, mode, dev)
-        if (result != 0) {
-            throw new IllegalStateException("mknod failed for $pathname: ${Native.getLastError()}")
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.umount2(target, (int) CLib.MNT_FORCE)
+            if (result != 0) {
+                throw new IllegalStateException("umount2 (force) failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder
+            try {
+                def process = new ProcessBuilder("umount", "-f", target).start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("umount2 failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to force unmount using ProcessBuilder")
+            }
         }
     }
 
     /**
      * Reboots the system.
      *
-     * @param magic The reboot magic constant (e.g., CLib.LINUX_REBOOT_CMD_HALT).
+     * @param cmd The reboot command, e.g., CLib.LINUX_REBOOT_CMD_RESTART.
      */
-    static void reboot(int magic) {
-        def result = C_LIB.reboot(magic)
-        if (result != 0) {
-            throw new IllegalStateException("Reboot failed: ${Native.getLastError()}")
+    static void reboot(int cmd) {
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.reboot(cmd)
+            if (result != 0) {
+                throw new IllegalStateException("reboot failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder - Trigger a reboot using /proc/sysrq-trigger
+            try {
+                def process = new ProcessBuilder("sh", "-c", "echo b > /proc/sysrq-trigger").start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("Reboot failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to reboot using ProcessBuilder")
+            }
         }
     }
 
     /**
-     * Executes a program, replacing the current process.
-     *
-     * @param filename The path to the executable.
-     * @param argv     Arguments (must be null-terminated).
-     * @param envp     Environment variables (must be null-terminated).
+     * Synchronizes the filesystem buffers.
      */
-    @SuppressWarnings('GroovyUnusedAssignment')
-    static void execve(String filename, String[] argv, String[] envp) {
-        if (!filename || !argv || !envp) {
-            throw new IllegalArgumentException("Filename, argv, and envp must not be null")
+    static void sync() {
+        if (nativeCall) {
+            // Native operation using JNA
+            C_LIB.sync()
+        } else {
+            // Fallback to ProcessBuilder - Directly call the sync binary
+            try {
+                def process = new ProcessBuilder("sync").start()
+                process.waitFor()
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to sync using ProcessBuilder")
+            }
         }
-
-        def result = C_LIB.execve(filename, argv, envp)
-        throw new IllegalStateException("execve failed: ${Native.getLastError()}")
     }
 
-    static void sync() {
-        C_LIB.sync()
+    /**
+     * Executes a program.
+     *
+     * @param file The program to execute.
+     * @param argv Arguments for the program.
+     * @param envp Environment variables for the execution.
+     */
+    static void execve(String file, String[] argv, String[] envp) {
+        if (!file) {
+            throw new IllegalArgumentException("File must not be null")
+        }
+
+        if (nativeCall) {
+            // Native operation using JNA
+            def result = C_LIB.execve(file, argv, envp)
+            if (result != 0) {
+                throw new IllegalStateException("execve failed: ${Native.getLastError()}")
+            }
+        } else {
+            // Fallback to ProcessBuilder - Execute the file with arguments
+            try {
+                def command = [file] + ((argv ?: []) as String)
+                def process = new ProcessBuilder(command).inheritIO().start()
+                process.waitFor()
+                if (process.exitValue() != 0) {
+                    throw new IllegalStateException("execve failed using ProcessBuilder")
+                }
+            } catch (Exception e) {
+                e.printStackTrace()
+                throw new RuntimeException("Failed to execve using ProcessBuilder")
+            }
+        }
     }
 }

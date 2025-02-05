@@ -1,12 +1,13 @@
-package org.starship.init
+package org.starship.sys
 
+import org.starship.init.Init
 
 import java.util.concurrent.ConcurrentHashMap
 
 class SystemResources implements Serializable {
     private static final long serialVersionUID = 1L
 
-    ConcurrentHashMap<String, Process> processTable = new ConcurrentHashMap<>()
+    ConcurrentHashMap<String, Object> processTable = new ConcurrentHashMap<>()
     ConcurrentHashMap<String, Object> resourceTable = new ConcurrentHashMap<>()
     ConcurrentHashMap<String, Object> serviceTable = new ConcurrentHashMap<>()
 

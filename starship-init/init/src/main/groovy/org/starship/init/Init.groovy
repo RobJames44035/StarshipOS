@@ -2,7 +2,9 @@
 package org.starship.init
 
 import groovy.util.logging.Slf4j
+import org.starship.init.util.InitUtil
 import org.starship.sys.PanicException
+import org.starship.sys.SystemResources
 
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
@@ -46,9 +48,7 @@ class Init {
     static void main(final String[] args) {
         try {
             if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
-                log.warn("Warning: This program is not running as PID 1!")
-            } else {
-                resources.processTable.put("org.starship.init.Init", this as Process)
+                throw new PanicException("This program is not running as PID 1!")
             }
 
             log.info("Initializing StarshipOS...")
@@ -148,11 +148,13 @@ class Init {
      */
     static void reapZombies() {
         log.info("Reaping zombie processes...")
-        resources.processTable.each { String name, Process process ->
+        resources.processTable.each { String name, Object process ->
             try {
-                if (process?.waitFor(0, TimeUnit.SECONDS)) {
-                    log.info("Reaped zombie process: ${name}")
-                    resources.processTable.remove(name)
+                if (process instanceof Process) {
+                    if (process?.waitFor(0, TimeUnit.SECONDS)) {
+                        log.info("Reaped zombie process: ${name}")
+                        resources.processTable.remove(name)
+                    }
                 }
             } catch (Exception e) {
                 log.error("Error reaping process ${name}: ${e.message}", e)

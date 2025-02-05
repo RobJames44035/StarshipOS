@@ -2,12 +2,12 @@
 //file:noinspection unused
 //file:noinspection GroovyInfiniteLoopStatement
 //file:noinspection GroovyAssignabilityCheck
-package org.starship.init
+package org.starship.init.util
 
 import com.sun.jna.Native
 import groovy.util.logging.Slf4j
+import org.starship.init.Init
 import org.starship.jna.CLibWrapper
-import org.starship.osgi.OSGiManager
 
 import static groovy.lang.Closure.DELEGATE_FIRST
 /**
@@ -62,16 +62,15 @@ class InitUtil {
     static void service(Map serviceArgs) {
         if (!serviceArgs.name || !serviceArgs.command) {
             log.error("Service definition failed: 'name' or 'command' is missing.")
-            throw new IllegalArgumentException("Service 'name' and 'command' are required.")
         }
 
         // Default values for optional fields
         serviceArgs.descr = serviceArgs.descr ?: "No description available"
 
         // Enforce RestartPolicy enumeration
-        serviceArgs.policy = serviceArgs.policy ?: OSGiManager.RestartPolicy.NO
-        if (!(serviceArgs.policy instanceof OSGiManager.RestartPolicy)) {
-            throw new IllegalArgumentException("Invalid 'policy' value. Must use RestartPolicy enumeration.")
+        serviceArgs.policy = serviceArgs.policy ?: ServiceRestartPolicy.NO
+        if (!(serviceArgs.policy instanceof ServiceRestartPolicy)) {
+            log.error("Invalid restart policy.")
         }
 
         serviceArgs.restartDelay = serviceArgs.restartDelay ?: 0
@@ -79,10 +78,10 @@ class InitUtil {
         log.info("Defining service: ${serviceArgs.name} with command: ${serviceArgs.command} and policy: ${serviceArgs.policy}")
 
         // Add service definition to the serviceTable
-        if (Init.serviceTable.containsKey(serviceArgs.name)) {
+        if (Init.resources.serviceTable.containsKey(serviceArgs.name)) {
             log.warn("Service ${serviceArgs.name} is already defined. Overwriting definition.")
         }
-        Init.serviceTable.put(serviceArgs.name, serviceArgs)
+        Init.resources.serviceTable.put(serviceArgs.name, serviceArgs)
     }
 
     /**
@@ -91,19 +90,16 @@ class InitUtil {
      * Spawns each service process and tracks them in `processTable`.
      */
     static void startServices() {
-        log.info("Starting ${Init.serviceTable.size()} service(s)...")
+        log.info("Starting ${Init.resources.serviceTable.size()} service(s)...")
 
-        Init.serviceTable.each { serviceName, service ->
+        Init.resources.serviceTable.each { String serviceName, Map service ->
             try {
                 log.info("Starting service: $serviceName")
 
                 // Spawn the process for this service
-                Process process = service.command.execute()
+                Process process = new ProcessBuilder(service.command).start()
+                Init.resources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
-
-                // Track the process in processTable
-                Init.processTable.put(serviceName, process)
-
                 // Handle restart policy
                 if (service.policy.toLowerCase() == "restart-always") {
                     handleServiceRestart(service as Map)
@@ -124,7 +120,7 @@ class InitUtil {
             while (true) {
                 try {
                     // Wait for the process to finish
-                    Process process = Init.processTable.get(service.name) as Process
+                    Process process = Init.resources.processTable.get(service.name) as Process
                     process.waitFor()
                     log.warn("Service '${service.name}' has terminated unexpectedly. Restarting...")
 
@@ -132,8 +128,8 @@ class InitUtil {
                     Thread.sleep(service.restartDelay * 1000)
 
                     // Restart the service
-                    Process restartedProcess = service.command.execute()
-                    Init.processTable.put(service.name, restartedProcess) // Replace old process reference
+                    Process restartedProcess = new ProcessBuilder(service.command).start()
+                    Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {
                     log.error("Error while restarting service '${service.name}': ${e.message}", e)
@@ -308,7 +304,7 @@ class InitUtil {
         try {
             // Call to the actual mounting logic (backed by system calls or wrappers)
             CLibWrapper.mount(source, target, type, flags, data)
-            Init.resourceTable.put(target, [source, type]) // Track the mounted resource
+            Init.resources.resourceTable.put(target, [source, type]) // Track the mounted resource
             log.info("Successfully mounted $source to $target")
         } catch (Exception e) {
             log.error("Failed to mount filesystem: ${e.message}", e)
@@ -371,6 +367,7 @@ class InitUtil {
         log.info("Spawning process: $name with command: $command")
         //noinspection GroovyUnusedAssignment
         Process process = command.execute()
+        Init.resources.processTable.put(process.class.name, process)
         log.info("Process $name started successfully.")
     }
 
@@ -391,6 +388,32 @@ class InitUtil {
             loginProcess.waitFor()
         } catch (Exception e) {
             println("Failed to launch shell: ${e.message}")
+        }
+    }
+
+    enum ServiceRestartPolicy {
+        NO("no", "The service will not be restarted automatically under any circumstances."),
+        ON_SUCCESS("on-success", "The service will restart only if it exits cleanly with an exit code of `0` or `Success`."),
+        ON_FAILURE("on-failure", "The service will restart if it exits with a non-zero exit code, is terminated by a signal, or due to a timeout."),
+        ON_ABNORMAL("on-abnormal", "The service will restart only if it gets terminated by a signal (e.g., segmentation fault or kill signal)."),
+        ON_ABORT("on-abort", "The service will restart if it is aborted (e.g., due to an assertion failure or explicit abort)."),
+        ON_WATCHDOG("on-watchdog", "The service will restart if it fails to send the expected watchdog signal to Init.groovy."),
+        ALWAYS("always", "The service will restart regardless of why it stopped.")
+
+        final String name
+        final String descr
+
+        ServiceRestartPolicy(final String name, final String descr) {
+            this.name = name
+            this.descr = descr
+        }
+
+        static ServiceRestartPolicy fromCode(String name) {
+            values().find { it.name == name }
+        }
+
+        static ServiceRestartPolicy fromName(String name) {
+            values().find { it.name() == name.toUpperCase() }
         }
     }
 }
