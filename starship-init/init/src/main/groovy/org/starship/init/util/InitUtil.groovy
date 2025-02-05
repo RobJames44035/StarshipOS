@@ -231,7 +231,6 @@ class InitUtil {
             parseConfiguration(configScript)
         } catch (Exception e) {
             log.error("Error occurred while configuring the system: ${e.message}", e)
-            throw new IllegalStateException("System configuration failed.", e)
         }
     }
 
@@ -247,7 +246,6 @@ class InitUtil {
             parseConfiguration(configScript)
         } catch (Exception e) {
             log.error("Error occurred while configuring the system: ${e.message}", e)
-            throw new IllegalStateException("System configuration failed.", e)
         }
     }
 

@@ -1,7 +1,3 @@
-import org.starship.service.ServiceRestartPolicy
-import groovy.util.logging.Slf4j
-
-@Slf4j
 init {
     system {
         // Set the hostname via glibc
