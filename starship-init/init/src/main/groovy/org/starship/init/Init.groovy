@@ -7,6 +7,20 @@ import org.starship.sys.PanicException
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
 
+
+/**
+ * The Init class is responsible for initializing and supervising the StarshipOS system.
+ * It handles various critical tasks such as loading system configurations,
+ * managing system resources, and supervising processes to ensure smooth operation.
+ * <p>
+ * Key functionalities include:
+ * <ul>
+ *   <li>System initialization and configuration</li>
+ *   <li>Reaping zombie processes</li>
+ *   <li>Setting up a shutdown hook for cleanup</li>
+ *   <li>Running a supervision loop to monitor the system</li>
+ * </ul>
+ */
 @Slf4j
 class Init {
 
@@ -16,13 +30,19 @@ class Init {
     // Tables for dynamically managing resources and services
     static final SystemResources resources = SystemResources.getInstance()
 
-    // Last heartbeat timestamp from OSGiManager
-//    static volatile long osgiManagerLastHeartbeat = System.currentTimeMillis()
-//    static final long HEARTBEAT_TIMEOUT = 10000 // Timeout duration for heartbeats in milliseconds (10 seconds)
 
-    // Instantiate the DBusServiceRegistry (singleton for this process)
-//    static final DBusServiceRegistry dbusRegistry = new DBusServiceRegistry()
-
+    /**
+     * Main entry point of the application.
+     *
+     * This method initializes the StarshipOS system by performing the following tasks:
+     * - Verifies if the process is running as PID 1 (warns if it's not).
+     * - Sets up a shutdown hook for cleanup during termination.
+     * - Configures the system using the preferred or fallback configuration files.
+     * - Enters the supervision loop to monitor and manage system stability.
+     *
+     * @param args Command-line arguments passed to the program.
+     * @throws PanicException If a critical error occurs during initialization.
+     */
     static void main(final String[] args) {
         try {
             if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
@@ -43,6 +63,21 @@ class Init {
         }
     }
 
+
+    /**
+     * Configures the StarshipOS system using configuration files.
+     *
+     * This method attempts to load the primary system configuration file specified
+     * by {@link #PRIMARY_CONFIG_PATH}. If the primary configuration file does not exist,
+     * it falls back to using the default configuration file located at {@link #FALLBACK_CONFIG_PATH}.
+     *
+     * The method validates the existence of the configuration file or fallback resource, 
+     * attempts to read its content, and performs system setup accordingly.
+     *
+     * @return true if the system configuration is successfully loaded and applied.
+     * @throws PanicException if configuration files are missing or there is a failure
+     *                        during the system setup process.
+     */
     static boolean configureSystem() {
         try {
             File configFile = new File(PRIMARY_CONFIG_PATH)
@@ -74,6 +109,19 @@ class Init {
         }
     }
 
+
+    /**
+     * The main supervision loop responsible for maintaining system stability.
+     *
+     * This method continually performs various supervision tasks, such as:
+     * - Reaping zombie processes to free system resources.
+     * - Logging and monitoring system health at regular intervals.
+     *
+     * The loop runs indefinitely unless interrupted by an external shutdown signal.
+     * Errors occurring during the loop are logged without halting its execution.
+     *
+     * @throws RuntimeException if an unexpected error occurs that affects the loop's functionality
+     */
     static void supervisorLoop() {
         log.info("Starting Supervisor Loop...")
         while (true) {
@@ -87,29 +135,17 @@ class Init {
         }
     }
 
-//    static boolean isOSGiManagerDown() {
-//        long currentTime = System.currentTimeMillis()
-//        boolean isDown = (currentTime - osgiManagerLastHeartbeat) > HEARTBEAT_TIMEOUT
-//        if (isDown) {
-//            log.warn("No heartbeat received from OSGiManager within ${HEARTBEAT_TIMEOUT} ms.")
-//        }
-//        return isDown
-//    }
-
-//    static void emitRestartSignal(String serviceName) {
-//        dbusRegistry.emitSignal(new ServiceControlSignals.RestartServiceSignal("/" + serviceName, serviceName))
-//        log.info("RestartServiceSignal emitted for service: ${serviceName}")
-//    }
-
-//    static void initiateCascadingShutdown() {
-//        log.warn("Shutting down all services...")
-//        resources.serviceTable.each { serviceName, _ ->
-//            dbusRegistry.emitSignal(new ServiceControlSignals.ShutdownServiceSignal("/" + serviceName, serviceName))
-//            log.info("ShutdownServiceSignal emitted for service: ${serviceName}")
-//        }
-//        System.exit(0)
-//    }
-
+    /**
+     * Reaps zombie processes from the system process table.
+     *
+     * Zombie processes are terminated child processes that have not been properly
+     * waited on, which can consume system resources unnecessarily. This method
+     * iterates through the process table, checks if each process has completed,
+     * and removes it from the table if it has exited.
+     *
+     * Any errors encountered during the reaping process are logged without affecting
+     * other processes in the table.
+     */
     static void reapZombies() {
         log.info("Reaping zombie processes...")
         resources.processTable.each { String name, Process process ->
@@ -124,6 +160,22 @@ class Init {
         }
     }
 
+
+    /**
+     * Sets up a shutdown hook to handle cleanup during system termination.
+     *
+     * This method registers a shutdown hook using the Java {@link Runtime} class.
+     * When the system receives a termination signal, the shutdown hook performs
+     * the following cleanup tasks:
+     * <ul>
+     *   <li>Iterates through the process table and terminates all active processes.</li>
+     *   <li>Logs the termination of each process for monitoring and debugging purposes.</li>
+     *   <li>Closes the DBus registry to free up resources and ensure proper shutdown behavior.</li>
+     * </ul>
+     *
+     * Any exceptions encountered during the shutdown process are logged without affecting
+     * the completion of other cleanup tasks.
+     */
     static void setupShutdownHook() {
         Runtime.runtime.addShutdownHook(new Thread({
             log.info("Shutdown hook triggered. Cleaning up...")
@@ -135,30 +187,4 @@ class Init {
         }))
     }
 
-//    static void registerSignalHandlers() {
-//        dbusRegistry.registerSignalHandler(OSGiManager.OSGiManagerSignals.OSGiHeartbeatSignal) { signal ->
-//            log.info("Heartbeat received from OSGiManager.")
-//            osgiManagerLastHeartbeat = System.currentTimeMillis()
-//        }
-//    }
-
-//    static class ServiceControlSignals {
-//        static class RestartServiceSignal extends DBusSignal {
-//            final String serviceName
-//
-//            RestartServiceSignal(String objectPath, String serviceName) throws DBusException {
-//                super(objectPath)
-//                this.serviceName = serviceName
-//            }
-//        }
-//
-//        static class ShutdownServiceSignal extends DBusSignal {
-//            final String serviceName
-//
-//            ShutdownServiceSignal(String objectPath, String serviceName) throws DBusException {
-//                super(objectPath)
-//                this.serviceName = serviceName
-//            }
-//        }
-//    }
 }
