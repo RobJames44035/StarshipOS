@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# StarshipOS Copyright (c) 2025. R.A. James
+# StarshipOS Copyright (c) 2025. R. A. James
 #
 
 #
@@ -31,11 +31,11 @@ function make_dirs() {
 #
 function copy_files() {
   echo "Copy files."
-  sudo wget "https://downloads.apache.org/activemq/activemq-artemis/2.39.0/apache-artemis-2.39.0-bin.tar.gz" --progress=dot -O "repo/apache-artemis-2.39.0-bin.tar.gz"
+  sudo wget "https://downloads.apache.org/activemq/activemq-artemis/2.39.0/apache-artemis-2.39.0-bin.tar.gz" -O "repo/apache-artemis-2.39.0-bin.tar.gz"
   sudo tar xvf "repo/apache-artemis-2.39.0-bin.tar.gz"
   sudo cp -rpv "./apache-artemis-2.39.0" "/mnt/rootfs/opt"
 
-  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" --progress=dot  -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
+  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
   sudo unzip "repo/org.apache.felix.main.distribution-7.0.5.zip"
   sudo cp -rpv "./felix-framework-7.0.5" "/mnt/rootfs/opt"
 }
@@ -58,10 +58,8 @@ function cleanup_litter() {
   echo "Cleaning up."
   sudo rm -rf "./apache-artemis-2.39.0"
   sudo rm -rf "./felix-framework-7.0.5"
-  sudo rm -rf "./jdk-23.0.2"
 
   sudo rm "repo/apache-artemis-2.39.0-bin.tar.gz"
-  sudo rm "repo/openjdk-23.0.2_linux-x64_bin.tar.gz"
   sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
 
   sudo sync
