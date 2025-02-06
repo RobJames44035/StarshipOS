@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# StarshipOS Copyright (c) 2025. R. A. James
+#
+
 clear
 figlet "Building & Running"
 figlet "StarshipOS QEMU"
