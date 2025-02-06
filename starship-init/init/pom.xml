@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.starship</groupId>
         <artifactId>starship-init</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>init</artifactId>
@@ -24,24 +24,58 @@
     <dependencies>
         <dependency>
             <groupId>org.starship</groupId>
-            <artifactId>event-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.starship</groupId>
-            <artifactId>event-core</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.starship</groupId>
             <artifactId>starship-sdk</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.starship</groupId>
+            <artifactId>osgi-manager</artifactId>
+            <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <!-- install to rootfs.ext4 -->
+                    <execution>
+                        <id>install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/install.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- clean -->
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/clean.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Uber-jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
