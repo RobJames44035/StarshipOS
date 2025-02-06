@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R. A. James
+ */
+
 //file:noinspection GroovyInfiniteLoopStatement
 package org.starship.init
 
@@ -26,8 +30,8 @@ import java.util.concurrent.TimeUnit
 @Slf4j
 class Init {
 
-    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.cfg"
-    static String FALLBACK_CONFIG_PATH = "/default-init.cfg"
+    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
+    static String FALLBACK_CONFIG_PATH = "default-init.groovy"
 
     // Tables for dynamically managing resources and services
     static final SystemResources resources = SystemResources.getInstance()
@@ -85,7 +89,7 @@ class Init {
 
             if (!configFile.exists()) {
                 log.warn("Primary config not found at $PRIMARY_CONFIG_PATH. Attempting to load fallback config: $FALLBACK_CONFIG_PATH")
-                def fallbackStream = Init.class.classLoader.getResourceAsStream("default-init.cfg")
+                InputStream fallbackStream = Init.class.classLoader.getResourceAsStream(FALLBACK_CONFIG_PATH)
                 if (fallbackStream == null) {
                     log.error("Fallback configuration not found. Aborting!")
                     throw new PanicException("System configuration missing! Initialization cannot proceed.")

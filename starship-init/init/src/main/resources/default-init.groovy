@@ -1,6 +1,9 @@
+/*
+ * StarshipOS Copyright (c) 2025. R. A. James
+ */
+
 init {
     system {
-        // Set the hostname via glibc
         setHostname "starship-os"
 
         // Define the /dev/console special device

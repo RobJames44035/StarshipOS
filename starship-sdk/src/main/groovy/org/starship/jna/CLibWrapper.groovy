@@ -1,9 +1,12 @@
 /*
- * StarshipOS Copyright (c) 2025. R.A. James
+ * StarshipOS Copyright (c) 2025. R. A. James
  */
 
 package org.starship.jna
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class CLibWrapper {
 
     // Static boolean to switch between native calls and ProcessBuilder
@@ -93,13 +96,12 @@ class CLibWrapper {
             // Fallback to ProcessBuilder (requires explicit command-line mount invocation)
             try {
                 def command = source ? ["mount", "-t", fsType, source, target] : ["mount", "-t", fsType, "none", target]
-                def process = new ProcessBuilder(command).start()
+                Process process = new ProcessBuilder(command).start()
                 process.waitFor()
                 if (process.exitValue() != 0) {
-                    throw new IllegalStateException("mount failed using ProcessBuilder")
                 }
             } catch (Exception e) {
-                e.printStackTrace()
+                log.error(e.message, e)
                 throw new RuntimeException("Failed to mount using ProcessBuilder")
             }
 //        }
