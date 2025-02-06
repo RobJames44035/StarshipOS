@@ -1,7 +1,12 @@
+/*
+ * StarshipOS Copyright (c) 2025. R. A. James
+ */
+
 package org.starship.sys
 
 
 import groovy.util.logging.Slf4j
+import org.starship.jna.CLib
 
 /**
  * Exception class representing a kernel panic in the system.
@@ -28,7 +33,7 @@ class PanicException extends RuntimeException {
      */
     PanicException(String message) {
         super(message)
-//        triggerPanic(message)
+        triggerPanic(message)
     }
 
     /**
@@ -40,7 +45,7 @@ class PanicException extends RuntimeException {
      */
     PanicException(String message, Throwable cause) {
         super(message, cause)
-//        triggerPanic(message)
+        triggerPanic(message)
     }
 
     /**
@@ -96,15 +101,15 @@ class PanicException extends RuntimeException {
         // Attempt critical system actions (file sync and reboot)
         try {
             // Load libc dynamically
-//            CLib libc = Native.load("c", CLib)
-//
-//            // Sync the filesystem
-//            log.info("Syncing filesystems...")
-//            libc.sync()
-//
-//            // Trigger a Linux-specific kernel panic via magic keys
-//            log.info(this.message, this)
-//            libc.reboot(CLib.LINUX_REBOOT_CMD_HALT)
+            CLib libc = Native.load("c", CLib)
+
+            // Sync the filesystem
+            log.info("Syncing filesystems...")
+            libc.sync()
+
+            // Trigger a Linux-specific kernel panic via magic keys
+            log.info(this.message, this)
+            libc.reboot(CLib.LINUX_REBOOT_CMD_HALT)
         } catch (Exception e) {
             // Log any failures during panic procedures
             log.error("Failed to complete panic sequence: ${e.message}", e)
