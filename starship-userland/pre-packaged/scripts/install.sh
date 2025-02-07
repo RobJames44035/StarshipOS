@@ -30,14 +30,17 @@ function make_dirs() {
 # the working directory and later cleaned in another function.
 #
 function copy_files() {
-  echo "Copy files."
-  sudo wget "https://downloads.apache.org/activemq/activemq-artemis/2.39.0/apache-artemis-2.39.0-bin.tar.gz" -O "repo/apache-artemis-2.39.0-bin.tar.gz"
-  sudo tar xvf "repo/apache-artemis-2.39.0-bin.tar.gz"
-  sudo cp -rpv "./apache-artemis-2.39.0" "/mnt/rootfs/opt"
+  echo "Copy files..."
+  echo "#"
+  echo "# Apache ActiveMQ v6.1.5"
+  echo "#"
+  sudo wget "https://www.apache.org/dyn/closer.cgi?filename=/activemq/6.1.5/apache-activemq-6.1.5-bin.tar.gz&action=download" -O "repo/apache-activemq-6.1.5-bin.tar.gz"
+  sudo tar xvf "repo/apache-activemq-6.1.5-bin.tar.gz"
+  sudo cp -rpv "./apache-activemq-6.1.5" "/mnt/rootfs/opt"
 
-  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
-  sudo unzip "repo/org.apache.felix.main.distribution-7.0.5.zip"
-  sudo cp -rpv "./felix-framework-7.0.5" "/mnt/rootfs/opt"
+#  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
+#  sudo unzip "repo/org.apache.felix.main.distribution-7.0.5.zip"
+#  sudo cp -rpv "./felix-framework-7.0.5" "/mnt/rootfs/opt"
 }
 
 #
@@ -56,11 +59,11 @@ function unmount_rootfs() {
 #
 function cleanup_litter() {
   echo "Cleaning up."
-  sudo rm -rf "./apache-artemis-2.39.0"
-  sudo rm -rf "./felix-framework-7.0.5"
+  sudo rm -rf "./apache-activemq-6.1.5"
+#  sudo rm -rf "./felix-framework-7.0.5"
 
-  sudo rm "repo/apache-artemis-2.39.0-bin.tar.gz"
-  sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
+  sudo rm "repo/apache-activemq-6.1.5-bin.tar.gz"
+#  sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
 
   sudo sync
 }
