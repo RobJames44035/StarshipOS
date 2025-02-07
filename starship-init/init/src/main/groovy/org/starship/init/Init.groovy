@@ -35,7 +35,7 @@ class Init {
 
     // Tables for dynamically managing resources and services
     static final SystemResources resources = SystemResources.getInstance()
-
+    Process osgiManager = null
 
     /**
      * Main entry point of the application.

@@ -2,6 +2,10 @@
  * StarshipOS Copyright (c) 2025. R. A. James
  */
 
+import org.starship.service.ServiceRestartPolicy
+
+
+
 init {
     system {
         setHostname "starship-os"
@@ -17,8 +21,25 @@ init {
         mount("tmpfs", "/run", "tmpfs", 0L, null)
 
         // Spawn any required processes
+//        spawn("/opt/apache-activemq-6.1.5/bin/activemq start", "ActiveMQ")
 
-
-        // Start a shell
+        services {
+            service(
+                    [
+                            name        : "apache-activemq-6.1.5",
+                            command     : "/opt/apache-activemq-6.1.5/bin/activemq start",
+                            descr       : "Apache ActiveMQ® is the most popular open source, multi-protocol, Java-based message broker.",
+                            policy      : ServiceRestartPolicy.NO,
+                            beforeStart : {},
+                            afterStart  : {},
+                            onFailure   : {},
+                            restartDelay: 0
+                    ]
+            )
+        }
+        startServices()
     }
+
+    // Start a shell
+    interactiveShell("Welcome!", "/bin/sh")
 }

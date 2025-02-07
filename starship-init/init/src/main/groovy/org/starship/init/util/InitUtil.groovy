@@ -1,3 +1,7 @@
+/*
+ * StarshipOS Copyright (c) 2025. R. A. James
+ */
+
 // InitUtil.groovy
 //file:noinspection unused
 //file:noinspection GroovyInfiniteLoopStatement
@@ -49,7 +53,7 @@ class InitUtil {
         closure.delegate = this // Bind closure to InitUtil instance
         closure.resolveStrategy = DELEGATE_FIRST
         closure.call() // Execute the closure block
-        log.info("Service configuration completed. ${Init.serviceTable.size()} service(s) defined.")
+        log.info("Service configuration completed. ${Init.resources.serviceTable.size()} service(s) defined.")
     }
 
     /**
@@ -373,8 +377,6 @@ class InitUtil {
     *                  Must include the following keys:
     *                  - `command`: The command to be executed (String).
     *                  - `name`: The name to identify the spawned process (String).
-    * @throws IllegalArgumentException if mandatory parameters (`command` or `name`) are missing.
-    * @throws IOException if an I/O error occurs during command execution.
     */
     static void spawn(Map spawnArgs) {
         String command = spawnArgs.command
@@ -382,13 +384,16 @@ class InitUtil {
 
         if (!command || !name) {
             log.error("Missing required spawn parameters: ${spawnArgs}")
-            throw new IllegalArgumentException("Spawn requires 'command' and 'name'!")
         }
 
         log.info("Spawning process: $name with command: $command")
-        //noinspection GroovyUnusedAssignment
-        Process process = command.execute()
-        Init.resources.processTable.put(process.class.name, process)
+
+        ProcessBuilder processBuilder = new ProcessBuilder(command)
+        processBuilder.inheritIO()
+        Process spawnProcess = processBuilder.start()
+        spawnProcess.waitFor()
+
+        Init.resources.processTable.put(spawnProcess.class.name, spawnProcess)
         log.info("Process $name started successfully.")
     }
 
@@ -400,7 +405,7 @@ class InitUtil {
             println(welcomeMessage)
             File shellFile = new File(shellPath)
             if (!shellFile.exists() || !shellFile.canExecute()) {
-                throw new IllegalArgumentException("Path to shell is invalid: $shellPath")
+                log.error("Path to shell is invalid: $shellPath")
             }
             // Start a shell
             ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh")
