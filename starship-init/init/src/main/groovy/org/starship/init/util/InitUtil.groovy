@@ -124,7 +124,7 @@ class InitUtil {
                 log.info("Starting service: $serviceName")
 
                 // Spawn the process for this service
-                Process process = new ProcessBuilder(service.command).start()
+                Process process = new ProcessBuilder(service.command, "start").inheritIO().start()
                 Init.resources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
                 // Handle restart policy

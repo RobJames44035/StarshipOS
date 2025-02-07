@@ -27,7 +27,7 @@ init {
             service(
                     [
                             name        : "apache-activemq-6.1.5",
-                            command     : "/opt/activemq/bin/activemq start",
+                            command     : "/opt/activemq/bin/activemq",
                             descr       : "Apache ActiveMQ is the most popular open source, multi-protocol, Java-based message broker.",
                             policy      : ServiceRestartPolicy.ALWAYS,
                             beforeStart : {},
