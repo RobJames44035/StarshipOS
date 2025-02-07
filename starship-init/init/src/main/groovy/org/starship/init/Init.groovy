@@ -112,7 +112,6 @@ class Init {
         }
     }
 
-
     /**
      * The main supervision loop responsible for maintaining system stability.
      *
@@ -165,7 +164,6 @@ class Init {
         }
     }
 
-
     /**
      * Sets up a shutdown hook to handle cleanup during system termination.
      *
@@ -188,8 +186,6 @@ class Init {
                 process?.destroy()
                 log.info("Terminated process: ${name}")
             }
-            dbusRegistry.close()
         }))
     }
-
 }

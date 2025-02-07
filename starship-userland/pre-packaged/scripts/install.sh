@@ -37,14 +37,18 @@ function copy_files() {
   sudo wget "https://www.apache.org/dyn/closer.cgi?filename=/activemq/6.1.5/apache-activemq-6.1.5-bin.tar.gz&action=download" -O "repo/apache-activemq-6.1.5-bin.tar.gz"
   sudo tar xvf "repo/apache-activemq-6.1.5-bin.tar.gz"
   sudo cp -rpv "./apache-activemq-6.1.5" "/mnt/rootfs/opt"
-  sudo chmod 755 "/mnt/rootfs/opt/apache-activemq-6.1.5/bin/activemq"
+  sudo mv "/mnt/rootfs/opt/apache-activemq-6.1.5/" "/mnt/rootfs/opt/activemq"
+  sudo chmod +x "/mnt/rootfs/opt/activemq/bin/activemq"
+
+echo "Paused..."
+read -p "x"
 
   echo "#"
   echo "# Apache Felix v7.0.5"
   echo "#"
-  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
-  sudo unzip "repo/org.apache.felix.main.distribution-7.0.5.zip"
-  sudo cp -rpv "./felix-framework-7.0.5" "/mnt/rootfs/opt"
+#  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-7.0.5.zip?action=download" -O "repo/org.apache.felix.main.distribution-7.0.5.zip"
+#  sudo unzip "repo/org.apache.felix.main.distribution-7.0.5.zip"
+#  sudo cp -rpv "./felix-framework-7.0.5" "/mnt/rootfs/opt"
 }
 
 #
