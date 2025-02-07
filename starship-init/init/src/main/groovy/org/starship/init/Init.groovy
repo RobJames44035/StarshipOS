@@ -67,7 +67,6 @@ class Init {
         }
     }
 
-
     /**
      * Configures the StarshipOS system using configuration files.
      *

@@ -28,8 +28,8 @@ init {
                     [
                             name        : "apache-activemq-6.1.5",
                             command     : "/opt/apache-activemq-6.1.5/bin/activemq start",
-                            descr       : "Apache ActiveMQ® is the most popular open source, multi-protocol, Java-based message broker.",
-                            policy      : ServiceRestartPolicy.NO,
+                            descr : "Apache ActiveMQ is the most popular open source, multi-protocol, Java-based message broker.",
+                            policy: ServiceRestartPolicy.ALWAYS,
                             beforeStart : {},
                             afterStart  : {},
                             onFailure   : {},
@@ -41,5 +41,5 @@ init {
     }
 
     // Start a shell
-    interactiveShell("Welcome!", "/bin/sh")
+    interactiveShell("Welcome! /usr/bin/jshell", "/usr/bin/jshell")
 }
