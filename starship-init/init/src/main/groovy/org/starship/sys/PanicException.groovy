@@ -1,13 +1,12 @@
 /*
  * StarshipOS Copyright (c) 2025. R. A. James
  */
+//file:noinspection GroovyAccessToStaticFieldLockedOnInstance
+//file:noinspection unused
 
 package org.starship.sys
 
-
 import groovy.util.logging.Slf4j
-import org.starship.jna.CLib
-
 /**
  * Exception class representing a kernel panic in the system.
  * This exception triggers critical system actions such as filesystem syncing
@@ -20,7 +19,7 @@ import org.starship.jna.CLib
 class PanicException extends RuntimeException {
 
     // Reboot command
-    int LINUX_REBOOT_CMD_HALT = 0xCDEF0123
+    int LINUX_REBOOT_CMD_HALT = (int) 0xCDEF0123
 
     /**
      * Static flag to prevent multiple panics in a single runtime session.
@@ -105,11 +104,11 @@ class PanicException extends RuntimeException {
         try {
             // Sync the filesystem
             log.info("Syncing filesystems...")
-            CLib.INSTANCE.sync()
+//            CLib.INSTANCE.sync()
 
             // Trigger a Linux-specific kernel panic via magic keys
             log.info(this.message, this)
-            CLib.INSTANCE.reboot(LINUX_REBOOT_CMD_HALT)
+//            CLib.INSTANCE.reboot(LINUX_REBOOT_CMD_HALT)
         } catch (Exception e) {
             // Log any failures during panic procedures
             log.error("Failed to complete panic sequence: ${e.message}", e)

@@ -125,7 +125,7 @@ class InitUtil {
                 log.info("Starting service: $serviceName")
 
                 // Spawn the process for this service TODO arguments
-                Process process = new ProcessBuilder(service.command, "start").inheritIO().start()
+                Process process = new ProcessBuilder(service.command.split(" ")).inheritIO().start()
                 Init.resources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
                 // Handle restart policy
@@ -171,7 +171,7 @@ class InitUtil {
                     Thread.sleep(service.restartDelay * 1000)
 
                     // Restart the service TODO arguments
-                    Process restartedProcess = new ProcessBuilder(service.command, "start").inheritIO().start()
+                    Process restartedProcess = new ProcessBuilder(service.command.split(" ")).inheritIO().start()
                     Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {
@@ -349,7 +349,6 @@ class InitUtil {
             log.info("Successfully mounted $source to $target")
         } catch (Exception e) {
             log.error("Failed to mount filesystem: ${e.message}", e)
-            throw new IllegalStateException("Error mounting $source to $target", e)
         }
     }
 
@@ -364,7 +363,7 @@ class InitUtil {
             // Read the /proc/mounts file to check current mounts
             File procMounts = new File("/proc/mounts")
             if (!procMounts.exists()) {
-                log.warn("Could not find /proc/mounts file to validate mounts. Assuming $target is not mounted.")
+                log.info("Could not find /proc/mounts file to validate mounts. Assuming $target is not mounted.")
                 return false // Fail-safe: assume not mounted
             }
 
@@ -418,18 +417,19 @@ class InitUtil {
      */
     static void interactiveShell(String welcomeMessage, String shellPath) {
         try {
-            println(welcomeMessage)
             File shellFile = new File(shellPath)
             if (!shellFile.exists() || !shellFile.canExecute()) {
                 log.error("Path to shell is invalid: $shellPath")
             }
             // Start a shell
-            ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh")
-            processBuilder.inheritIO()
-            Process loginProcess = processBuilder.start()
-            loginProcess.waitFor()
+            println(welcomeMessage)
+            ProcessBuilder processBuilder = new ProcessBuilder(shellPath).inheritIO()
+            log.info("${shellPath} 115200")
+            Process shellProcess = processBuilder.start()
+            shellProcess.waitFor()
+            Init.resources.processTable.put(shellPath, shellProcess)
         } catch (Exception e) {
-            println("Failed to launch shell: ${e.message}")
+            log.error("Failed to launch shell: ${e.message}")
         }
     }
 }

@@ -40,9 +40,6 @@ function copy_files() {
   sudo mv "/mnt/rootfs/opt/apache-activemq-6.1.5/" "/mnt/rootfs/opt/activemq"
   sudo chmod +x "/mnt/rootfs/opt/activemq/bin/activemq"
 
-echo "Paused..."
-read -p "x"
-
   echo "#"
   echo "# Apache Felix v7.0.5"
   echo "#"
@@ -68,10 +65,10 @@ function unmount_rootfs() {
 function cleanup_litter() {
   echo "Cleaning up."
   sudo rm -rf "./apache-activemq-6.1.5"
-#  sudo rm -rf "./felix-framework-7.0.5"
+  sudo rm -rf "./felix-framework-7.0.5"
 
   sudo rm "repo/apache-activemq-6.1.5-bin.tar.gz"
-#  sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
+  sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
 
   sudo sync
 }
