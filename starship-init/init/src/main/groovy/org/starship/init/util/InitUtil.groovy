@@ -6,6 +6,7 @@
 //file:noinspection unused
 //file:noinspection GroovyInfiniteLoopStatement
 //file:noinspection GroovyAssignabilityCheck
+//file:noinspection GroovyFallthrough
 package org.starship.init.util
 
 import com.sun.jna.Native
@@ -123,14 +124,29 @@ class InitUtil {
             try {
                 log.info("Starting service: $serviceName")
 
-                // Spawn the process for this service
+                // Spawn the process for this service TODO arguments
                 Process process = new ProcessBuilder(service.command, "start").inheritIO().start()
                 Init.resources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
                 // Handle restart policy
-                if (service.policy.toLowerCase() == "restart-always") {
-                    handleServiceRestart(service as Map)
+                switch(service.policy) {
+                    case ServiceRestartPolicy.NO:
+                        break
+                    case ServiceRestartPolicy.ON_SUCCESS:
+                        break
+                    case ServiceRestartPolicy.ON_ABNORMAL:
+                        break
+                    case ServiceRestartPolicy.ON_ABORT:
+                        break
+                    case ServiceRestartPolicy.ON_FAILURE:
+                        break
+                    case ServiceRestartPolicy.ON_WATCHDOG:
+                        break
+                    case ServiceRestartPolicy.ALWAYS:
+                        handleServiceRestart(service as Map)
+                        break
                 }
+
             } catch (Exception e) {
                 log.error("Failed to start service '$serviceName': ${e.message}", e)
             }
@@ -154,8 +170,8 @@ class InitUtil {
                     // Delay before restarting
                     Thread.sleep(service.restartDelay * 1000)
 
-                    // Restart the service
-                    Process restartedProcess = new ProcessBuilder(service.command).start()
+                    // Restart the service TODO arguments
+                    Process restartedProcess = new ProcessBuilder(service.command, "start").inheritIO().start()
                     Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {

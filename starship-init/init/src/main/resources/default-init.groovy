@@ -30,9 +30,9 @@ init {
                             command     : "/opt/activemq/bin/activemq",
                             descr       : "Apache ActiveMQ is the most popular open source, multi-protocol, Java-based message broker.",
                             policy      : ServiceRestartPolicy.ALWAYS,
-                            beforeStart : {},
-                            afterStart  : {},
-                            onFailure   : {},
+                            beforeStart : {}, // NOP
+                            afterStart  : {}, // NOP
+                            onFailure   : {}, // NOP
                             restartDelay: 0
                     ]
             )
@@ -41,5 +41,5 @@ init {
     }
 
     // Start a shell
-    interactiveShell("Welcome! /usr/bin/jshell", "/usr/bin/jshell")
+    interactiveShell("Welcome! /bin/sh", "/bin/sh")
 }

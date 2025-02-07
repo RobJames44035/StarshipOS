@@ -19,6 +19,9 @@ import org.starship.jna.CLib
 @Slf4j
 class PanicException extends RuntimeException {
 
+    // Reboot command
+    int LINUX_REBOOT_CMD_HALT = 0xCDEF0123
+
     /**
      * Static flag to prevent multiple panics in a single runtime session.
      * Ensures only one kernel panic is triggered.
@@ -100,16 +103,13 @@ class PanicException extends RuntimeException {
 
         // Attempt critical system actions (file sync and reboot)
         try {
-            // Load libc dynamically
-            CLib libc = Native.load("c", CLib)
-
             // Sync the filesystem
             log.info("Syncing filesystems...")
-            libc.sync()
+            CLib.INSTANCE.sync()
 
             // Trigger a Linux-specific kernel panic via magic keys
             log.info(this.message, this)
-            libc.reboot(CLib.LINUX_REBOOT_CMD_HALT)
+            CLib.INSTANCE.reboot(LINUX_REBOOT_CMD_HALT)
         } catch (Exception e) {
             // Log any failures during panic procedures
             log.error("Failed to complete panic sequence: ${e.message}", e)
