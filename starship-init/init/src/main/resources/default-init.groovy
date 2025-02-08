@@ -21,8 +21,8 @@ init {
         mount("tmpfs", "/tmp", "tmpfs", 0L, null)
 
         // Spawn any required processes
-        spawn([command: "/sbin/syslogd", name: "syslogd"])
-        spawn([command: "/sbin/klogd", name: "klogd"])
+//        spawn([command: "/sbin/syslogd", name: "syslogd"])
+//        spawn([command: "/sbin/klogd", name: "klogd"])
 
         services {
             service(

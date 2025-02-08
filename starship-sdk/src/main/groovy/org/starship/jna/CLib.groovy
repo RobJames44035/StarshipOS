@@ -23,7 +23,7 @@ interface CLib extends Library {
     int S_IWUSR = 0x0080 // Write permission, owner
 
     // Reboot command
-    int LINUX_REBOOT_CMD_HALT = 0xCDEF0123
+    int LINUX_REBOOT_CMD_HALT = (int) 0xCDEF0123
 
     // Load the native library
     CLib INSTANCE = Native.load("c", CLib.class)

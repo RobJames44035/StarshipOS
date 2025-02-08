@@ -363,13 +363,12 @@ class InitUtil {
             // Read the /proc/mounts file to check current mounts
             File procMounts = new File("/proc/mounts")
             if (!procMounts.exists()) {
-                log.info("Could not find /proc/mounts file to validate mounts. Assuming $target is not mounted.")
                 return false // Fail-safe: assume not mounted
             }
 
             // Iterate through each line of /proc/mounts and check for the target
             for (String line : procMounts.readLines()) {
-                def parts = line.split("\\s+") // Split the line into components
+                String[] parts = line.split("\\s+") // Split the line into components
                 if (parts.size() >= 2 && parts[1] == target) {
                     log.info("$target is already mounted.")
                     return true
@@ -408,7 +407,7 @@ class InitUtil {
         Process spawnProcess = processBuilder.start()
         spawnProcess.waitFor()
 
-        Init.resources.processTable.put(spawnProcess.class.name, spawnProcess)
+        Init.resources.processTable.put(spawnArgs.name, spawnProcess)
         log.info("Process $name started successfully.")
     }
 
