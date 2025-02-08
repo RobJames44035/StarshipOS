@@ -41,5 +41,5 @@ init {
     }
 
     // Start a shell
-    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/sbin/sulogin")
+//    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/sbin/sulogin")
 }
