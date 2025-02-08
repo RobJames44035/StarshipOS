@@ -403,7 +403,7 @@ class InitUtil {
 
         log.info("Spawning process: $name with command: $command")
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command)
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "))
         processBuilder.inheritIO()
         Process spawnProcess = processBuilder.start()
         spawnProcess.waitFor()
