@@ -30,12 +30,13 @@ import java.util.concurrent.TimeUnit
 @Slf4j
 class Init {
 
-    static String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
-    static String FALLBACK_CONFIG_PATH = "default-init.groovy"
+    static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
+    static final String FALLBACK_CONFIG_PATH = "default-init.groovy"
+    static final int ZERO = 0
 
     // Tables for dynamically managing resources and services
     static final SystemResources resources = SystemResources.getInstance()
-//    static Process osgiManager = null
+    //    static Process osgiManager = null
 
     /**
      * Main entry point of the application.
@@ -51,7 +52,7 @@ class Init {
      */
     static void main(final String[] args) {
         try {
-            if (ManagementFactory.getRuntimeMXBean().getName().split("@")[0] != "1") {
+            if (ManagementFactory.getRuntimeMXBean().getName().split("@")[ZERO] != "1") {
                 throw new PanicException("This program is not running as PID 1!")
             }
 
@@ -153,7 +154,7 @@ class Init {
         resources.processTable.each { String name, Object process ->
             try {
                 if (process instanceof Process) {
-                    if (process?.waitFor(0, TimeUnit.SECONDS)) {
+                    if (process?.waitFor(ZERO, TimeUnit.SECONDS)) {
                         log.info("Reaped zombie process: ${name}")
                         resources.processTable.remove(name)
                     }

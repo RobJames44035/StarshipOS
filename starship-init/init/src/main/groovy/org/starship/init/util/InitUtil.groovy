@@ -171,7 +171,7 @@ class InitUtil {
                     Thread.sleep(service.restartDelay * 1000)
 
                     // Restart the service TODO arguments
-                    Process restartedProcess = new ProcessBuilder(service.command.split(" ")).inheritIO().start()
+                    Process restartedProcess = new ProcessBuilder(service.command.split(" ")).inheritIO().start().waitFor(0)
                     Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {

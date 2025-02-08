@@ -25,11 +25,12 @@ init {
 //        spawn([command: "/sbin/klogd", name: "klogd"])
 
         services {
+            // Message Broker
             service(
                     [
                             name        : "apache-activemq-6.1.5",
                             command     : "/opt/activemq/bin/activemq start",
-                            descr       : "Apache ActiveMQ is the most popular open source, multi-protocol, Java-based message broker.",
+                            descr       : "Apache ActiveMQ is an open source, multi-protocol, Java-based message broker.",
                             policy      : ServiceRestartPolicy.ALWAYS,
                             beforeStart : {}, // NOP
                             afterStart  : {}, // NOP
@@ -37,10 +38,24 @@ init {
                             restartDelay: 0
                     ]
             )
+
+            // OSGi bundle manager
+            service(
+                    [
+                            name        : "osgi-manager-1.0.0",
+                            command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
+                            descr       : "StarshipOS OSGiManager service",
+                            policy      : ServiceRestartPolicy.ALWAYS,
+                            beforeStart : {}, // NOP
+                            afterStart  : {}, // NOP
+                            onFailure   : {}, // NOP
+                            restartDelay: 5
+                    ]
+            )
         }
         startServices()
     }
 
     // Start a shell
-    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/bin/login")
+//    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/sbin/sulogin")
 }
