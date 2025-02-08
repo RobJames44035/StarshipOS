@@ -15,6 +15,8 @@ import org.starship.init.Init
 import org.starship.jna.CLibWrapper
 import org.starship.service.ServiceRestartPolicy
 
+import java.util.concurrent.TimeUnit
+
 import static groovy.lang.Closure.DELEGATE_FIRST
 /**
  * Utility class for system initialization tasks.
@@ -22,7 +24,9 @@ import static groovy.lang.Closure.DELEGATE_FIRST
 @Slf4j
 class InitUtil {
 
-    private static InitUtil instance = null // Singleton instance
+    // Singleton instance
+    private static InitUtil instance = null
+    static final int ZERO = 0
 
     // Instance fields for properties
     private String logLevel
@@ -124,7 +128,7 @@ class InitUtil {
             try {
                 log.info("Starting service: $serviceName")
 
-                // Spawn the process for this service TODO arguments
+                // Spawn the process for this service
                 Process process = new ProcessBuilder(service.command.split(" ")).inheritIO().start()
                 Init.resources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
@@ -163,15 +167,20 @@ class InitUtil {
             while (true) {
                 try {
                     // Wait for the process to finish
-                    Process process = Init.resources.processTable.get(service.name) as Process
-                    process.waitFor()
-                    log.warn("Service '${service.name}' has terminated unexpectedly. Restarting...")
-
+                    try {
+                        log.warn("Service '${service.name}' has terminated unexpectedly. Restarting...")
+                        Process process = Init.resources.processTable.get(service.name) as Process
+                        process.waitFor(ZERO, TimeUnit.SECONDS)
+                    } catch(Exception e) {
+                        log.error(e.message, e)
+                    }
                     // Delay before restarting
                     Thread.sleep(service.restartDelay * 1000)
 
-                    // Restart the service TODO arguments
-                    Process restartedProcess = new ProcessBuilder(service.command.split(" ")).inheritIO().start().waitFor(0)
+                    // Restart the service
+                    Process restartedProcess =
+                            new ProcessBuilder(service.command.split(" ")).inheritIO().start()
+                    restartedProcess.waitFor(ZERO, TimeUnit.SECONDS)
                     Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {
@@ -305,11 +314,11 @@ class InitUtil {
             int dev = (5 << 8) | 1 // Major 5, Minor 1
 
             // Call the mknod system function via our CLibWrapper
-            int result = CLibWrapper.mknod("/dev/console", mode, dev) as int
+            int result = CLibWrapper.mknod("/dev/console", mode, dev) ?: 0 as int
             if (result == 0) {
                 log.info("/dev/console created successfully.")
             } else {
-                log.error("Failed to create /dev/console. Error code: ${Native.getLastError()}")
+                log.error("Failed to create /dev/console.")
                 throw new IllegalStateException("Error creating /dev/console. Check permissions!")
             }
         } catch (Exception e) {
