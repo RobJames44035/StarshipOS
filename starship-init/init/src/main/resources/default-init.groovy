@@ -21,7 +21,8 @@ init {
         mount("tmpfs", "/tmp", "tmpfs", 0L, null)
 
         // Spawn any required processes
-//        spawn("/opt/apache-activemq-6.1.5/bin/activemq start", "ActiveMQ")
+        spawn([command: "/sbin/syslogd", name: "syslogd"])
+        spawn([command: "/sbin/klogd", name: "klogd"])
 
         services {
             service(
@@ -41,5 +42,5 @@ init {
     }
 
     // Start a shell
-//    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/sbin/sulogin")
+    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/bin/login")
 }

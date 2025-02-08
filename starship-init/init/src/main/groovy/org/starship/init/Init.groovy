@@ -35,7 +35,7 @@ class Init {
 
     // Tables for dynamically managing resources and services
     static final SystemResources resources = SystemResources.getInstance()
-    static Process osgiManager = null
+//    static Process osgiManager = null
 
     /**
      * Main entry point of the application.
@@ -59,10 +59,6 @@ class Init {
             setupShutdownHook()
             configureSystem()
             log.info("System is up.")
-//            ProcessBuilder processBuilder = new ProcessBuilder("/sbin/sulogin").inheritIO()
-//            Process shellProcess = processBuilder.start()
-//            shellProcess.waitFor()
-//            Init.resources.processTable.put("/sbin/sulogin", shellProcess)
             supervisorLoop()
 
         } catch (Exception e) {

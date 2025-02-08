@@ -12,7 +12,7 @@ class CLibWrapper {
     // Static boolean to switch between native calls and ProcessBuilder
 //    static final boolean nativeCall = false // Set to `true` to use JNA native calls
 
-//    private static final CLib C_LIB = null // CLib.INSTANCE
+    private static final CLib CLIB = null // CLib.INSTANCE
 
     /**
      * Changes the hostname of the system.
@@ -25,23 +25,23 @@ class CLibWrapper {
         }
 
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def result = C_LIB.sethostname(hostname, hostname.length() + 1)
 //            if (result != 0) {
 //                throw new IllegalStateException("sethostname failed: ${Native.getLastError()}")
 //            }
 //        } else {
-            // Fallback to ProcessBuilder - Use traditional echo to /proc/sys/kernel/hostname
-            try {
-                def process = new ProcessBuilder("sh", "-c", "echo ${hostname} > /proc/sys/kernel/hostname").start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                    throw new IllegalStateException("setHostname failed using ProcessBuilder")
-                }
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to set hostname using ProcessBuilder")
+        // Fallback to ProcessBuilder - Use traditional echo to /proc/sys/kernel/hostname
+        try {
+            def process = new ProcessBuilder("sh", "-c", "echo ${hostname} > /proc/sys/kernel/hostname").start()
+            process.waitFor()
+            if (process.exitValue() != 0) {
+                throw new IllegalStateException("setHostname failed using ProcessBuilder")
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to set hostname using ProcessBuilder")
+        }
 //        }
     }
 
@@ -52,7 +52,7 @@ class CLibWrapper {
      */
     static String getHostname() {
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def buffer = new byte[256] // Max hostname length on Linux
 //            def result = C_LIB.gethostname(buffer, buffer.length)
 //            if (result != 0) {
@@ -60,51 +60,38 @@ class CLibWrapper {
 //            }
 //            return new String(buffer).trim()
 //        } else {
-            // Fallback to ProcessBuilder
-            try {
-                def process = new ProcessBuilder("hostname").start()
-                def result = process.inputStream.text.trim()
-                return result
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to get hostname using ProcessBuilder")
-            }
+        // Fallback to ProcessBuilder
+        try {
+            def process = new ProcessBuilder("hostname").start()
+            def result = process.inputStream.text.trim()
+            return result
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to get hostname using ProcessBuilder")
+        }
 //        }
     }
 
     /**
      * Mounts a filesystem.
      *
-     * @param source      The source block device or directory (nullable for tmpfs, etc.).
-     * @param target      The target mount point.
-     * @param fsType      The filesystem type (e.g., "ext4").
-     * @param mountFlags  Mount flags (e.g., CLib.MS_RDONLY, CLib.MS_NOEXEC).
-     * @param data        Additional mount data (optional).
+     * @param source The source block device or directory (nullable for tmpfs, etc.).
+     * @param target The target mount point.
+     * @param fsType The filesystem type (e.g., "ext4").
+     * @param mountFlags Mount flags (e.g., CLib.MS_RDONLY, CLib.MS_NOEXEC).
+     * @param data Additional mount data (optional).
      */
     static void mount(String source, String target, String fsType, long mountFlags, String data) {
         if (!target || !fsType) {
-            throw new IllegalArgumentException("Target and filesystem type must not be null")
+            log.error("Target (${target}) and filesystem type  (${fsType}) must not be null.")
         }
-
-//        if (nativeCall) {
-            // Native operation using JNA
-//            def result = C_LIB.mount(source, target, fsType, mountFlags, data)
-//            if (result != 0) {
-//                throw new IllegalStateException("mount failed: ${Native.getLastError()}")
-//            }
-//        } else {
-            // Fallback to ProcessBuilder (requires explicit command-line mount invocation)
-            try {
-                def command = source ? ["mount", "-t", fsType, source, target] : ["mount", "-t", fsType, "none", target]
-                Process process = new ProcessBuilder(command).start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                }
-            } catch (Exception e) {
-                log.error(e.message, e)
-                throw new RuntimeException("Failed to mount using ProcessBuilder")
-            }
-//        }
+        // Native operation using JNA
+        int result = CLIB.mount(source, target, fsType, mountFlags, data)
+        if (result != 0) {
+            log.error("Mounting ${target} failed.")
+        } else {
+            log.info("Mounted ${target}.")
+        }
     }
 
     /**
@@ -118,23 +105,23 @@ class CLibWrapper {
         }
 
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def result = C_LIB.umount(target)
 //            if (result != 0) {
 //                throw new IllegalStateException("umount failed: ${Native.getLastError()}")
 //            }
 //        } else {
-            // Fallback to ProcessBuilder
-            try {
-                def process = new ProcessBuilder("umount", target).start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                    throw new IllegalStateException("umount failed using ProcessBuilder")
-                }
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to unmount using ProcessBuilder")
+        // Fallback to ProcessBuilder
+        try {
+            def process = new ProcessBuilder("umount", target).start()
+            process.waitFor()
+            if (process.exitValue() != 0) {
+                throw new IllegalStateException("umount failed using ProcessBuilder")
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to unmount using ProcessBuilder")
+        }
 //        }
     }
 
@@ -149,23 +136,23 @@ class CLibWrapper {
         }
 
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def result = C_LIB.umount2(target, (int) CLib.MNT_FORCE)
 //            if (result != 0) {
 //                throw new IllegalStateException("umount2 (force) failed: ${Native.getLastError()}")
 //            }
 //        } else {
-            // Fallback to ProcessBuilder
-            try {
-                def process = new ProcessBuilder("umount", "-f", target).start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                    throw new IllegalStateException("umount2 failed using ProcessBuilder")
-                }
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to force unmount using ProcessBuilder")
+        // Fallback to ProcessBuilder
+        try {
+            def process = new ProcessBuilder("umount", "-f", target).start()
+            process.waitFor()
+            if (process.exitValue() != 0) {
+                throw new IllegalStateException("umount2 failed using ProcessBuilder")
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to force unmount using ProcessBuilder")
+        }
 //        }
     }
 
@@ -176,23 +163,23 @@ class CLibWrapper {
      */
     static void reboot(int cmd) {
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def result = C_LIB.reboot(cmd)
 //            if (result != 0) {
 //                throw new IllegalStateException("reboot failed: ${Native.getLastError()}")
 //            }
 //        } else {
-            // Fallback to ProcessBuilder - Trigger a reboot using /proc/sysrq-trigger
-            try {
-                def process = new ProcessBuilder("sh", "-c", "echo b > /proc/sysrq-trigger").start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                    throw new IllegalStateException("Reboot failed using ProcessBuilder")
-                }
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to reboot using ProcessBuilder")
+        // Fallback to ProcessBuilder - Trigger a reboot using /proc/sysrq-trigger
+        try {
+            def process = new ProcessBuilder("sh", "-c", "echo b > /proc/sysrq-trigger").start()
+            process.waitFor()
+            if (process.exitValue() != 0) {
+                throw new IllegalStateException("Reboot failed using ProcessBuilder")
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to reboot using ProcessBuilder")
+        }
 //        }
     }
 
@@ -204,14 +191,14 @@ class CLibWrapper {
 //             Native operation using JNA
 //            C_LIB.sync()
 //        } else {
-            // Fallback to ProcessBuilder - Directly call the sync binary
-            try {
-                def process = new ProcessBuilder("sync").start()
-                process.waitFor()
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to sync using ProcessBuilder")
-            }
+        // Fallback to ProcessBuilder - Directly call the sync binary
+        try {
+            def process = new ProcessBuilder("sync").start()
+            process.waitFor()
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to sync using ProcessBuilder")
+        }
 //        }
     }
 
@@ -228,24 +215,24 @@ class CLibWrapper {
         }
 
 //        if (nativeCall) {
-            // Native operation using JNA
+        // Native operation using JNA
 //            def result = C_LIB.execve(file, argv, envp)
 //            if (result != 0) {
 //                throw new IllegalStateException("execve failed: ${Native.getLastError()}")
 //            }
 //        } else {
-            // Fallback to ProcessBuilder - Execute the file with arguments
-            try {
-                def command = [file] + ((argv ?: []) as String)
-                def process = new ProcessBuilder(command).inheritIO().start()
-                process.waitFor()
-                if (process.exitValue() != 0) {
-                    throw new IllegalStateException("execve failed using ProcessBuilder")
-                }
-            } catch (Exception e) {
-                e.printStackTrace()
-                throw new RuntimeException("Failed to execve using ProcessBuilder")
+        // Fallback to ProcessBuilder - Execute the file with arguments
+        try {
+            def command = [file] + ((argv ?: []) as String)
+            def process = new ProcessBuilder(command).inheritIO().start()
+            process.waitFor()
+            if (process.exitValue() != 0) {
+                throw new IllegalStateException("execve failed using ProcessBuilder")
             }
+        } catch (Exception e) {
+            e.printStackTrace()
+            throw new RuntimeException("Failed to execve using ProcessBuilder")
+        }
 //        }
     }
 }

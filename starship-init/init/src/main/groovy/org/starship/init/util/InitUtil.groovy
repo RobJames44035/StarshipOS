@@ -423,8 +423,7 @@ class InitUtil {
             }
             // Start a shell
             println(welcomeMessage)
-            ProcessBuilder processBuilder = new ProcessBuilder(shellPath, "-t", "/dev/ttyS0").inheritIO()
-            log.info("${shellPath} 115200")
+            ProcessBuilder processBuilder = new ProcessBuilder(shellPath).inheritIO()
             Process shellProcess = processBuilder.start()
             shellProcess.waitFor()
             Init.resources.processTable.put(shellPath, shellProcess)
