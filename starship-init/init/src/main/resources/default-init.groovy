@@ -21,8 +21,7 @@ init {
         mount("tmpfs", "/tmp", "tmpfs", 0L, null)
 
         // Spawn any required processes
-//        spawn([command: "/sbin/syslogd", name: "syslogd"])
-//        spawn([command: "/sbin/klogd", name: "klogd"])
+//        spawn(command: "", name: "")
 
         services {
             // Message Broker
@@ -35,27 +34,25 @@ init {
                             beforeStart : {}, // NOP
                             afterStart  : {}, // NOP
                             onFailure   : {}, // NOP
-                            restartDelay: 0
+                            restartDelay: 10
                     ]
             )
 
             // OSGi bundle manager
-            service(
-                    [
-                            name        : "osgi-manager-1.0.0",
-                            command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
-                            descr       : "StarshipOS OSGiManager service",
-                            policy      : ServiceRestartPolicy.ALWAYS,
-                            beforeStart : {}, // NOP
-                            afterStart  : {}, // NOP
-                            onFailure   : {}, // NOP
-                            restartDelay: 5
-                    ]
-            )
+              service(
+                      [
+                              name        : "osgi-manager-1.0.0",
+                              command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
+                              descr       : "StarshipOS OSGiManager service",
+                              policy      : ServiceRestartPolicy.ALWAYS,
+                              beforeStart : {}, // NOP
+                              afterStart  : {}, // NOP
+                              onFailure   : {}, // NOP
+                              restartDelay: 5
+                      ]
+              )
+            startServices()
         }
-        startServices()
     }
-
-    // Start a shell
-//    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/sbin/sulogin")
+//    interactiveShell()
 }

@@ -35,7 +35,7 @@ class Init {
     static final int ZERO = 0
 
     // Tables for dynamically managing resources and services
-    static final SystemResources resources = SystemResources.getInstance()
+    static SystemResources resources = SystemResources.getInstance()
     //    static Process osgiManager = null
 
     /**
@@ -57,11 +57,21 @@ class Init {
             }
 
             log.info("Initializing StarshipOS...")
-            setupShutdownHook()
-            configureSystem()
-            log.info("System is up.")
-            supervisorLoop()
+            log.info("Is TTY available for stdin: ${System.console()}")
+            System.getenv().each {  String key, String value -> log.info("$key = $value") }
 
+            setupShutdownHook()
+
+            configureSystem()
+
+            log.info("System is up.")
+            int xit = InitUtil.interactiveShell()
+            log.info("Interactive shell exited with code: $xit")
+            if(xit == 0) {
+                supervisorLoop()
+            } else {
+                throw new PanicException("Something REALLY BAD happened.")
+            }
         } catch (Exception e) {
             log.error("Critical error during system initialization: ${e.message}", e)
             throw new PanicException("PANIC: ${e.message ?: 'Unknown error'}", e)
@@ -129,7 +139,6 @@ class Init {
         log.info("Starting Supervisor Loop...")
         while (true) {
             try {
-                log.info("Running supervision checks...")
                 reapZombies()
                 Thread.sleep(1000) // Supervisor polling interval
             } catch (Exception e) {

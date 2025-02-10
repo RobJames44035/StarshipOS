@@ -22,8 +22,11 @@ int main() {
 
     // If execv() fails, fallback to an emergency shell
     fprintf(stderr, "Dropping to emergency shell...\n");
-    char *const shell_args[] = { NULL };
-    execv("/bin/sh", shell_args);
+    char *const shell_args[] = {
+        "sulogin",
+        NULL
+    };
+    execv("/bin/busybox", shell_args);
 
     // If even the shell fails, exit with a failure code
     perror("Failed to launch emergency shell");

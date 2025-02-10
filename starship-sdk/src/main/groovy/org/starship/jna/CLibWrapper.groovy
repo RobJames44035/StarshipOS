@@ -140,4 +140,18 @@ class CLibWrapper {
             log.error("execve failed.")
         }
     }
+
+    /**
+     * Creates a filesystem node (file, device special file, or named pipe).
+     *
+     * @param path The path for the new node.
+     * @param node The mode for the node, specifying type and permissions.
+     * @param deviceNumber The device number for special files.
+     */
+    static void mknod(final String path, final int node, final long deviceNumber) {
+        int result = CLIB.mknod(path, node, deviceNumber)
+        if(result != 0) {
+            log.error("mknod failed.")
+        }
+    }
 }
