@@ -5,7 +5,6 @@
 import org.starship.service.ServiceRestartPolicy
 
 
-
 init {
     system {
         setHostname "starship-os"
@@ -37,22 +36,21 @@ init {
                             restartDelay: 10
                     ]
             )
-
             // OSGi bundle manager
-              service(
-                      [
-                              name        : "osgi-manager-1.0.0",
-                              command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
-                              descr       : "StarshipOS OSGiManager service",
-                              policy      : ServiceRestartPolicy.ALWAYS,
-                              beforeStart : {}, // NOP
-                              afterStart  : {}, // NOP
-                              onFailure   : {}, // NOP
-                              restartDelay: 5
-                      ]
-              )
+//            service(
+//                    [
+//                            name        : "osgi-manager-1.0.0",
+//                            command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
+//                            descr       : "StarshipOS OSGiManager service",
+//                            policy      : ServiceRestartPolicy.ALWAYS,
+//                            beforeStart : {}, // NOP
+//                            afterStart  : {}, // NOP
+//                            onFailure   : {}, // NOP
+//                            restartDelay: 5
+//                    ]
+//            )
             startServices()
         }
     }
-//    interactiveShell()
+    interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/bin/sh")
 }
