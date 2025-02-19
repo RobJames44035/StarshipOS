@@ -22,35 +22,35 @@ init {
         // Spawn any required processes
 //        spawn(command: "", name: "")
 
-        services {
-            // Message Broker
-            service(
-                    [
-                            name        : "apache-activemq-6.1.5",
-                            command     : "/opt/activemq/bin/activemq start",
-                            descr       : "Apache ActiveMQ is an open source, multi-protocol, Java-based message broker.",
-                            policy      : ServiceRestartPolicy.ALWAYS,
-                            beforeStart : {}, // NOP
-                            afterStart  : {}, // NOP
-                            onFailure   : {}, // NOP
-                            restartDelay: 10
-                    ]
-            )
-            // OSGi bundle manager
+//        services {
+//            // Message Broker
 //            service(
 //                    [
-//                            name        : "osgi-manager-1.0.0",
-//                            command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
-//                            descr       : "StarshipOS OSGiManager service",
+//                            name        : "apache-activemq-6.1.5",
+//                            command     : "/opt/activemq/bin/activemq start",
+//                            descr       : "Apache ActiveMQ is an open source, multi-protocol, Java-based message broker.",
 //                            policy      : ServiceRestartPolicy.ALWAYS,
 //                            beforeStart : {}, // NOP
 //                            afterStart  : {}, // NOP
 //                            onFailure   : {}, // NOP
-//                            restartDelay: 5
+//                            restartDelay: 10
 //                    ]
 //            )
-            startServices()
-        }
+//            // OSGi bundle manager
+////            service(
+////                    [
+////                            name        : "osgi-manager-1.0.0",
+////                            command     : "/usr/bin/java -jar /var/lib/starship/osgi-manager.jar",
+////                            descr       : "StarshipOS OSGiManager service",
+////                            policy      : ServiceRestartPolicy.ALWAYS,
+////                            beforeStart : {}, // NOP
+////                            afterStart  : {}, // NOP
+////                            onFailure   : {}, // NOP
+////                            restartDelay: 5
+////                    ]
+////            )
+////            startServices()
+//        }
     }
     interactiveShell("Welcome to StarshipOS, enjoy your flight!", "/bin/sh")
 }

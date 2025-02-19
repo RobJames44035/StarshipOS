@@ -82,6 +82,8 @@ function main() {
   mount_rootfs
   make_dirs
   copy_files
+#echo "Paused..."
+#read -p "x"
   cleanup_litter
   unmount_rootfs
 }

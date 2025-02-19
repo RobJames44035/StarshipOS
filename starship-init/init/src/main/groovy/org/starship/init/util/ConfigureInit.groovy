@@ -9,7 +9,7 @@
 //file:noinspection GroovyFallthrough
 package org.starship.init.util
 
-import com.sun.jna.Native
+
 import groovy.util.logging.Slf4j
 import org.starship.init.Init
 import org.starship.jna.CLibWrapper
@@ -22,26 +22,26 @@ import static groovy.lang.Closure.DELEGATE_FIRST
  * Utility class for system initialization tasks.
  */
 @Slf4j
-class InitUtil {
+class ConfigureInit {
 
     // Singleton instance
-    private static InitUtil instance = null
+    private static ConfigureInit instance = null
     static final int ZERO = 0
 
     // Instance fields for properties
     private String logLevel
     private String logLocation
 
-    private InitUtil() {} // Private constructor for singleton
+    private ConfigureInit() {} // Private constructor for singleton
 
     /**
      * Returns the singleton instance of InitUtil.
      *
      * @return the singleton InitUtil instance
      */
-    static InitUtil getInstance() {
+    static ConfigureInit getInstance() {
         if (instance == null) {
-            instance = new InitUtil()
+            instance = new ConfigureInit()
         }
         return instance
     }
@@ -425,18 +425,58 @@ class InitUtil {
      */
     static void interactiveShell(String welcomeMessage, String shellPath) {
         try {
-            File shellFile = new File(shellPath)
-            if (!shellFile.exists() || !shellFile.canExecute()) {
-                log.error("Path to shell is invalid: $shellPath")
-            }
-            // Start a shell
+            // Validate the shell path
+//            File shellFile = new File(shellPath)
+//            if (!shellFile.exists() || !shellFile.canExecute()) {
+//                log.error("Path to shell is invalid: $shellPath")
+//                return
+//            }
+
+            // Print a welcome message
             println(welcomeMessage)
-            ProcessBuilder processBuilder = new ProcessBuilder(shellPath).inheritIO()
+
+            // Create and start the shell process
+            ProcessBuilder processBuilder = new ProcessBuilder(shellPath, "-i")
             Process shellProcess = processBuilder.start()
-            shellProcess.waitFor()
-            Init.resources.processTable.put(shellPath, shellProcess)
+
+            // Threads for interactive I/O between user and shell
+            Thread inputThread = new Thread({
+                try (BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in))
+                     PrintWriter shellInput = new PrintWriter(shellProcess.outputStream, true)) {
+                    String line
+                    while ((line = userInput.readLine()) != null) {
+                        shellInput.println(line)
+                    }
+                } catch (IOException ex) {
+                    log.error("Error passing input to shell: ${ex.message}")
+                }
+            })
+
+            Thread outputThread = new Thread({
+                try (BufferedReader shellOutput = new BufferedReader(new InputStreamReader(shellProcess.inputStream))) {
+                    String line
+                    while ((line = shellOutput.readLine()) != null) {
+                        println(line)
+                    }
+                } catch (IOException ex) {
+                    log.error("Error reading shell output: ${ex.message}")
+                }
+            })
+
+            // Start I/O Threads
+            inputThread.start()
+            outputThread.start()
+
+            // Wait for the shell process and threads to terminate
+            int exitCode = shellProcess.waitFor()
+            log.info("Interactive shell exited with code: $exitCode")
+
+            inputThread.join()
+            outputThread.join()
+        } catch (IOException e) {
+            log.error("Failed to start shell process: ${e.message}")
         } catch (Exception e) {
-            log.error("Failed to launch shell: ${e.message}")
+            log.error("An unexpected error occurred: ${e.message}")
         }
     }
 }

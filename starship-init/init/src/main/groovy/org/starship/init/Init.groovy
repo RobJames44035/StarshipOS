@@ -6,7 +6,7 @@
 package org.starship.init
 
 import groovy.util.logging.Slf4j
-import org.starship.init.util.InitUtil
+import org.starship.init.util.ConfigureInit
 import org.starship.sys.PanicException
 import org.starship.sys.SystemResources
 
@@ -65,13 +65,6 @@ class Init {
             configureSystem()
 
             log.info("System is up.")
-            int xit = InitUtil.interactiveShell()
-            log.info("Interactive shell exited with code: $xit")
-            if(xit == 0) {
-                supervisorLoop()
-            } else {
-                throw new PanicException("Something REALLY BAD happened.")
-            }
         } catch (Exception e) {
             log.error("Critical error during system initialization: ${e.message}", e)
             throw new PanicException("PANIC: ${e.message ?: 'Unknown error'}", e)
@@ -94,28 +87,28 @@ class Init {
      */
     static boolean configureSystem() {
         try {
-            File configFile = new File(PRIMARY_CONFIG_PATH)
-            String configContent = null
+            // Try to load configuration from the primary file path
+            File configFile = new File("/etc/starship/config.d/init.groovy")
+            String configContent
 
-            if (!configFile.exists()) {
-                log.warn("Primary config not found at $PRIMARY_CONFIG_PATH. Attempting to load fallback config: $FALLBACK_CONFIG_PATH")
-                InputStream fallbackStream = Init.class.classLoader.getResourceAsStream(FALLBACK_CONFIG_PATH)
-                if (fallbackStream == null) {
-                    log.error("Fallback configuration not found. Aborting!")
-                    throw new PanicException("System configuration missing! Initialization cannot proceed.")
-                }
-                configContent = fallbackStream.text
-                log.info("Fallback configuration loaded from resources.")
-            } else {
+            if (configFile.exists()) {
                 log.info("Primary configuration file located at: ${configFile.absolutePath}")
-            }
-
-            if (!configContent) {
-                InitUtil.getInstance().configureSystem(configFile)
+                configContent = configFile.text // Load the file's content as text
             } else {
-                InitUtil.getInstance().configureSystem(configContent)
+                log.warn("Primary configuration not found at /etc/starship/config.d/init.groovy. Attempting fallback configuration.")
+                // Attempt fallback from classpath
+                InputStream fallbackStream = Init.class.classLoader.getResourceAsStream("default-init.groovy")
+                if (fallbackStream != null) {
+                    log.info("Fallback configuration loaded from classpath: default-init.groovy")
+                    configContent = fallbackStream.text // Load the stream content as text
+                } else {
+                    log.error("Fallback configuration missing. Cannot continue system initialization!")
+                    throw new PanicException("No configuration file found! Initialization aborted.")
+                }
             }
 
+            // Pass the configuration content to your single configuration loader
+            ConfigureInit.getInstance().configureSystem(configContent)
             return true
         } catch (Exception e) {
             log.error("System configuration failed: ${e.message}", e)
@@ -140,6 +133,7 @@ class Init {
         while (true) {
             try {
                 reapZombies()
+                serviceManager()
                 Thread.sleep(1000) // Supervisor polling interval
             } catch (Exception e) {
                 log.error("Error in supervisor loop: ${e.message}", e)
