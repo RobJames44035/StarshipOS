@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-    const char *java_binary = "/usr/bin/java";
+    const char *java_binary = "/jdk/bin/java";
     char *const java_args[] = {
         "java",
 //        "-Xcheck:jni",
