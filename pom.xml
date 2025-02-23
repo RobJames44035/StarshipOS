@@ -25,7 +25,8 @@
         <module>starship-sdk</module>
         <module>starship-init</module>
         <module>starship-userland</module>
-<!--        <module>usb-image</module>-->
+        <module>starship-userland/graal-vm</module>
+        <!--        <module>usb-image</module>-->
     </modules>
 
     <dependencies>

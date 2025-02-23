@@ -4,242 +4,120 @@ This document outlines the development roadmap for StarshipOS. The focus is on b
 
 The tasks are prioritized to ensure foundational stability early, with incremental steps toward a fully functional OS.
 
----
+# Project Roadmap: Object-Oriented, Fileless, Event-Driven OS
 
-## Roadmap Tasks
+## Epic 1: Setup and Basic System Architecture
 
-### 1. Connect Remote Debugging to Init
-- **Goal**: Enable remote debugging for the Init process.
-- **Why**: Debugging Init is critical for understanding its runtime behavior and resolving issues quickly.
-- **Key Steps**:
-    - Set up remote JVM debugging.
-    - Attach remote debugging tools (e.g., IntelliJ, VisualVM).
-    - Verify logs and output can be monitored remotely.
+### Story 1.1: Build Semi-Functional Init System
+**As a developer**, I want to set up a basic init system based on Groovy and Buildroot so that the system can initialize and start processes.
+- **Tasks**:
+  - Define init system structure (process management, boot process).
+  - Implement basic Groovy DSL for system initialization.
+  - Test system to ensure it boots to a shell.
 
----
-
-### 2. Build a Bootable Flash Drive
-- **Goal**: Create a StarshipOS image that boots from a USB flash drive using UEFI.
-- **Why**: Running StarshipOS directly on hardware ensures that it behaves like a fully independent system.
-- **Key Steps**:
-    - Configure the image generator to create a bootable UEFI flash drive.
-    - Test both with and without GRUB.
-    - Verify Init starts as PID 1 post-boot.
+### Story 1.2: Memory Management and JVM Process Allocation
+**As a developer**, I want to map a large swap partition and allocate memory directly to JVM processes so that they have access to enough memory.
+- **Tasks**:
+  - Implement memory mapping to the swap partition.
+  - Integrate with JVM processes to dynamically allocate memory.
+  - Test memory allocation and ensure processes are stable.
 
 ---
 
-### 3. Debug Init and Make It Production Quality
-- **Goal**: Stabilize Init as the foundational process of StarshipOS.
-- **Why**: Init is responsible for process management, resource cleanup, and supervisor loops. It must be robust and bug-free to support the whole system.
-- **Key Steps**:
-    - Monitor edge-case failures (e.g., missing heartbeats, zombie process handling).
-    - Harden logging and error-handling mechanisms.
-    - Write unit tests for key features.
+## Epic 2: Core Object-Oriented System Features
+
+### Story 2.1: Event-Driven Architecture Implementation
+**As a developer**, I want to implement an event-driven architecture (pub/sub) so that processes can interact asynchronously.
+- **Tasks**:
+  - Design the pub/sub model and define event classes.
+  - Implement system to handle events (publish, subscribe).
+  - Create example events to simulate real-world interactions (e.g., process events).
+
+### Story 2.2: Build OSGi Container for System Services
+**As a developer**, I want to create an OSGi container to manage both system and userland services so that services are modular and can be started/stopped independently.
+- **Tasks**:
+  - Set up the Apache Felix framework for OSGi.
+  - Integrate services as OSGi bundles.
+  - Test OSGi container for proper service management.
+
+### Story 2.3: ActiveMQ Integration
+**As a developer**, I want to integrate ActiveMQ into the system to handle messaging between processes and components.
+- **Tasks**:
+  - Set up ActiveMQ instance.
+  - Integrate ActiveMQ with the pub/sub system.
+  - Create sample messages and test system communication.
 
 ---
 
-### 4. Expand and Get BundleManager Functional
-- **Goal**: Implement a functional version of BundleManager (beyond the stub).
-- **Why**: BundleManager handles modular service management, making it essential for the OS and SDK workflows.
-- **Key Steps**:
-    - Establish dynamic bundle loading (e.g., JARs or scripts).
-    - Add bundle lifecycle management (start, stop, restart).
-    - Test bundle communications via heartbeats with Init.
+## Epic 3: Memory Management and Dynamic Placement
+
+### Story 3.1: Entropy and Flag Integration in Objects
+**As a developer**, I want to modify Java's `Object` class to include entropy and flags so that objects can have dynamic memory placement.
+- **Tasks**:
+  - Implement `entropy` (0-1) and flags in `Object`.
+  - Modify memory allocation logic based on entropy values.
+  - Test the integration and verify that the flags/entropy are working correctly.
+
+### Story 3.2: GC Modifications with Machine Learning
+**As a developer**, I want to modify the garbage collector to use machine learning models for intelligent object placement between RAM and SSD.
+- **Tasks**:
+  - Implement a machine learning model to predict object behavior.
+  - Integrate model with GC for dynamic placement of objects.
+  - Test GC performance and optimize memory usage.
 
 ---
 
-### 5. Debug and Make BundleManager Production Quality
-- **Goal**: Refine the BundleManager with rigorous testing and robustness improvements.
-- **Why**: A stable BundleManager ensures services run reliably and have clear failure recovery mechanisms.
-- **Key Steps**:
-    - Expand the feature set (e.g., inter-bundle communication, configuration fetch).
-    - Add error recovery logic for failed bundles.
-    - Stress test with multiple bundles.
+## Epic 4: Basic User Interface (JShell)
+
+### Story 4.1: Develop Basic JShell Interface
+**As a user**, I want to interact with the system via JShell so that I can test and issue commands to the OS.
+- **Tasks**:
+  - Set up JShell environment.
+  - Create basic commands for interacting with the OS.
+  - Test system interaction through the JShell interface.
 
 ---
 
-### 6. Provide Installation Scripts for Packaged Artifacts
-- **Goal**: Develop scripts for installing/replacing system artifacts (e.g., bundles, configurations).
-- **Why**: Well-written scripts make it easy to deploy and update the OS and its components for new environments or versions.
-- **Key Steps**:
-    - Define how artifacts are packaged.
-    - Write installation scripts to deploy bundles, configs, and libraries.
-    - Test script idempotence and reliability under edge cases.
+## Epic 5: 3D JavaFX GUI Development
+
+### Story 5.1: Basic 3D Rendering Setup
+**As a developer**, I want to set up a 3D JavaFX rendering pipeline to display the first-person shooter GUI.
+- **Tasks**:
+  - Implement a basic 3D scene.
+  - Add camera and navigation controls (WASD, mouse).
+  - Test basic rendering and controls.
+
+### Story 5.2: Interactive Event-Driven 3D Interface
+**As a user**, I want to interact with the 3D world using events so that I can control objects and navigate the scene.
+- **Tasks**:
+  - Integrate event system with 3D interface (e.g., user input, object interaction).
+  - Ensure smooth transitions between actions (e.g., moving, interacting).
+  - Test interaction within the 3D space.
 
 ---
 
-### 7. Integrate D-Bus / dbus-cxx for IPC
-- **Goal**: Integrate `dbus` and `dbus-cxx` to enable inter-process communication for StarshipOS modules and apps.
-- **Why**: D-Bus is a flexible and widely-used message bus, providing a standardized way for applications and modules to communicate.
-- **Key Steps**:
-    - Set up dbus-daemon to run within StarshipOS.
-    - Provide examples of services communicating via D-Bus.
-    - Test performance and compatibility with the OS.
+## Epic 6: VR Adaptation (Future)
+
+### Story 6.1: Research VR Integration
+**As a developer**, I want to research how to integrate VR into the OS so that the user can interact with the system in an immersive way.
+- **Tasks**:
+  - Investigate VR frameworks (e.g., OpenVR, Oculus SDK).
+  - Explore how to integrate VR controls (e.g., hand tracking, movement).
+  - Develop a prototype for VR interaction.
+
+### Story 6.2: VR Event-Driven Interaction
+**As a user**, I want to interact with the system in VR using event-driven controls, so that I can control the system in an immersive environment.
+- **Tasks**:
+  - Implement VR input handling (gesture tracking, movement).
+  - Integrate with the event system for VR actions.
+  - Test user interactions in VR and refine experience.
 
 ---
 
-### 8. Design and Build SDK
-- **Goal**: Develop an SDK for crafting apps and bundles for StarshipOS.
-- **Why**: App developers will need tools, libraries, and APIs to build and deploy to StarshipOS.
-- **Key Steps**:
-    - Define SDK structure (libraries, scripts, docs).
-    - Provide API bindings for system features (e.g., D-Bus, lifecycle hooks).
-    - Write installation and usage guides.
+## Milestones:
 
----
-
-### 9. Write a Hello World CLI App
-- **Goal**: Develop a command-line "Hello World" app for StarshipOS.
-- **Why**: A simple CLI app proves that the SDK, Init, and BundleManager can work together to deploy and execute a basic application.
-- **Key Steps**:
-    - Use the SDK to create a basic CLI app.
-    - Deploy and execute the app as a bundle.
-    - Verify output (e.g., print "Hello World" to the console).
-
----
-
-### 10. Write a JavaFX Hello World
-- **Goal**: Create a graphical "Hello World" app using JavaFX.
-- **Why**: Demonstrates StarshipOS's ability to support advanced apps with GUIs.
-- **Key Steps**:
-    - Write a JavaFX app with a basic GUI (e.g., label/button).
-    - Integrate JavaFX runtime support into the OS.
-    - Test deployment as a bundle or standalone app.
-
----
-
-## Notes on Task Order
-The tasks are listed in a logical order, but some development can occur in parallel. For instance:
-- Debugging Init (Task 3) can happen alongside building a bootable flash (Task 2).
-- Expanding BundleManager (Task 4) can begin before Init is fully production quality but should prioritize functionality over perfection.
-
-Focus on foundational tasks before moving toward user-facing deliverables like the Hello World apps.
-
----
-
-## Conclusion
-This roadmap provides structured steps to guide StarshipOS into becoming a robust custom operating system. Each task builds upon the previous ones, ensuring stability and modularity at every stage. As you progress, revisit and refine this roadmap to adapt to new challenges or innovations discovered along the way.
-
-Happy hacking! 🚀# StarshipOS Roadmap
-
-This document outlines the development roadmap for StarshipOS. The focus is on building a robust, modular, and production-ready OS with its custom Init system (`Init`) and supporting components like `BundleManager` and an SDK for developing apps.
-
-The tasks are prioritized to ensure foundational stability early, with incremental steps toward a fully functional OS.
-
----
-
-## Roadmap Tasks
-
-### 1. Connect Remote Debugging to Init
-- **Goal**: Enable remote debugging for the Init process.
-- **Why**: Debugging Init is critical for understanding its runtime behavior and resolving issues quickly.
-- **Key Steps**:
-    - Set up remote JVM debugging.
-    - Attach remote debugging tools (e.g., IntelliJ, VisualVM).
-    - Verify logs and output can be monitored remotely.
-
----
-
-### 2. Build a Bootable Flash Drive
-- **Goal**: Create a StarshipOS image that boots from a USB flash drive using UEFI.
-- **Why**: Running StarshipOS directly on hardware ensures that it behaves like a fully independent system.
-- **Key Steps**:
-    - Configure the image generator to create a bootable UEFI flash drive.
-    - Test both with and without GRUB.
-    - Verify Init starts as PID 1 post-boot.
-
----
-
-### 3. Debug Init and Make It Production Quality
-- **Goal**: Stabilize Init as the foundational process of StarshipOS.
-- **Why**: Init is responsible for process management, resource cleanup, and supervisor loops. It must be robust and bug-free to support the whole system.
-- **Key Steps**:
-    - Monitor edge-case failures (e.g., missing heartbeats, zombie process handling).
-    - Harden logging and error-handling mechanisms.
-    - Write unit tests for key features.
-
----
-
-### 4. Expand and Get BundleManager Functional
-- **Goal**: Implement a functional version of BundleManager (beyond the stub).
-- **Why**: BundleManager handles modular service management, making it essential for the OS and SDK workflows.
-- **Key Steps**:
-    - Establish dynamic bundle loading (e.g., JARs or scripts).
-    - Add bundle lifecycle management (start, stop, restart).
-    - Test bundle communications via heartbeats with Init.
-
----
-
-### 5. Debug and Make BundleManager Production Quality
-- **Goal**: Refine the BundleManager with rigorous testing and robustness improvements.
-- **Why**: A stable BundleManager ensures services run reliably and have clear failure recovery mechanisms.
-- **Key Steps**:
-    - Expand the feature set (e.g., inter-bundle communication, configuration fetch).
-    - Add error recovery logic for failed bundles.
-    - Stress test with multiple bundles.
-
----
-
-### 6. Provide Installation Scripts for Packaged Artifacts
-- **Goal**: Develop scripts for installing/replacing system artifacts (e.g., bundles, configurations).
-- **Why**: Well-written scripts make it easy to deploy and update the OS and its components for new environments or versions.
-- **Key Steps**:
-    - Define how artifacts are packaged.
-    - Write installation scripts to deploy bundles, configs, and libraries.
-    - Test script idempotence and reliability under edge cases.
-
----
-
-### 7. Integrate D-Bus / dbus-cxx for IPC
-- **Goal**: Integrate `dbus` and `dbus-cxx` to enable inter-process communication for StarshipOS modules and apps.
-- **Why**: D-Bus is a flexible and widely-used message bus, providing a standardized way for applications and modules to communicate.
-- **Key Steps**:
-    - Set up dbus-daemon to run within StarshipOS.
-    - Provide examples of services communicating via D-Bus.
-    - Test performance and compatibility with the OS.
-
----
-
-### 8. Design and Build SDK
-- **Goal**: Develop an SDK for crafting apps and bundles for StarshipOS.
-- **Why**: App developers will need tools, libraries, and APIs to build and deploy to StarshipOS.
-- **Key Steps**:
-    - Define SDK structure (libraries, scripts, docs).
-    - Provide API bindings for system features (e.g., D-Bus, lifecycle hooks).
-    - Write installation and usage guides.
-
----
-
-### 9. Write a Hello World CLI App
-- **Goal**: Develop a command-line "Hello World" app for StarshipOS.
-- **Why**: A simple CLI app proves that the SDK, Init, and BundleManager can work together to deploy and execute a basic application.
-- **Key Steps**:
-    - Use the SDK to create a basic CLI app.
-    - Deploy and execute the app as a bundle.
-    - Verify output (e.g., print "Hello World" to the console).
-
----
-
-### 10. Write a JavaFX Hello World
-- **Goal**: Create a graphical "Hello World" app using JavaFX.
-- **Why**: Demonstrates StarshipOS's ability to support advanced apps with GUIs.
-- **Key Steps**:
-    - Write a JavaFX app with a basic GUI (e.g., label/button).
-    - Integrate JavaFX runtime support into the OS.
-    - Test deployment as a bundle or standalone app.
-
----
-
-## Notes on Task Order
-The tasks are listed in a logical order, but some development can occur in parallel. For instance:
-- Debugging Init (Task 3) can happen alongside building a bootable flash (Task 2).
-- Expanding BundleManager (Task 4) can begin before Init is fully production quality but should prioritize functionality over perfection.
-
-Focus on foundational tasks before moving toward user-facing deliverables like the Hello World apps.
-
----
-
-## Conclusion
-This roadmap provides structured steps to guide StarshipOS into becoming a robust custom operating system. Each task builds upon the previous ones, ensuring stability and modularity at every stage. As you progress, revisit and refine this roadmap to adapt to new challenges or innovations discovered along the way.
-
-Happy hacking! 🚀
+- **M1**: Semi-functional init system with memory allocation (3 months).
+- **M2**: Event-driven architecture and OSGi container (6 months).
+- **M3**: Basic JShell interface and core memory management (9 months).
+- **M4**: 3D JavaFX GUI and interactive system (12 months).
+- **M5**: VR adaptation and user testing (24 months).

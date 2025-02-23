@@ -1,11 +1,20 @@
 #!/bin/bash
 
+#
+# StarshipOS Copyright (c) 2025. R. A. James
+#
+
 JAVA_VERSION="23.0.2"
 FELIX_VERSION="7.0.5"
 ACTIVEMQ_VERSION="6.1.5"
 
+JAVA_DOWNLOAD="https://download.java.net/java/GA/jdk${JAVA_VERSION}/6da2a6609d6e406f85c491fcb119101b/7/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+FELIX_DOWNLOAD="https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-${FELIX_VERSION}.zip?action=download"
+ACTIVEMQ_DOWNLOAD="https://www.apache.org/dyn/closer.cgi?filename=/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz&action=download"
+
 #
-# StarshipOS Copyright (c) 2025. R. A. James
+# The `pause` function displays a message prompting the user to either press the ENTER key to continue
+# or use ^C to quit the process. It halts the script execution until the user provides input.
 #
 function pause() {
   echo "Paused... [ENTER] to continue ^C to quit."
@@ -30,7 +39,87 @@ function mount_rootfs() {
 # root filesystem. Note that the actual directory creation commands are currently commented out.
 #
 function make_dirs() {
-  echo "Creating directories."
+  echo "Creating directories." # if needed
+  mkdir -p "repo"
+}
+
+#
+# The `jdk` function downloads the specified OpenJDK version for Linux, extracts it, 
+# copies it to the mounted root filesystem, and then renames the directory to `jdk`. 
+# This function ensures the correct Java Development Kit is installed in the root filesystem.
+#
+function jdk() {
+  echo "#"
+  echo "# OpenJDK $JAVA_VERSION"
+  echo "#"
+
+  # Check if the file already exists
+  if [ ! -f "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" ]; then
+    echo "Downloading OpenJDK ${JAVA_VERSION}..."
+    sudo wget "${JAVA_DOWNLOAD}" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+  else
+    echo "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz already exists. Skipping download."
+  fi
+
+  # Extract the tarball
+  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+
+  # Copy and move JDK files
+  sudo cp -rpv "./openjdk-${JAVA_VERSION}" "/mnt/rootfs/"
+  sudo mv "/mnt/rootfs/openjdk-${JAVA_VERSION}/" "/mnt/rootfs/jdk"
+}
+
+#
+# The `felix` function is responsible for downloading the specified version of Apache Felix framework, 
+# extracting it, and copying the extracted files into the `/mnt/rootfs/opt` directory within the 
+# mounted filesystem. This setup places the framework in the correct location for further use within 
+# the system environment.
+#
+function felix() {
+  echo "#"
+  echo "# Apache Felix v${FELIX_VERSION}"
+  echo "#"
+
+  # Check if the file already exists
+  if [ ! -f "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" ]; then
+    echo "Downloading Apache Felix v${FELIX_VERSION}..."
+    sudo wget "${FELIX_DOWNLOAD}" -O "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
+  else
+    echo "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip already exists. Skipping download."
+  fi
+
+  # Extract the zip file
+  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
+
+  # Copy Felix files to the opt directory in the mounted filesystem
+  sudo cp -rpv "./felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt"
+}
+
+#
+# The `activemq` function downloads the specified Apache ActiveMQ version for Linux,
+# extracts it, copies it to the `/mnt/rootfs/opt` directory in the mounted filesystem,
+# renames the directory to `activemq`, and makes the `activemq` executable available.
+# This ensures the application is properly set up for further use within the environment.
+#
+function activemq() {
+  echo "#"
+  echo "# Apache ActiveMQ v${ACTIVEMQ_VERSION}"
+  echo "#"
+
+  # Check if the file already exists
+  if [ ! -f "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" ]; then
+    echo "Downloading Apache ActiveMQ v${ACTIVEMQ_VERSION}..."
+    sudo wget "${ACTIVEMQ_DOWNLOAD}" -O "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
+  else
+    echo "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz already exists. Skipping download."
+  fi
+
+  # Extract the tarball
+  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
+
+  # Copy and move ActiveMQ files
+  sudo cp -rpv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/"
+  sudo mv "/mnt/rootfs/opt/apache-activemq-${ACTIVEMQ_VERSION}/" "/mnt/rootfs/opt/activemq"
 }
 
 #
@@ -40,30 +129,9 @@ function make_dirs() {
 #
 function copy_files() {
   echo "Copy files..."
-
-  echo "#"
-  echo "# OpenJDK $JAVA_VERSION"
-  echo "#"
-  sudo wget "https://download.java.net/java/GA/jdk${JAVA_VERSION}/6da2a6609d6e406f85c491fcb119101b/7/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
-  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64"
-  sudo cp -rpv "./openjdk-${JAVA_VERSION}" "/mnt/rootfs/"
-  sudo mv "/mnt/rootfs/openjdk-${JAVA_VERSION}/" "/mnt/rootfs/jdk"
-
-  echo "#"
-  echo "# Apache Felix v${FELIX_VERSION}"
-  echo "#"
-  sudo wget "https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-${FELIX_VERSION}.zip?action=download" -O "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
-  sudo unzip "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
-  sudo cp -rpv "./felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt"
-
-  echo "#"
-  echo "# Apache ActiveMQ v${ACTIVEMQ_VERSION}"
-  echo "#"
-  sudo wget "https://www.apache.org/dyn/closer.cgi?filename=/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz&action=download" -O "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-  sudo cp -rpv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt"
-  sudo mv "/mnt/rootfs/opt/apache-activemq-${ACTIVEMQ_VERSION}/" "/mnt/rootfs/opt/activemq"
-  sudo chmod +x "/mnt/rootfs/opt/activemq/bin/activemq"
+  jdk
+  activemq
+  felix
 }
 
 #
@@ -85,9 +153,6 @@ function cleanup_litter() {
   sudo rm -rf "./apache-activemq-6.1.5"
   sudo rm -rf "./felix-framework-7.0.5"
 
-  sudo rm "repo/apache-activemq-6.1.5-bin.tar.gz"
-  sudo rm "repo/org.apache.felix.main.distribution-7.0.5.zip"
-
   sudo sync
 }
 
@@ -100,7 +165,6 @@ function main() {
   mount_rootfs
   make_dirs
   copy_files
-pause
   cleanup_litter
   unmount_rootfs
 }
