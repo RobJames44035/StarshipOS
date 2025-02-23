@@ -1,1 +1,0 @@
-Resource file in module moduletests.hello.lib

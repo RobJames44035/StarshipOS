@@ -11,6 +11,7 @@ ACTIVEMQ_VERSION="6.1.5"
 JAVA_DOWNLOAD="https://download.java.net/java/GA/jdk${JAVA_VERSION}/6da2a6609d6e406f85c491fcb119101b/7/GPL/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
 FELIX_DOWNLOAD="https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-${FELIX_VERSION}.zip?action=download"
 ACTIVEMQ_DOWNLOAD="https://www.apache.org/dyn/closer.cgi?filename=/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz&action=download"
+GRAAL_DOWNLOAD="https://download.oracle.com/graalvm/23/latest/graalvm-jdk-23_linux-x64_bin.tar.gz"
 
 #
 # The `pause` function displays a message prompting the user to either press the ENTER key to continue
@@ -165,6 +166,7 @@ function main() {
   mount_rootfs
   make_dirs
   copy_files
+pause
   cleanup_litter
   unmount_rootfs
 }

@@ -1,2 +1,0 @@
-wasm.MultiMemory = true
-zero-memory = true

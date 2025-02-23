@@ -1,4 +1,0 @@
-interpreter-iterations = 3
-sync-noinline-iterations = 3
-sync-inline-iterations = 3
-async-iterations = 20

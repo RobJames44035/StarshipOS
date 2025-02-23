@@ -1,2 +1,0 @@
-split("class", ".*\\.nodes\\..*ParameterNode$");
-split("class", ".*\\.nodes\\..*ConstantNode$");

@@ -1,1 +1,0 @@
-Please specify options for native-image building or use --help for more info.
