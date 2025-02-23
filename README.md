@@ -1,6 +1,6 @@
 ![StarshipOS](StarshipOS.png)
 
-# Starship Operating System (StarshipOS)
+# Starship Operating System (StarshipOS) - https://matrix.to/#/@robjames44035:matrix.org
 
 Welcome to **Starship Operating System (StarshipOS)**! This project reimagines what an operating system can be—combining deep object-oriented principles with cutting-edge innovations in virtual memory management, unique process orchestration, and immersive user interaction. StarshipOS is not just an operating system; it’s a framework for a **new way of thinking**, focusing on flexibility, modularity, and empowering its users to build their "universe."
 
