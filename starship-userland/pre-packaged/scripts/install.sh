@@ -12,7 +12,6 @@ JAVA_DOWNLOAD="https://download.java.net/java/GA/jdk${JAVA_VERSION}/6da2a6609d6e
 FELIX_DOWNLOAD="https://www.apache.org/dyn/closer.lua/felix/org.apache.felix.main.distribution-${FELIX_VERSION}.zip?action=download"
 ACTIVEMQ_DOWNLOAD="https://www.apache.org/dyn/closer.cgi?filename=/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz&action=download"
 GRAAL_DOWNLOAD="https://download.oracle.com/graalvm/23/latest/graalvm-jdk-23_linux-x64_bin.tar.gz"
-
 #
 # The `pause` function displays a message prompting the user to either press the ENTER key to continue
 # or use ^C to quit the process. It halts the script execution until the user provides input.
@@ -63,17 +62,35 @@ function jdk() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
-
-  # Copy and move JDK files
-  sudo cp -rpv "./openjdk-${JAVA_VERSION}" "/mnt/rootfs/"
-  sudo mv "/mnt/rootfs/openjdk-${JAVA_VERSION}/" "/mnt/rootfs/jdk"
+  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" -C /mnt/rootfs/java
 }
 
 #
-# The `felix` function is responsible for downloading the specified version of Apache Felix framework, 
-# extracting it, and copying the extracted files into the `/mnt/rootfs/opt` directory within the 
-# mounted filesystem. This setup places the framework in the correct location for further use within 
+# The `graal` function downloads the specified GraalVM version for Linux, extracts it,
+# copies it to the mounted root filesystem, and then renames the directory to `graal`.
+# This function ensures the correct Java Development Kit is installed in the root filesystem.
+#
+function graal() {
+  echo "#"
+  echo "# GraalVM 23"
+  echo "#"
+pause
+  # Check if the file already exists
+  if [ ! -f "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" ]; then
+    echo "Downloading GraalVM 23..."
+    sudo wget "${GRAAL_DOWNLOAD}" -O "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
+  else
+    echo "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
+  fi
+pause
+  # Extract the tarball
+  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" --transform="s/^openjdk-${JAVA_VERSION}/graal/" -C /mnt/rootfs/
+}
+
+#
+# The `felix` function is responsible for downloading the specified version of Apache Felix framework,
+# extracting it, and copying the extracted files into the `/mnt/rootfs/opt` directory within the
+# mounted filesystem. This setup places the framework in the correct location for further use within
 # the system environment.
 #
 function felix() {
@@ -89,11 +106,8 @@ function felix() {
     echo "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip already exists. Skipping download."
   fi
 
-  # Extract the zip file
-  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
-
-  # Copy Felix files to the opt directory in the mounted filesystem
-  sudo cp -rpv "./felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt"
+  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" -d "/mnt/rootfs/opt"
+  sudo mv "/mnt/rootfs/opt/felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt/felix"
 }
 
 #
@@ -116,11 +130,7 @@ function activemq() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-
-  # Copy and move ActiveMQ files
-  sudo cp -rpv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/"
-  sudo mv "/mnt/rootfs/opt/apache-activemq-${ACTIVEMQ_VERSION}/" "/mnt/rootfs/opt/activemq"
+  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" --transform="s/^apache-activemq-${ACTIVEMQ_VERSION}/activemq/" -C "/mnt/rootfs/opt/"
 }
 
 #
@@ -131,6 +141,7 @@ function activemq() {
 function copy_files() {
   echo "Copy files..."
   jdk
+  graal
   activemq
   felix
 }
@@ -153,7 +164,7 @@ function cleanup_litter() {
   echo "Cleaning up."
   sudo rm -rf "./apache-activemq-6.1.5"
   sudo rm -rf "./felix-framework-7.0.5"
-
+  sudo rm -rf "./graalvm-jdk-23_linux-x64_bin.tar.gz"
   sudo sync
 }
 
