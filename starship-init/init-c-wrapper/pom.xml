@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~
+  ~ /*******************************************************************************
+  ~  * FILE: ${filename}
+  ~  * AUTHOR: Your Name Here
+  ~  * StarshipOS Copyright (c) ${year} R.A. James
+  ~  *******************************************************************************/
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -62,6 +71,7 @@
                         <configuration>
                             <executable>gcc</executable>
                             <arguments>
+                                <argument>-DDEBUG</argument> <!-- Define the DEBUG macro -->
                                 <argument>-o</argument>
                                 <argument>${project.build.directory}/sbin-init</argument>
                                 <argument>${basedir}/src/main/c/sbin.c</argument>
