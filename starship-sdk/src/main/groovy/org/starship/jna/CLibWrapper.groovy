@@ -4,156 +4,151 @@
  * Licensed under GPL2, GPL3 and Apache 2
  */
 
+
+/**
+ * Provides a wrapper for the CLibJNI library, offering several system operations such as 
+ * setting and retrieving the hostname, mounting and unmounting filesystems, rebooting, 
+ * and executing processes.
+ *
+ * <p>This class ensures that appropriate checks are performed before interacting with 
+ * native system calls by using the CLibJNI Java bridge.</p>
+ *
+ * <ul>
+ *     <li>{@link #setHostname(String)}: Sets the system hostname.</li>
+ *     <li>{@link #getHostname()}: Retrieves the system hostname.</li>
+ *     <li>{@link #mount(String, String, String, long, String)}: Mounts a filesystem.</li>
+ *     <li>{@link #umount(String)}: Unmounts a filesystem.</li>
+ *     <li>{@link #umount2(String, int)}: Unmounts a filesystem with additional options.</li>
+ *     <li>{@link #reboot(int)}: Reboots the system using a specific command.</li>
+ *     <li>{@link #sync()}: Synchronizes filesystem buffers to disk.</li>
+ *     <li>{@link #execve(String, String [ ], String [ ])}: Executes a program with arguments and environment.</li>
+ * </ul>
+ *
+ * <p>Each method leverages the underlying native library to provide essential system 
+ * functionalities, while logging errors or important information for diagnostics 
+ * and proper error handling.</p>
+ *
+ * <p>Note: The native system calls invoked by this class may require elevated 
+ * permissions to execute successfully.</p>
+ */
 package org.starship.jna
 
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.starship.CLibJNI
 
+/**
+ * A utility wrapper class providing higher-level, user-friendly Java methods
+ * for interacting with the native system operations implemented in the 
+ * {@link CLibJNI} library. This class offers essential system management 
+ * functionalities, including hostname management, filesystem operations, 
+ * process execution, and system synchronization.
+ *
+ * <p>All methods in this class perform necessary validations and log errors 
+ * in case of failures. Most operations require elevated permissions to execute 
+ * successfully. It is primarily designed for system-level applications 
+ * requiring direct interaction with the underlying OS.</p>
+ *
+ * <p>Methods provided include:</p>
+ * <ul>
+ *   <li>{@link #setHostname(String)} — Updates the system hostname.</li>
+ *   <li>{@link #getHostname()} — Retrieves the current system hostname.</li>
+ *   <li>{@link #mount(String, String, String, long, String)} — Mounts a filesystem.</li>
+ *   <li>{@link #umount(String)} — Unmounts a filesystem.</li>
+ *   <li>{@link #umount2(String, int)} — Unmounts a filesystem with additional flags.</li>
+ *   <li>{@link #reboot(int)} — Reboots the system with the given command.</li>
+ *   <li>{@link #sync()} — Synchronizes filesystem buffers to disk.</li>
+ *   <li>{@link #execve(String, String [ ], String [ ])} — Executes a process with specified arguments and environment.</li>
+ * </ul>
+ *
+ * <p><b>Note:</b> Incorrect usage of these functions may affect the stability or 
+ * functionality of the system. Proper error handling and validations should always 
+ * be considered before invoking these methods.</p>
+ *
+ * @see CLibJNI* @author R.A.
+ * @version 1.0
+ */
 @Slf4j
+@CompileStatic
 class CLibWrapper {
 
-    private static final CLib CLIB = CLib.INSTANCE
+    private static final CLibJNI CLIB = new CLibJNI() // Use the Java bridge
 
-    /**
-     * Changes the hostname of the system.
-     *
-     * @param hostname The new hostname to set.
-     */
     static void setHostname(String hostname) {
         if (!hostname) {
             log.error("Hostname must not be null or empty")
+            return
         }
 
-        // Native operation using JNA
         int result = CLIB.sethostname(hostname, hostname.length() + 1)
         if (result != 0) {
-            log.error("sethostname failed.")
+            log.error("Failed to set hostname")
         }
     }
 
-    /**
-     * Retrieves the current hostname of the system.
-     *
-     * @return The current hostname.
-     */
     static String getHostname() {
-        // Native operation using JNA
-        byte[] buffer = new byte[256] // Max hostname length on Linux
+        byte[] buffer = new byte[256]
         int result = CLIB.gethostname(buffer, buffer.length)
         if (result != 0) {
-            log.error("gethostname failed.")
+            log.error("Failed to get hostname")
         }
         return new String(buffer).trim()
     }
 
-    /**
-     * Mounts a filesystem.
-     *
-     * @param source The source block device or directory (nullable for tmpfs, etc.).
-     * @param target The target mount point.
-     * @param fsType The filesystem type (e.g., "ext4").
-     * @param mountFlags Mount flags (e.g., CLib.MS_RDONLY, CLib.MS_NOEXEC).
-     * @param data Additional mount data (optional).
-     */
-    static void mount(String source, String target, String fsType, long mountFlags, String data) {
+    static void mount(String source, String target, String fsType, long flags, String data) {
         if (!target || !fsType) {
-            log.error("Target (${target}) and filesystem type  (${fsType}) must not be null.")
+            log.error("Target (${target}) and filesystem type (${fsType}) must not be null.")
+            return
         }
-        // Native operation using JNA
-        int result = CLIB.mount(source, target, fsType, mountFlags, data)
+        int result = CLIB.mount(source, target, fsType, flags, data)
         if (result != 0) {
-            log.error("Mounting ${target} failed.")
+            log.error("Failed to mount filesystem ${target}")
         } else {
-            log.info("Mounted ${target}.")
+            log.info("Successfully mounted ${target}")
         }
     }
 
-    /**
-     * Unmounts a filesystem.
-     *
-     * @param target The target mount point to unmount.
-     */
     static void umount(String target) {
         if (!target) {
             log.error("Target must not be null.")
+            return
         }
-
-        // Native operation using JNA
         int result = CLIB.umount(target)
         if (result != 0) {
-            if(umount2(target) != 0) {
-                log.error("umount failed.")
-            }
+            log.error("Failed to umount target ${target}")
         }
     }
 
-    /**
-     * Forcefully unmounts a filesystem.
-     *
-     * @param target The target mount point to unmount.
-     */
-    static void umount2(String target) {
+    static void umount2(String target, int flags) {
         if (!target) {
             log.error("Target must not be null.")
+            return
         }
-
-        // Native operation using JNA
-        int result = CLIB.umount2(target, (int) CLib.MNT_FORCE)
+        int result = CLIB.umount2(target, flags)
         if (result != 0) {
-            log.error("umount2 (force) failed.")
+            log.error("Failed to forcefully unmount target ${target}")
         }
     }
 
-    /**
-     * Reboots the system.
-     *
-     * @param cmd The reboot command, e.g., CLib.LINUX_REBOOT_CMD_RESTART.
-     */
     static void reboot(int cmd) {
-        // Native operation using JNA
         int result = CLIB.reboot(cmd)
         if (result != 0) {
-            log.error("reboot failed.")
+            log.error("Failed to reboot")
         }
     }
 
-    /**
-     * Synchronizes the filesystem buffers.
-     */
     static void sync() {
-        // Native operation using JNA
         CLIB.sync()
     }
 
-    /**
-     * Executes a program.
-     *
-     * @param file The program to execute.
-     * @param argv Arguments for the program.
-     * @param envp Environment variables for the execution.
-     */
     static void execve(String file, String[] argv, String[] envp) {
         if (!file) {
             log.error("File must not be null.")
+            return
         }
-
-        // Native operation using JNA
         int result = CLIB.execve(file, argv, envp)
         if (result != 0) {
-            log.error("execve failed.")
-        }
-    }
-
-    /**
-     * Creates a filesystem node (file, device special file, or named pipe).
-     *
-     * @param path The path for the new node.
-     * @param node The mode for the node, specifying type and permissions.
-     * @param deviceNumber The device number for special files.
-     */
-    static void mknod(final String path, final int node, final long deviceNumber) {
-        int result = CLIB.mknod(path, node, deviceNumber)
-        if(result != 0) {
-            log.error("mknod failed.")
+            log.error("Failed to execute file ${file}")
         }
     }
 }
