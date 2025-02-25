@@ -1,4 +1,16 @@
 #!/bin/sh
+#
+# /*
+#  *
+#  * StarshipOS $file.filename Copyright (c) 2025 R. A. James
+#  * UPDATED: 2/25/25, 1:18 PM by rajames
+#  *
+#  * StarshipOS is licensed under GPL2, GPL3, Apache 2
+#  *
+#  */
+#
+#
+
 # The init script to set up system mounts, console, and start the jar.
 # shellcheck disable=SC3045
 #ulimit -c unlimited

@@ -1,5 +1,13 @@
+
 /*
- * StarshipOS Copyright (c) 2025. R. A. James
+ *
+ *  *
+ *  * StarshipOS $NAME Copyright (c) 2025 R. A. James
+ *  * UPDATED: 2/25/25, 1:23 PM by rajames
+ *  *
+ *  * StarshipOS is licensed under GPL2, GPL3, Apache 2
+ *  *
+ *
  */
 
 //import org.starship.service.ServiceRestartPolicy
