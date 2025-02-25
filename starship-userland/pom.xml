@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ StarshipOS Copyright (c) 2025. R. A. James
+  ~ StarshipOS Copyright (c) 2025. R.A.James
+  ~
+  ~ Licensed under GPL2, GPL3 and Apache 2
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
