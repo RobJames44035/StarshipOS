@@ -4,3 +4,4 @@
 #
 # Licensed under GPL2, GPL3 and Apache 2
 #
+mkdir -p "./target/lib"
