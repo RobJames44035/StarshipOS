@@ -2,7 +2,7 @@
  * StarshipOS Copyright (c) 2025. R. A. James
  */
 
-import org.starship.service.ServiceRestartPolicy
+//import org.starship.service.ServiceRestartPolicy
 
 
 init {

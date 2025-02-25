@@ -41,6 +41,8 @@ function mount_rootfs() {
 function make_dirs() {
   echo "Creating directories." # if needed
   mkdir -p "repo"
+  sudo mkdir -p "/mbt/rootfs/java"
+  sudo mkdir -p "/mbt/rootfs/graal"
 }
 
 #
@@ -62,7 +64,8 @@ function jdk() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" -C /mnt/rootfs/java
+  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+  sudo mv -fv "./jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
 }
 
 #
@@ -74,7 +77,6 @@ function graal() {
   echo "#"
   echo "# GraalVM 23"
   echo "#"
-pause
   # Check if the file already exists
   if [ ! -f "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" ]; then
     echo "Downloading GraalVM 23..."
@@ -82,9 +84,9 @@ pause
   else
     echo "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
   fi
-pause
   # Extract the tarball
-  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" --transform="s/^openjdk-${JAVA_VERSION}/graal/" -C /mnt/rootfs/
+  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
+  sudo mv -fv "./graalvm-jdk-23.0.2+7.1/" "/mnt/rootfs/graalvm"
 }
 
 #
@@ -106,8 +108,8 @@ function felix() {
     echo "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip already exists. Skipping download."
   fi
 
-  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" -d "/mnt/rootfs/opt"
-  sudo mv "/mnt/rootfs/opt/felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt/felix"
+  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
+  sudo mv -fv "./felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt/felix"
 }
 
 #
@@ -130,7 +132,8 @@ function activemq() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" --transform="s/^apache-activemq-${ACTIVEMQ_VERSION}/activemq/" -C "/mnt/rootfs/opt/"
+  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
+  sudo mv -fv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/felix"
 }
 
 #
@@ -141,9 +144,9 @@ function activemq() {
 function copy_files() {
   echo "Copy files..."
   jdk
-  graal
-  activemq
-  felix
+#  graal
+#  activemq
+#  felix
 }
 
 #
@@ -151,7 +154,7 @@ function copy_files() {
 # synced before unmounting to avoid corruption.
 #
 function unmount_rootfs() {
-  echo "Cleanup"
+  echo "unmount"
   sudo sync
   sudo umount "/mnt/rootfs/"
 }
@@ -162,6 +165,7 @@ function unmount_rootfs() {
 #
 function cleanup_litter() {
   echo "Cleaning up."
+  sudo rm -rf "./jdk-23.0.2"
   sudo rm -rf "./apache-activemq-6.1.5"
   sudo rm -rf "./felix-framework-7.0.5"
   sudo rm -rf "./graalvm-jdk-23_linux-x64_bin.tar.gz"
