@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   ~
   ~ /*******************************************************************************
-  ~  * FILE: ${filename}
-  ~  * AUTHOR: $USER
-  ~  * StarshipOS Copyright (c) ${year} R.A. James
+  ~  * FILE: pom.xml
+  ~  * AUTHOR: rajames
+  ~  * StarshipOS Copyright (c) 2025 R.A. James
   ~  *******************************************************************************/
   -->
 
