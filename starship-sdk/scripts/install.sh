@@ -6,12 +6,13 @@
 #
 
 function mount_rootfs() {
-  LOOPDEV=$(sudo losetup -fP --show ../../buildroot/buildroot/output/images/rootfs.ext4)
-  sudo mount -o loop ../../buildroot/buildroot/output/images/rootfs.ext4 /mnt/rootfs
+  LOOPDEV=$(sudo losetup -fP --show "../buildroot/buildroot/output/images/rootfs.ext4")
+  sudo mount -o loop "../buildroot/buildroot/output/images/rootfs.ext4" "/mnt/rootfs"
 }
 
 function copy_files() {
-  sudo cp -v target/libstarshipclib.so /mnt/rootfs/java/lib
+  sudo mkdir -p "/mnt/rootfs/java/lib"
+  sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
 }
 
 function unmount_rootfs() {

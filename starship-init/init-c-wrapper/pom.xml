@@ -16,12 +16,16 @@
         <version>1.0.0</version>
     </parent>
 
+    <properties>
+        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.target>23</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <exec.executable.gcc>gcc</exec.executable.gcc>
+        <busybox>false</busybox>
+    </properties>
+
     <artifactId>init-c-wrapper</artifactId>
     <packaging>pom</packaging>
-
-    <dependencies>
-
-    </dependencies>
 
     <build>
         <plugins>
@@ -41,6 +45,7 @@
                             <executable>bash</executable>
                             <arguments>
                                 <argument>-c</argument>
+                                <argument>${busybox}</argument>
                                 <argument>scripts/install.sh</argument>
                             </arguments>
                         </configuration>
@@ -92,12 +97,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <exec.executable.gcc>gcc</exec.executable.gcc>
-    </properties>
 
 </project>
