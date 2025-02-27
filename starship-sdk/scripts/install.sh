@@ -5,24 +5,16 @@
 # Licensed under GPL2, GPL3 and Apache 2
 #
 
-function mount_rootfs() {
-  LOOPDEV=$(sudo losetup -fP --show "../buildroot/buildroot/output/images/rootfs.ext4")
-  sudo mount -o loop "../buildroot/buildroot/output/images/rootfs.ext4" "/mnt/rootfs"
-}
+source "../scripts/fs_library.sh"
 
 function copy_files() {
   sudo mkdir -p "/mnt/rootfs/java/lib"
   sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
 }
 
-function unmount_rootfs() {
-  sudo sync
-  sudo umount /mnt/rootfs/
-}
-
 function main() {
-  echo "Installing libstarshipclib.so"
-  mount_rootfs
+  log "Installing libstarshipclib.so"
+  mount_rootfs "../buildroot/buildroot/output/images/rootfs.ext4"
   copy_files
   unmount_rootfs
 }

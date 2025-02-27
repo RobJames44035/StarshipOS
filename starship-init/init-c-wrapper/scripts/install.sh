@@ -4,32 +4,29 @@
 #
 # Licensed under GPL2, GPL3 and Apache 2
 #
-
+source "../../scripts/fs_library.sh"
 function mount_rootfs() {
+  # shellcheck disable=SC2034
   LOOPDEV=$(sudo losetup -fP --show "../../buildroot/buildroot/output/images/rootfs.ext4")
   sudo mount -o loop "../../buildroot/buildroot/output/images/rootfs.ext4" "/mnt/rootfs"
 }
 
 function copy_files() {
-  if [[ $INIT_SYSTEM == "true" ]]; then
-    echo "Using BusyBox init."
-  else
-    echo "Using StarshipOS init."
     sudo cp -v "target/sbin-init" "/mnt/rootfs/sbin/init"
-  fi
-}
-
-function unmount_rootfs() {
-  sudo sync
-  sudo umount "/mnt/rootfs/"
 }
 
 function main() {
-  mount_rootfs
-  copy_files
-  unmount_rootfs
+  if [[ $1 = 'true' ]]; then
+    echo "**************************"
+    echo "*  Using BusyBox init.   *"
+    echo "**************************"
+  else
+    echo "**************************"
+    echo "* Using StarshipOS init. *"
+    echo "**************************"
+    mount_rootfs "../../buildroot/buildroot/output/images/rootfs.ext4"
+    copy_files
+    unmount_rootfs
+  fi
 }
-
-# Main script logic
-INIT_SYSTEM=$1 # Get the Maven property value as the first argument
-main
+main $1
