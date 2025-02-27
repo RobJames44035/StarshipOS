@@ -27,8 +27,8 @@ GRAAL_DOWNLOAD="https://download.oracle.com/graalvm/23/latest/graalvm-jdk-23_lin
 function make_dirs() {
   log "Creating directories." # if needed
   mkdir -p "repo"
-  sudo mkdir -p "/mbt/rootfs/java"
-  sudo mkdir -p "/mbt/rootfs/graal"
+  sudo mkdir -p "/mnt/rootfs/java"
+  sudo mkdir -p "/mnt/rootfs/graal"
 }
 
 #
