@@ -1,15 +1,29 @@
 #!/bin/sh
+
 #
 # StarshipOS Copyright (c) 2025. R.A.James
 #
 # Licensed under GPL2, GPL3 and Apache 2
 #
 
-clear
-figlet "Building & Running"
-figlet "StarshipOS QEMU"
+# So we can use this globally thus reducing typing errors.
+export ROOT_FS="/mnt/rootfs/"
 
-#!/bin/sh
+clear
+
+# Function to display text
+show_message() {
+    if command -v figlet >/dev/null 2>&1; then
+        # If figlet is installed
+        figlet "$1"
+    else
+        # Fallback to plain text
+        echo "$1"
+    fi
+}
+show_message "Building & Running"
+show_message "StarshipOS QEMU"
+
 # Default to busybox=false if no argument is provided
 BUSYBOX=$1
 
@@ -24,6 +38,7 @@ else
   echo "Usage: $0 [busybox]"
   exit 1
 fi
+
 
 # Run QEMU
 qemu-system-x86_64 -m 4096 -smp 2 -kernel buildroot/buildroot/output/images/bzImage \
