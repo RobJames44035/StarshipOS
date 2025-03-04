@@ -60,7 +60,7 @@ class ConfigureInit {
         closure.delegate = this // Bind closure to InitUtil instance
         closure.resolveStrategy = DELEGATE_FIRST
         closure.call() // Execute the closure block
-        log.info("Service configuration completed. ${Init.resources.serviceTable.size()} service(s) defined.")
+        log.info("Service configuration completed. ${Init.systemResources.serviceTable.size()} service(s) defined.")
     }
 
     /**
@@ -105,10 +105,10 @@ class ConfigureInit {
         log.debug("Restart Delay: ${serviceArgs.restartDelay} ms")
 
         // Add service definition to the serviceTable
-        if (Init.resources.serviceTable.containsKey(serviceArgs.name)) {
+        if (Init.systemResources.serviceTable.containsKey(serviceArgs.name)) {
             log.warn("Service '${serviceArgs.name}' is already defined. Overwriting definition.")
         }
-        Init.resources.serviceTable.put(serviceArgs.name, serviceArgs)
+        Init.systemResources.serviceTable.put(serviceArgs.name, serviceArgs)
     }
 
     private static void validateLifecycleHook(Map serviceArgs, String hookName) {
@@ -124,15 +124,15 @@ class ConfigureInit {
      * Spawns each service process and tracks them in `processTable`.
      */
     static void startServices() {
-        log.info("Starting ${Init.resources.serviceTable.size()} service(s)...")
+        log.info("Starting ${Init.systemResources.serviceTable.size()} service(s)...")
 
-        Init.resources.serviceTable.each { String serviceName, Map service ->
+        Init.systemResources.serviceTable.each { String serviceName, Map service ->
             try {
                 log.info("Starting service: $serviceName")
 
                 // Spawn the process for this service
                 Process process = new ProcessBuilder(service.command.split(" ")).inheritIO().start()
-                Init.resources.processTable.put(serviceName, process)
+                Init.systemResources.processTable.put(serviceName, process)
                 log.info("Service '$serviceName' started successfully.")
                 // Handle restart policy
                 switch(service.policy) {
@@ -171,7 +171,7 @@ class ConfigureInit {
                     // Wait for the process to finish
                     try {
                         log.warn("Service '${service.name}' has terminated unexpectedly. Restarting...")
-                        Process process = Init.resources.processTable.get(service.name) as Process
+                        Process process = Init.systemResources.processTable.get(service.name) as Process
                         process.waitFor(ZERO, TimeUnit.SECONDS)
                     } catch(Exception e) {
                         log.error(e.message, e)
@@ -183,7 +183,8 @@ class ConfigureInit {
                     Process restartedProcess =
                             new ProcessBuilder(service.command.split(" ")).inheritIO().start()
                     restartedProcess.waitFor(ZERO, TimeUnit.SECONDS)
-                    Init.resources.processTable.put(service.name, restartedProcess) // Replace old process reference
+                    Init.systemResources.processTable.put(service.name, restartedProcess)
+                    // Replace old process reference
                     log.info("Service '${service.name}' restarted successfully.")
                 } catch (Exception e) {
                     log.error("Error while restarting service '${service.name}': ${e.message}", e)
@@ -356,7 +357,7 @@ class ConfigureInit {
         try {
             // Call to the actual mounting logic (backed by system calls or wrappers)
             CLibWrapper.mount(source, target, type, flags, data)
-            Init.resources.resourceTable.put(target, [source, type]) // Track the mounted resource
+            Init.systemResources.resourceTable.put(target, [source, type]) // Track the mounted resource
             log.info("Successfully mounted $source to $target")
         } catch (Exception e) {
             log.error("Failed to mount filesystem: ${e.message}", e)
@@ -418,7 +419,7 @@ class ConfigureInit {
         Process spawnProcess = processBuilder.start()
         spawnProcess.waitFor()
 
-        Init.resources.processTable.put(spawnArgs.name, spawnProcess)
+        Init.systemResources.processTable.put(spawnArgs.name, spawnProcess)
         log.info("Process $name started successfully.")
     }
 

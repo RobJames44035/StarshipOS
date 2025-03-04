@@ -6,7 +6,6 @@
 
 //import org.starship.service.ServiceRestartPolicy
 
-
 init {
     system {
         setHostname "starship-os"
@@ -21,23 +20,23 @@ init {
         mount("devtmpfs", "/dev", "devtmpfs", 0L, null)
         mount("tmpfs", "/tmp", "tmpfs", 0L, null)
 
+        startStopDaemon.start("syslogd", "start")
         // Spawn any required processes
 //        spawn(command: "", name: "")
 
 //        services {
-//            // Message Broker
-//            service(
-//                    [
-//                            name        : "apache-activemq-6.1.5",
-//                            command     : "/opt/activemq/bin/activemq start",
-//                            descr       : "Apache ActiveMQ is an open source, multi-protocol, Java-based message broker.",
-//                            policy      : ServiceRestartPolicy.ALWAYS,
-//                            beforeStart : {}, // NOP
-//                            afterStart  : {}, // NOP
-//                            onFailure   : {}, // NOP
-//                            restartDelay: 10
-//                    ]
-//            )
+
+        service(
+                name: "syslogd",
+                command: "/sbin/syslogd -n",
+                descr: "syslog daemon",
+                policy: ServiceRestartPolicy.ALWAYS,
+                beforeStart: {},
+                afterStart: {},
+                onFailure: {},
+                restartDelay: 10 // 10 seconds before restarting on failure
+        )
+
 //            // OSGi bundle manager
 ////            service(
 ////                    [

@@ -7,6 +7,7 @@
 //file:noinspection GroovyInfiniteLoopStatement
 package org.starship.init
 
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.starship.init.util.ConfigureInit
 import org.starship.sys.PanicException
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit
  * </ul>
  */
 @Slf4j
+@CompileStatic
 class Init {
 
     static final String PRIMARY_CONFIG_PATH = "/etc/starship/config.d/init.groovy"
@@ -37,7 +39,7 @@ class Init {
     static final int ZERO = 0
 
     // Tables for dynamically managing resources and services
-    static SystemResources resources = SystemResources.getInstance()
+    static SystemResources systemResources = SystemResources.getInstance()
     //    static Process osgiManager = null
 
     /**
@@ -61,7 +63,6 @@ class Init {
             log.info("Initializing StarshipOS...")
             log.info("Is TTY available for stdin: ${System.console()}")
             System.getenv().each {  String key, String value -> log.info("$key = $value") }
-
             setupShutdownHook()
 
             configureSystem()
@@ -135,7 +136,7 @@ class Init {
         while (true) {
             try {
                 reapZombies()
-                serviceManager()
+//                serviceManager()
                 Thread.sleep(1000) // Supervisor polling interval
             } catch (Exception e) {
                 log.error("Error in supervisor loop: ${e.message}", e)
@@ -156,12 +157,12 @@ class Init {
      */
     static void reapZombies() {
         log.info("\tReaping zombie processes...")
-        resources.processTable.each { String name, Object process ->
+        systemResources.processTable.each { String name, Object process ->
             try {
                 if (process instanceof Process) {
                     if (process?.waitFor(ZERO, TimeUnit.SECONDS)) {
                         log.info("Reaped zombie process: ${name}")
-                        resources.processTable.remove(name)
+                        systemResources.processTable.remove(name)
                     }
                 }
             } catch (Exception e) {
@@ -188,8 +189,8 @@ class Init {
     static void setupShutdownHook() {
         Runtime.runtime.addShutdownHook(new Thread({
             log.info("Shutdown hook triggered. Cleaning up...")
-            resources.processTable.each { String name, Object process ->
-                process?.destroy()
+            systemResources.processTable.each { String name, Object process ->
+                process?.finalize()
                 log.info("Terminated process: ${name}")
             }
         }))

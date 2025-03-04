@@ -31,6 +31,16 @@ function make_dirs() {
   sudo mkdir -p "/mnt/rootfs/graal"
 }
 
+function etc-init() {
+  sudo rm -rfv "/mnt/rootfs/etc/init.d"
+  if [ -d "./init.d" ]; then
+    touch "./repo/init.tar.gz"
+    tar -czvf "./repo/init.tar.gz" -C "./init.d"
+  fi
+  sudo tar xvf "repo/init.tar.gz"
+  sudo mv -fv "./init.d" "/mnt/rootfs/etc"
+}
+
 #
 # The `jdk` function downloads the specified OpenJDK version for Linux, extracts it,
 # copies it to the mounted root filesystem, and then renames the directory to `jdk`.
@@ -41,6 +51,7 @@ function jdk() {
   log "#"
 
   # Check if the file already exists
+  sudo rm -rf "/mnt/rootfs/java"
   if [ ! -f "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" ]; then
     log "Downloading OpenJDK ${JAVA_VERSION}..."
     sudo wget "${JAVA_DOWNLOAD}" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
@@ -62,6 +73,7 @@ function graal() {
   log "#"
   log "# GraalVM 23"
   log "#"
+  sudo rm -rf "/mnt/rootfs/graalvm"
 
   # Check if the file already exists
   if [ ! -f "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" ]; then
@@ -70,6 +82,7 @@ function graal() {
   else
     log "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
   fi
+
   # Extract the tarball
   log "Extracting tarball"
   sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
@@ -84,7 +97,7 @@ function felix() {
   log "#"
   log "# Apache Felix v${FELIX_VERSION}"
   log "#"
-
+  sudo rm -rfv "/mnt/rootfs/opt/felix"
   # Check if the file already exists
   if [ ! -f "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" ]; then
     log "Downloading Apache Felix v${FELIX_VERSION}..."
@@ -105,7 +118,7 @@ function activemq() {
   log "#"
   log "# Apache ActiveMQ v${ACTIVEMQ_VERSION}"
   log "#"
-
+  sudo rm -rfv "/mnt/rootfs/opt/activemq"
   # Check if the file already exists
   if [ ! -f "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" ]; then
     log "Downloading Apache ActiveMQ v${ACTIVEMQ_VERSION}..."
@@ -116,7 +129,7 @@ function activemq() {
 
   # Extract the tarball
   sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-  sudo mv -fv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/felix"
+  sudo mv -fv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/activemq"
 }
 
 #
@@ -128,6 +141,8 @@ function copy_files() {
 #  graal
 #  activemq
 #  felix
+  etc-init # TODO after we have our groovy init working, remove this.
+pause "Paused... ^C to quit [ENTER] to continue."
 }
 
 #
