@@ -86,6 +86,6 @@ function pause() {
   if [ -z "$message" ]; then
     message="Press any key to continue..."
   fi
-  read -rsp "$message" -n 1
-  echo
+  echo "${message}"
+  read -p "x"
 }

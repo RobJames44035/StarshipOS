@@ -12,6 +12,7 @@ source ../../scripts/fs_library.sh
 # Set versions and download URLs
 #
 JAVA_VERSION="23.0.2"
+GRAAL_VERSION="-jdk-23_linux-x64"
 FELIX_VERSION="7.0.5"
 ACTIVEMQ_VERSION="6.1.5"
 
@@ -51,7 +52,6 @@ function jdk() {
   log "#"
 
   # Check if the file already exists
-  sudo rm -rf "/mnt/rootfs/java"
   if [ ! -f "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" ]; then
     log "Downloading OpenJDK ${JAVA_VERSION}..."
     sudo wget "${JAVA_DOWNLOAD}" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
@@ -62,7 +62,8 @@ function jdk() {
   # Extract the tarball
   log "Extracting tarball"
   sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
-  sudo mv -fv "./jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
+  sudo mv -vf "./jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
+  pause
 }
 
 #
@@ -71,22 +72,22 @@ function jdk() {
 #
 function graal() {
   log "#"
-  log "# GraalVM 23"
+  log "# GraalVM ${GRAAL_VERSION}"
   log "#"
-  sudo rm -rf "/mnt/rootfs/graalvm"
+  sudo rm -rf "/mnt/rootfs/graal"
 
   # Check if the file already exists
   if [ ! -f "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" ]; then
     log "Downloading GraalVM 23..."
     sudo wget "${GRAAL_DOWNLOAD}" -O "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
   else
-    log "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
+    log "repo/graalvm-${GRAAL_VERSION}_bin.tar.gz already exists. Skipping download."
   fi
 
   # Extract the tarball
   log "Extracting tarball"
-  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
-  sudo mv -fv "./graalvm-jdk-23.0.2+7.1/" "/mnt/rootfs/graalvm"
+  sudo tar xvf "repo/graalvm-${GRAAL_VERSION}_bin.tar.gz"
+  sudo mv -fv "./graalvm-${GRAAL_VERSION}/" "/mnt/rootfs/graal"
 }
 
 #
@@ -142,7 +143,7 @@ function copy_files() {
 #  activemq
 #  felix
   etc-init # TODO after we have our groovy init working, remove this.
-pause "Paused... ^C to quit [ENTER] to continue."
+
 }
 
 #
