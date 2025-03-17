@@ -1,123 +1,201 @@
 # StarshipOS Roadmap
 
-This document outlines the development roadmap for StarshipOS. The focus is on building a robust, modular, and production-ready OS with its custom Init system (`Init`) and supporting components like `BundleManager` and an SDK for developing apps.
+This document outlines the development roadmap for StarshipOS. The focus is on building a robust, modular, and
+production-ready OS with its custom Init system (`Init`) and supporting components like `BundleManager` and an SDK for
+developing apps. Over time, StarshipOS will evolve into a highly scalable, **object-oriented, fileless, event-driven**
+OS, with support for advanced features like artificial intelligence, 3D interfaces, and eventually VR.
 
-The tasks are prioritized to ensure foundational stability early, with incremental steps toward a fully functional OS.
-
-# Project Roadmap: Object-Oriented, Fileless, Event-Driven OS
-
-## Epic 1: Setup and Basic System Architecture
-
-### Story 1.1: Build Semi-Functional Init System
-**As a developer**, I want to set up a basic init system based on Groovy and Buildroot so that the system can initialize and start processes.
-- **Tasks**:
-  - Define init system structure (process management, boot process).
-  - Implement basic Groovy DSL for system initialization.
-  - Test system to ensure it boots to a shell.
-
-### Story 1.2: Memory Management and JVM Process Allocation
-**As a developer**, I want to map a large swap partition and allocate memory directly to JVM processes so that they have access to enough memory.
-- **Tasks**:
-  - Implement memory mapping to the swap partition.
-  - Integrate with JVM processes to dynamically allocate memory.
-  - Test memory allocation and ensure processes are stable.
+The roadmap tasks are prioritized to ensure foundational stability early, with incremental steps toward a fully
+functional and innovative OS.
 
 ---
 
-## Epic 2: Core Object-Oriented System Features
+## Project Roadmap: Object-Oriented, Fileless, Event-Driven OS
 
-### Story 2.1: Event-Driven Architecture Implementation
-**As a developer**, I want to implement an event-driven architecture (pub/sub) so that processes can interact asynchronously.
+### Epic 1: Setup and Basic System Architecture
+
+#### Story 1.1: Build Semi-Functional Init System
+**As a developer**, I want to set up a basic init system based on Groovy and Buildroot so that the system can initialize and start processes.
+
 - **Tasks**:
-  - Design the pub/sub model and define event classes.
-  - Implement system to handle events (publish, subscribe).
+  - Define the init system structure (process management, boot process).
+  - Implement a basic Groovy DSL for system initialization.
+  - Test the system to ensure it boots to a shell.
+
+#### Story 1.2: Memory Management and JVM Process Allocation
+
+**As a developer**, I want to map a swap partition and allocate memory directly to JVM processes so that they have
+access to sufficient memory.
+
+- **Tasks**:
+  - Implement memory mapping to a swap partition.
+  - Integrate with JVM processes for dynamic memory allocation.
+  - Test memory allocation logic and ensure stability.
+
+#### Story 1.3: Ext2/4 Disk Image Integration
+
+**As a developer**, I want to use an ext2/4 disk image to improve compatibility and prepare for future flash drive
+booting capabilities.
+
+- **Tasks**:
+  - Replace QCOW2 with ext2/4 as the default filesystem image.
+  - Test read/write access for the ext2/4 image.
+  - Ensure compatibility with tools for creating bootable flash drives.
+  - Prepare scripts for converting ext2/4 images to USB bootable drives.
+
+---
+
+### Epic 2: Core Object-Oriented System Features
+
+#### Story 2.1: Event-Driven Architecture Implementation
+**As a developer**, I want to implement an event-driven architecture (pub/sub) so that processes can interact asynchronously.
+
+- **Tasks**:
+  - Design the pub/sub model and define core event classes.
+  - Implement a system to handle events (publish, subscribe).
   - Create example events to simulate real-world interactions (e.g., process events).
 
-### Story 2.2: Build OSGi Container for System Services
-**As a developer**, I want to create an OSGi container to manage both system and userland services so that services are modular and can be started/stopped independently.
-- **Tasks**:
-  - Set up the Apache Felix framework for OSGi.
-  - Integrate services as OSGi bundles.
-  - Test OSGi container for proper service management.
+#### Story 2.2: Build OSGi Container for System Services
 
-### Story 2.3: ActiveMQ Integration
-**As a developer**, I want to integrate ActiveMQ into the system to handle messaging between processes and components.
+**As a developer**, I want to create an OSGi container to manage system and userland services so that services are
+modular and can be started/stopped independently.
+
 - **Tasks**:
-  - Set up ActiveMQ instance.
-  - Integrate ActiveMQ with the pub/sub system.
-  - Create sample messages and test system communication.
+  - Set up Apache Felix or another OSGi implementation.
+  - Convert system services to modular OSGi bundles.
+  - Test the system for proper service management.
+
+#### Story 2.3: Messaging System with ActiveMQ
+
+**As a developer**, I want to integrate ActiveMQ into the system to enable efficient messaging between processes.
+
+- **Tasks**:
+  - Set up a lightweight ActiveMQ instance.
+  - Integrate ActiveMQ with the core event system.
+  - Test messaging across system components.
 
 ---
 
-## Epic 3: Memory Management and Dynamic Placement
+### Epic 3: Advanced Memory Management and Optimization
 
-### Story 3.1: Entropy and Flag Integration in Objects
-**As a developer**, I want to modify Java's `Object` class to include entropy and flags so that objects can have dynamic memory placement.
-- **Tasks**:
-  - Implement `entropy` (0-1) and flags in `Object`.
-  - Modify memory allocation logic based on entropy values.
-  - Test the integration and verify that the flags/entropy are working correctly.
+#### Story 3.1: Entropy and Flag Integration in Objects
 
-### Story 3.2: GC Modifications with Machine Learning
-**As a developer**, I want to modify the garbage collector to use machine learning models for intelligent object placement between RAM and SSD.
+**As a developer**, I want to enhance the Java `Object` class by adding custom fields such as `entropy` and flags to
+enable dynamic memory placement.
+
 - **Tasks**:
-  - Implement a machine learning model to predict object behavior.
-  - Integrate model with GC for dynamic placement of objects.
-  - Test GC performance and optimize memory usage.
+  - Modify Java's `Object` class to include `entropy` (0-1) and flags.
+  - Adjust object memory allocation based on entropy/flags.
+  - Test changes and verify system performance improvements.
+
+#### Story 3.2: Garbage Collector Machine Learning Integration
+
+**As a developer**, I want to modify the garbage collector to use machine learning for intelligent object placement
+between RAM and SSD.
+
+- **Tasks**:
+  - Develop and train a basic machine learning model to predict object lifecycle.
+  - Integrate the model with the garbage collector.
+  - Test and optimize GC to ensure memory usage is optimal.
 
 ---
 
-## Epic 4: Basic User Interface (JShell)
+### Epic 4: Basic User Interface (Interactive Shell)
 
-### Story 4.1: Develop Basic JShell Interface
-**As a user**, I want to interact with the system via JShell so that I can test and issue commands to the OS.
+#### Story 4.1: Develop Basic Shell Interface
+
+**As a user**, I want to interact with the OS using a shell interface so that I can test and issue commands to the
+system.
+
 - **Tasks**:
-  - Set up JShell environment.
-  - Create basic commands for interacting with the OS.
-  - Test system interaction through the JShell interface.
+  - Create a lightweight shell environment (e.g., JShell or Groovy scripting).
+  - Implement basic commands for system interactions (e.g., list processes, start services).
+  - Test interaction between the shell and core system.
+
+#### Story 4.2: Disk Image Debugging and Management
+
+**As a developer**, I want to use the shell to debug and manage ext2/4 disk images directly from the OS.
+
+- **Tasks**:
+  - Add commands for mounting and inspecting ext2/4 disk images.
+  - Integrate filesystem tools like `fsck` for on-demand repair or validation.
 
 ---
 
-## Epic 5: 3D JavaFX GUI Development
+### Epic 5: 3D JavaFX GUI
 
-### Story 5.1: Basic 3D Rendering Setup
-**As a developer**, I want to set up a 3D JavaFX rendering pipeline to display the first-person shooter GUI.
+#### Story 5.1: Basic 3D Rendering
+
+**As a developer**, I want to set up a basic 3D rendering pipeline using JavaFX to lay the foundation for a 3D
+interactive GUI.
+
 - **Tasks**:
-  - Implement a basic 3D scene.
+  - Implement a simple 3D scene.
   - Add camera and navigation controls (WASD, mouse).
-  - Test basic rendering and controls.
+  - Test rendering and basic scene interaction.
 
-### Story 5.2: Interactive Event-Driven 3D Interface
-**As a user**, I want to interact with the 3D world using events so that I can control objects and navigate the scene.
+#### Story 5.2: Event-Driven 3D Interface
+
+**As a user**, I want to interact with the 3D GUI using events so that I can control objects and navigate dynamically.
+
 - **Tasks**:
-  - Integrate event system with 3D interface (e.g., user input, object interaction).
-  - Ensure smooth transitions between actions (e.g., moving, interacting).
-  - Test interaction within the 3D space.
+  - Connect the core event system to the 3D interface (e.g., input handling, object interaction).
+  - Implement animations and smooth transitions for user actions.
+  - Test 3D interactions for responsiveness.
 
 ---
 
-## Epic 6: VR Adaptation (Future)
+### Epic 6: Bootable Flash Drive and VR Support (Future)
 
-### Story 6.1: Research VR Integration
-**As a developer**, I want to research how to integrate VR into the OS so that the user can interact with the system in an immersive way.
-- **Tasks**:
-  - Investigate VR frameworks (e.g., OpenVR, Oculus SDK).
-  - Explore how to integrate VR controls (e.g., hand tracking, movement).
-  - Develop a prototype for VR interaction.
+#### Story 6.1: Bootable Flash Drive Creation
 
-### Story 6.2: VR Event-Driven Interaction
-**As a user**, I want to interact with the system in VR using event-driven controls, so that I can control the system in an immersive environment.
+**As a developer**, I want to generate bootable flash drives from ext2/4 disk images so that StarshipOS can run on real
+hardware.
+
 - **Tasks**:
-  - Implement VR input handling (gesture tracking, movement).
-  - Integrate with the event system for VR actions.
-  - Test user interactions in VR and refine experience.
+  - Develop a script to write ext2/4 images to flash drives (e.g., using `dd`).
+  - Test bootability and compatibility across hardware configurations.
+  - Optimize boot performance for embedded systems.
+
+#### Story 6.2: Research VR Integration
+
+**As a developer**, I want to research VR frameworks to create an immersive OS interface in virtual environments.
+
+- **Tasks**:
+  - Investigate VR toolkits (e.g., OpenVR, Oculus SDK).
+  - Research input handling for VR controls (gesture tracking, movement).
+  - Develop a prototype for VR interaction with the OS.
 
 ---
 
-## Milestones:
+## Milestones
 
-- **M1**: Semi-functional init system with memory allocation (3 months).
-- **M2**: Event-driven architecture and OSGi container (6 months).
-- **M3**: Basic JShell interface and core memory management (9 months).
-- **M4**: 3D JavaFX GUI and interactive system (12 months).
-- **M5**: VR adaptation and user testing (24 months).
+### **M1**: Foundation and Basic Functionality (3 months)
+
+- Semi-functional init system capable of booting and managing processes.
+- Memory allocation and ext2/4 disk management.
+
+### **M2**: Core System and Pub/Sub Architecture (6 months)
+
+- Event-driven architecture implemented with ActiveMQ.
+- OSGi container supporting modular service management.
+
+### **M3**: Memory Enhancements and Shell Interface (9 months)
+
+- Advanced memory management with custom GC improvements.
+- Functional shell for interacting with the OS.
+
+### **M4**: 3D GUI and Flash Drive Support (12 months)
+
+- 3D interactive GUI implemented in JavaFX.
+- Support for bootable flash drives from ext2/4 disk images.
+
+### **M5**: VR Integration and Testing (24 months)
+
+- Immersive VR interaction prototype with event-driven mechanics.
+- Stability testing for core system features and VR implementation.
+
+---
+
+This roadmap is subject to updates as the project progresses, with feedback from users and contributors helping to
+refine priorities and add new features.
