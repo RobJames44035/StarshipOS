@@ -63,6 +63,7 @@ function jdk() {
   log "Extracting tarball"
   sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
   sudo mv -vf "./jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
+  sudo mv -rf "./java" "/mnt/rootfs"
   pause
 }
 
