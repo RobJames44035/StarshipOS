@@ -12,7 +12,7 @@ source ../../scripts/fs_library.sh
 # Set versions and download URLs
 #
 JAVA_VERSION="23.0.2"
-GRAAL_VERSION="-jdk-23_linux-x64"
+GRAAL_VERSION="jdk-23_linux-x64"
 FELIX_VERSION="7.0.5"
 ACTIVEMQ_VERSION="6.1.5"
 
@@ -84,12 +84,19 @@ function graal() {
     log "Downloading GraalVM 23..."
     sudo wget "${GRAAL_DOWNLOAD}" -O "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
   else
-    log "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
+    log "repo/graalvm-${GRAAL_VERSION}_bin.tar.gz already exists. Skipping download."
   fi
 
   # Extract the tarball
   log "Extracting tarball"
-  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" -C /mnt/rootfs/graal --strip-components=1
+  cd "./repo" || exit 1
+  sudo tar xvf "./graalvm-${GRAAL_VERSION}_bin.tar.gz"
+  cd "../"
+  log "Copy to root filesystem."
+  sudo cp -rfv "./repo/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graalvm-${GRAAL_VERSION}"
+  sudo rm -rf "/mnt/rootfs/graal"
+  sudo mv "/mnt/rootfs/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graal"
+pause "Waiting for you to press [ENTER]."
   log "GraalVM installed."
 }
 

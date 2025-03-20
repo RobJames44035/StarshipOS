@@ -61,6 +61,8 @@ class Init {
             }
 
             log.info("Initializing StarshipOS...")
+            System.setProperty("PATH", System.getenv("PATH") + ":/java/bin")
+            System.setProperty("JAVA_HOME", "/java")
             log.info("Is TTY available for stdin: ${System.console()}")
             System.getenv().each {  String key, String value -> log.info("$key = $value") }
             setupShutdownHook()
