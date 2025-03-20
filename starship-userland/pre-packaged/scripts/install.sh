@@ -55,7 +55,6 @@ function jdk() {
     sudo wget "${JAVA_DOWNLOAD}" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
   else
     log "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz already exists. Skipping download."
-pause "Press [ENTER] to continue. ^C to exit"
   fi
 
   # Extract the tarball

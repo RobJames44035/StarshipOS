@@ -51,10 +51,10 @@ int main() {
     }
 
     // Debug output
-#ifdef DEBUG
+//#ifdef DEBUG
     printf("LD_LIBRARY_PATH: %s\n", getenv("LD_LIBRARY_PATH"));
     printf("PATH: %s\n", getenv("PATH"));
-#endif
+//#endif
 
     const char *java_binary = "/java/bin/java";
     char *const java_args[] = {
