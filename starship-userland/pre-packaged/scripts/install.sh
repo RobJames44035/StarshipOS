@@ -23,10 +23,10 @@ GRAAL_DOWNLOAD="https://download.oracle.com/graalvm/23/latest/graalvm-jdk-23_lin
 
 #
 # The `make_dirs` function is designed to create necessary directories inside the mounted
-# root filesystem. Note that the actual directory creation commands are currently commented out.
+# root filesystem.
 #
 function make_dirs() {
-  log "Creating directories." # if needed
+  log "Creating directories."
   mkdir -p "repo"
   sudo mkdir -p "/mnt/rootfs/java"
   sudo mkdir -p "/mnt/rootfs/graal"
@@ -38,33 +38,36 @@ function etc-init() {
     touch "./repo/init.tar.gz"
     tar -czvf "./repo/init.tar.gz" -C "./init.d"
   fi
-  sudo tar xvf "repo/init.tar.gz"
-  sudo mv -fv "./init.d" "/mnt/rootfs/etc"
+  sudo tar xvf "repo/init.tar.gz" -C /mnt/rootfs/etc
 }
 
 #
 # The `jdk` function downloads the specified OpenJDK version for Linux, extracts it,
-# copies it to the mounted root filesystem, and then renames the directory to `jdk`.
+# and copies it to the mounted root filesystem.
 #
 function jdk() {
   log "#"
   log "# OpenJDK $JAVA_VERSION"
   log "#"
-
   # Check if the file already exists
   if [ ! -f "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz" ]; then
     log "Downloading OpenJDK ${JAVA_VERSION}..."
     sudo wget "${JAVA_DOWNLOAD}" -O "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
   else
     log "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz already exists. Skipping download."
+pause "Press [ENTER] to continue. ^C to exit"
   fi
 
   # Extract the tarball
   log "Extracting tarball"
-  sudo tar xvf "repo/openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
-  sudo mv -vf "./jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
-  sudo mv -rf "./java" "/mnt/rootfs"
-  pause
+  cd "./repo" || exit 1
+  sudo tar xvf "./openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+  cd "../"
+  log "Copy to root filesystem."
+  sudo cp -rfv "./repo/jdk-${JAVA_VERSION}" "/mnt/rootfs/jdk-${JAVA_VERSION}"
+  sudo rm -rf "/mnt/rootfs/java"
+  sudo mv "/mnt/rootfs/jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
+  log "Java JDK installed."
 }
 
 #
@@ -82,13 +85,13 @@ function graal() {
     log "Downloading GraalVM 23..."
     sudo wget "${GRAAL_DOWNLOAD}" -O "repo/graalvm-jdk-23_linux-x64_bin.tar.gz"
   else
-    log "repo/graalvm-${GRAAL_VERSION}_bin.tar.gz already exists. Skipping download."
+    log "repo/graalvm-jdk-23_linux-x64_bin.tar.gz already exists. Skipping download."
   fi
 
   # Extract the tarball
   log "Extracting tarball"
-  sudo tar xvf "repo/graalvm-${GRAAL_VERSION}_bin.tar.gz"
-  sudo mv -fv "./graalvm-${GRAAL_VERSION}/" "/mnt/rootfs/graal"
+  sudo tar xvf "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" -C /mnt/rootfs/graal --strip-components=1
+  log "GraalVM installed."
 }
 
 #
@@ -108,8 +111,8 @@ function felix() {
     log "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip already exists. Skipping download."
   fi
 
-  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
-  sudo mv -fv "./felix-framework-${FELIX_VERSION}" "/mnt/rootfs/opt/felix"
+  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" -d /mnt/rootfs/opt/felix
+  log "Felix framework installed."
 }
 
 #
@@ -130,8 +133,8 @@ function activemq() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-  sudo mv -fv "./apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/activemq"
+  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" -C /mnt/rootfs/opt/activemq
+  log "ActiveMQ installed."
 }
 
 #
@@ -143,7 +146,7 @@ function copy_files() {
 #  graal
 #  activemq
 #  felix
-  etc-init # TODO after we have our groovy init working, remove this.
+#  etc-init
 
 }
 
@@ -152,10 +155,10 @@ function copy_files() {
 #
 function cleanup_litter() {
   log "Cleaning up."
-  sudo rm -rf "./jdk-23.0.2"
-  sudo rm -rf "./apache-activemq-6.1.5"
-  sudo rm -rf "./felix-framework-7.0.5"
-  sudo rm -rf "./graalvm-jdk-23.0.2+7.1"
+  sudo rm -rf "./jdk-${JAVA_VERSION}"
+  sudo rm -rf "./apache-activemq-${ACTIVEMQ_VERSION}"
+  sudo rm -rf "./felix-framework-${FELIX_VERSION}"
+  sudo rm -rf "./graalvm-jdk-23"
   sudo sync
 }
 
@@ -163,7 +166,8 @@ function cleanup_litter() {
 # The `main` function orchestrates the process.
 #
 function main() {
-  mount_rootfs # Provide the disk image path dynamically when calling this function
+  source "../../scripts/fs_library.sh"
+  mount_rootfs "../buildroot/buildroot/output/images/rootfs.ext4" # Provide the disk image path dynamically when calling this function
   make_dirs
   copy_files
   cleanup_litter

@@ -1,6 +1,6 @@
+- sudo privleges are required
 - install jdk23
 - install maven
 - install maven wrapper 
 - install make
 - install gcc
-- 

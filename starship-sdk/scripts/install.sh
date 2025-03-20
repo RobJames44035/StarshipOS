@@ -14,7 +14,7 @@ function copy_files() {
 
 function main() {
   log "Installing libstarshipclib.so"
-  mount_rootfs "../buildroot/buildroot/output/images/rootfs.ext4"
+  mount_rootfs
   copy_files
   unmount_rootfs
 }

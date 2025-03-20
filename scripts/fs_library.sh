@@ -21,29 +21,32 @@ function log_error() {
 }
 
 # Function to mount a root filesystem
-# Accepts the disk image path as an argument
 function mount_rootfs() {
-  local disk_image=$1
-  if [ -z "$disk_image" ]; then
-    log_error "Disk image path not provided to mount_rootfs."
-    return 1
-  fi
+  # Define the relative path to the disk image
+  local disk_image="${HOME}/IdeaProjects/StarshipOS/buildroot/buildroot/output/images/rootfs.ext4"
 
-  log "Locating free loop device for disk image $disk_image."
-  sudo mkdir -p "/mnt/rootfs" # Ensure mount directory exists
+  # Log the operation being performed
+  log "Locating free loop device for disk image at $disk_image."
+
+  # Ensure the mount directory exists
+  sudo mkdir -p "/mnt/rootfs"
+
+  # Assign a loop device for the disk image
   LOOPDEV=$(sudo losetup -fP --show "$disk_image")
   if [ $? -ne 0 ]; then
     log_error "Failed to set up loop device for $disk_image."
-    return 1
+    exit 1  # Exit immediately on error
   fi
 
+  # Mount the disk image
   sudo mount -o loop "$disk_image" "/mnt/rootfs"
   if [ $? -ne 0 ]; then
     log_error "Failed to mount $disk_image to /mnt/rootfs."
     sudo losetup -d "$LOOPDEV"
-    return 1
+    exit 1  # Exit immediately on error
   fi
 
+  # Log success
   log "Disk image $disk_image mounted at /mnt/rootfs using loop device $LOOPDEV."
 }
 

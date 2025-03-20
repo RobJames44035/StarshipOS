@@ -27,7 +27,7 @@
                 <executions>
                     <!-- install to rootfs.ext4 -->
                     <execution>
-                        <id>install</id>
+                        <id>install-java-graal-activemq-felix</id>
                         <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
