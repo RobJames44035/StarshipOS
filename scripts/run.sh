@@ -5,6 +5,8 @@
 #
 # Licensed under GPL2, GPL3 and Apache 2
 #
+# shellcheck disable=SC3046
+source fs_library.sh
 sudo -v
 # So we can use this globally thus reducing typing errors.
 export ROOT_FS="/mnt/rootfs/"
@@ -57,8 +59,9 @@ if ! command -v qemu-system-x86_64 >/dev/null 2>&1; then
 fi
 
 # Run QEMU
-echo "Running QEMU with StarshipOS..."
+figlet "Run QEMU with StarshipOS..."
+pause "Are you ready to Launch Starship"
 qemu-system-x86_64 -m 4096 -smp 2 -kernel buildroot/buildroot/output/images/bzImage \
-  -drive file=buildroot/buildroot/output/images/rootfs.ext4,if=ide,format=raw \
+  -drive file=/home/rajames/IdeaProjects/StarshipOS/buildroot/buildroot/output/images/rootfs.ext4,if=ide,format=raw \
   -netdev user,id=net0,hostfwd=tcp::5005-:5005 -device e1000,netdev=net0 \
   -append 'root=/dev/sda rw console=ttyS0 init=/sbin/init' -serial mon:stdio
