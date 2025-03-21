@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ StarshipOS Copyright (c) 2025. R.A.James
-  ~
-  ~ Licensed under GPL2, GPL3 and Apache 2
+  ~ StarshipOS Copyright (c) 2025. R.A. James
+  ~ Licensed under GPL2, GPL3, and Apache 2
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -21,9 +20,13 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jni.generated.headers.dir>${project.build.directory}/generated-sources/jni</jni.generated.headers.dir>
+        <jni.output.library.dir>${project.build.directory}/lib</jni.output.library.dir>
+        <jni.source.c.dir>${basedir}/src/main/c</jni.source.c.dir>
     </properties>
 
     <dependencies>
+        <!-- Add any required dependencies here -->
         <dependency>
             <groupId>com.github.hypfvieh</groupId>
             <artifactId>dbus-java</artifactId>
@@ -33,13 +36,13 @@
 
     <build>
         <plugins>
-            <!-- Exec Plugin for Custom Executions -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
-                    <!-- Clean & recreate target -->
+
+                    <!-- Clean Step -->
                     <execution>
                         <id>clean</id>
                         <phase>clean</phase>
@@ -54,67 +57,47 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <!-- Install the artifact in the rootfs -->
+
+                    <!-- Generate JNI Header -->
                     <execution>
-                        <id>install</id>
-                        <phase>install</phase>
+                        <id>generate-jni-header</id>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>bash</executable>
+                            <executable>javac</executable>
                             <arguments>
-                                <argument>-c</argument>
-                                <argument>scripts/install.sh</argument>
+                                <argument>-h</argument>
+                                <argument>${jni.generated.headers.dir}</argument> <!-- JNI headers -->
+                                <argument>-d</argument>
+                                <argument>${project.build.directory}/classes</argument> <!-- Class output -->
+                                <argument>${basedir}/src/main/java/org/starship/CLibJNI.java</argument> <!-- Source -->
                             </arguments>
                         </configuration>
                     </execution>
-<!--                    -->
-<!--                    &lt;!&ndash; Compile Java and Generate JNI Header &ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>generate-jni-header</id>-->
-<!--                        <phase>generate-sources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <executable>javac</executable>-->
-<!--                            <arguments>-->
-<!--                                <argument>-h</argument>-->
-<!--                                <argument>${project.build.directory}/generated-sources/jni-->
-<!--                                </argument> &lt;!&ndash; Generated JNI headers &ndash;&gt;-->
-<!--                                <argument>-d</argument>-->
-<!--                                <argument>${project.build.directory}/classes-->
-<!--                                </argument> &lt;!&ndash; Output directory for .class files &ndash;&gt;-->
-<!--                                <argument>${basedir}/src/main/java/org/starship/CLibJNI.java-->
-<!--                                </argument> &lt;!&ndash; Your Java class &ndash;&gt;-->
-<!--                            </arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                    &lt;!&ndash; Compile the Native Library &ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>compile-jni</id>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <executable>gcc</executable>-->
-<!--                            <arguments>-->
-<!--                                <argument>-shared</argument>-->
-<!--                                <argument>-fPIC</argument>-->
-<!--                                <argument>-o</argument>-->
-<!--                                <argument>${project.build.directory}/lib/libstarshipclib.so</argument>-->
-<!--                                &lt;!&ndash; TODO Replace with env JAVA_HOME &ndash;&gt;-->
-<!--                                <argument>-I/home/rajames/.jdks/corretto-17.0.14/include</argument>-->
-<!--                                <argument>-I/home/rajames/.jdks/corretto-17.0.14/include/linux</argument>-->
-<!--                                <argument>-I${project.build.directory}/generated-sources/jni-->
-<!--                                </argument> &lt;!&ndash; Include JNI header &ndash;&gt;-->
-<!--                                <argument>${basedir}/src/main/c/starshipclib.c</argument>-->
-<!--                            </arguments>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                    -->
+
+                    <!-- Compile C to Native Library -->
+                    <execution>
+                        <id>compile-native-library</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>gcc</executable>
+                            <arguments>
+                                <argument>-shared</argument>
+                                <argument>-fPIC</argument>
+                                <argument>-o</argument>
+                                <argument>${jni.output.library.dir}/libstarshipclib.so</argument>
+                                <argument>-I/java/include</argument> <!-- Use JAVA_HOME -->
+                                <argument>-I/java/include/linux</argument> <!-- Use platform-specific includes -->
+                                <argument>-I${jni.generated.headers.dir}</argument> <!-- Header files -->
+                                <argument>${jni.source.c.dir}/starshipclib.c</argument> <!-- C file -->
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

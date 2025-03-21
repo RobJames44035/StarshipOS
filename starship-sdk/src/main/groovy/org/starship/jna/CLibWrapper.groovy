@@ -31,6 +31,8 @@
  * <p>Note: The native system calls invoked by this class may require elevated 
  * permissions to execute successfully.</p>
  */
+//file:noinspection GroovyDocCheck
+//file:noinspection unused
 package org.starship.jna
 
 import groovy.transform.CompileStatic
@@ -149,6 +151,43 @@ class CLibWrapper {
         int result = CLIB.execve(file, argv, envp)
         if (result != 0) {
             log.error("Failed to execute file ${file}")
+        }
+    }
+
+    static String getenv(String name) {
+        if (!name) {
+            return null
+        }
+        String value = CLIB.getenv(name) // Call the native function
+        if (!value) {
+            log.error("Environment variable '${name}' does not exist or is empty.")
+        }
+        return value
+    }
+
+    static int setenv(String name, String value, boolean overwrite = true) {
+        if (!name || !value) {
+            return -1
+        }
+        return CLIB.setenv(name, value, overwrite ? 1 : 0)
+    }
+
+    /**
+     * Exports an environment variable using the CLIB.setenv JNI function.
+     *
+     * @param key   The name of the environment variable to set.
+     * @param value The value of the environment variable to set.
+     * @param overwrite Whether to overwrite the variable if it already exists (default: true).
+     */
+    static void exportEnvironment(String key, String value, boolean overwrite = true) {
+        if (!key || !value) {
+            log.error("Invalid environment variable. 'key' and 'value' must both be non-null.")
+            return
+        }
+
+        int result = setenv(key, value, overwrite)
+        if (result != 0) {
+            log.error("Failed to export environment variable: $key = $value. CLIB.setenv returned error code: $result")
         }
     }
 }

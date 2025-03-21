@@ -4,10 +4,13 @@
  * Licensed under GPL2, GPL3 and Apache 2
  */
 
-//import org.starship.service.ServiceRestartPolicy
-
 init {
     system {
+
+        // Export system variables
+        exportEnvironment("JAVA_HOME", "/java")
+        exportEnvironment("PATH", getEnvironmentalVariable("PATH") + ":/java/bin")
+
         setHostname "starship-os"
 
         // Define the /dev/console special device
@@ -21,6 +24,7 @@ init {
         mount("tmpfs", "/tmp", "tmpfs", 0L, null)
 
         startStopDaemon.start("syslogd", "start")
+
         // Spawn any required processes
 //        spawn(command: "", name: "")
 

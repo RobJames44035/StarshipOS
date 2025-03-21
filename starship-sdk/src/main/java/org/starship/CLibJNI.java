@@ -30,4 +30,8 @@ public class CLibJNI {
     public native void sync();
 
     public native int execve(String filename, String[] argv, String[] envp);
+
+    public native String getenv(String name);
+
+    public native int setenv(String name, String value, int overwrite);
 }

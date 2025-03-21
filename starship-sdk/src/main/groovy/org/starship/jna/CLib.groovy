@@ -91,4 +91,12 @@ interface CLib extends Library {
     void sync()
 
     int reboot(int magic)
+
+    //---------------------------------
+    // Environment Variable Management
+    //---------------------------------
+
+    String getenv(String name) // Reads the value of an environment variable
+
+    int setenv(String name, String value, int overwrite) // Sets an environment variable
 }

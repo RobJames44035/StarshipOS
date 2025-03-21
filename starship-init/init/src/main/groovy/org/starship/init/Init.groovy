@@ -14,6 +14,7 @@ import org.starship.sys.PanicException
 import org.starship.sys.SystemResources
 
 import java.lang.management.ManagementFactory
+import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
 
 
@@ -61,8 +62,18 @@ class Init {
             }
 
             log.info("Initializing StarshipOS...")
-            System.setProperty("PATH", System.getenv("PATH") + ":/java/bin")
-            System.setProperty("JAVA_HOME", "/java")
+
+//            System.setProperty("PATH", System.getenv("PATH") + ":/java/bin")
+//            System.setProperty("PATH", System.getenv("LD_LBIRARY_PATH") + ":/java/lib:/java/lib/server:/lib:/usr/lib")
+//
+//            setEnvironmentVariable("LD_LIBRARY_PATH", "")
+//
+//            System.setProperty("JAVA_HOME", "/java")
+//            setEnvironmentVariable("JAVA_HOME", "/java")
+//
+//            System.setProperty("LANG", "java")
+//            System.setProperty("TERM", "linux")
+
             log.info("Is TTY available for stdin: ${System.console()}")
             System.getenv().each {  String key, String value -> log.info("$key = $value") }
             setupShutdownHook()
