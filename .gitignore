@@ -3947,3 +3947,5 @@ build/
 /.run_counter
 /rootfs.ext4
 /pre-packaged-binaries/repo/
+/pre-packaged-binaries/dependency-reduced-pom.xml
+/.idea/inspectionProfiles/Project_Default.xml
