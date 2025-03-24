@@ -2,4 +2,10 @@
 #
 # StarshipOS Copyright (c) 2025. R.A. James
 #
-figlet "buildroot install."
+
+function main() {
+  figlet "buildroot install."
+  cp -v "./buildroot/output/images/rootfs.ext4" "../"
+}
+
+main

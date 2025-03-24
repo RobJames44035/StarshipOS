@@ -23,10 +23,11 @@ function copy_files() {
   fi
 }
 
-function main() {
-  mount_rootfs "../../buildroot/buildroot/output/images/rootfs.ext4"
-  make_dirs
-  copy_files
-  unmount_rootfs
-}
-main
+#function main() {
+#  figlet "starship-init install"
+#  read -p "x"
+#  make_dirs
+#  copy_files
+#}
+#
+#main

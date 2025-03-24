@@ -2,8 +2,18 @@
 #
 # StarshipOS Copyright (c) 2025. R.A. James
 #
-cp -pv scripts/default.config buildroot/.config
-cd buildroot
-make oldconfig
-make all
-cd ../
+function compile() {
+  cp -v "./scripts/default.config" "buildroot/.config"
+
+  cd "./buildroot" || exit
+  make oldconfig
+  make all
+  cd "../"
+}
+
+function main() {
+  figlet "buildroot compile"
+  compile
+}
+
+main

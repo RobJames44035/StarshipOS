@@ -38,7 +38,6 @@
                             <arguments>
                                 <argument>-c</argument>
                                 <argument>scripts/install.sh ${busybox}</argument>
-                                <!--                                <argument>true</argument>-->
                             </arguments>
                         </configuration>
                     </execution>
@@ -57,6 +56,7 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <!-- compile -->
                     <execution>
                         <id>compile-c</id>
                         <phase>package</phase>

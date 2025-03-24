@@ -30,6 +30,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
+                    <!-- compile buildroot -->
                     <execution>
                         <id>compile</id>
                         <phase>compile</phase>
@@ -44,20 +45,7 @@
                             </arguments>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>package</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>bash</executable>
-                            <arguments>
-                                <argument>-c</argument>
-                                <argument>scripts/package.sh</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
+                    <!-- install -->
                     <execution>
                         <id>install</id>
                         <phase>install</phase>
@@ -72,6 +60,7 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <!-- clean -->
                     <execution>
                         <id>clean</id>
                         <phase>clean</phase>
@@ -84,9 +73,6 @@
                                 <argument>-c</argument>
                                 <argument>scripts/clean.sh</argument>
                             </arguments>
-                            <environmentVariables>
-                                <DISTCLEAN>${distclean}</DISTCLEAN>
-                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>

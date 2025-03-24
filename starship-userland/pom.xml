@@ -18,7 +18,7 @@
     <artifactId>starship-userland</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>pre-packaged</module>
+<!--        <module>pre-packaged</module>-->
     </modules>
 
     <properties>

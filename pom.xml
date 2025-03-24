@@ -16,7 +16,7 @@
     <name>StarshipOS</name>
 
     <properties>
-        <maven.compiler.source>23</maven.compiler.source>
+        <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <exec.executable.gcc>gcc</exec.executable.gcc>
@@ -28,7 +28,10 @@
         <module>starship-sdk</module>
         <module>starship-init</module>
         <module>starship-userland</module>
-<!--        <module>usb-image</module>-->
+
+        <!-- always last in this order -->
+        <module>pre-packaged-binaries</module>
+        <module>populate_rootfs</module>
     </modules>
 
     <dependencies>

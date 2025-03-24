@@ -22,39 +22,51 @@ function log_error() {
 
 # Function to mount a root filesystem
 function mount_rootfs() {
-  # Define the relative path to the disk image
-  local disk_image="${HOME}/IdeaProjects/StarshipOS/buildroot/buildroot/output/images/rootfs.ext4"
 
-  # Log the operation being performed
-  log "Locating free loop device for disk image at $disk_image."
+# Define variables
+disk_image="../rootfs.ext4"
+mount_dir="/mnt/rootfs"
 
-  # Ensure the mount directory exists
-  sudo mkdir -p "/mnt/rootfs"
+# Ensure the disk image exists
+if [ ! -f "$disk_image" ]; then
+  log_error "Disk image '$disk_image' does not exist. Exiting."
+  exit 1
+fi
 
-  # Assign a loop device for the disk image
-  LOOPDEV=$(sudo losetup -fP --show "$disk_image")
-  if [ $? -ne 0 ]; then
-    log_error "Failed to set up loop device for $disk_image."
-    exit 1  # Exit immediately on error
-  fi
+# Ensure the mount directory exists
+sudo mkdir -p "$mount_dir"
 
-  # Mount the disk image
-  sudo mount -o loop "$disk_image" "/mnt/rootfs"
-  if [ $? -ne 0 ]; then
-    log_error "Failed to mount $disk_image to /mnt/rootfs."
-    sudo losetup -d "$LOOPDEV"
-    exit 1  # Exit immediately on error
-  fi
+# Log the operation being performed
+log "Locating free loop device for disk image at '$disk_image'."
 
-  # Log success
-  log "Disk image $disk_image mounted at /mnt/rootfs using loop device $LOOPDEV."
+# Assign a loop device for the disk image
+LOOPDEV=$(sudo losetup -fP --show "$disk_image" 2>/dev/null)
+if [ $? -ne 0 ] || [ -z "$LOOPDEV" ]; then
+  log_error "Failed to set up loop device for '$disk_image'."
+  exit 1
+fi
+log "Loop device $LOOPDEV assigned to '$disk_image'."
+
+# Attempt to mount the disk image
+log "Mounting disk image '$disk_image' at '$mount_dir'."
+sudo mount -o loop "$disk_image" "$mount_dir" 2>/dev/null
+if [ $? -ne 0 ]; then
+  log_error "Failed to mount '$disk_image' to '$mount_dir'."
+  log "Cleaning up loop device $LOOPDEV."
+  sudo losetup -d "$LOOPDEV"
+  exit 1
+fi
+
+# Success message
+log "Disk image '$disk_image' mounted successfully at '$mount_dir' using loop device $LOOPDEV. Press [ENTER] to continue."
 }
+
 
 # Function to unmount a root filesystem
 function unmount_rootfs() {
   if mountpoint -q "/mnt/rootfs"; then
     log "Unmounting root filesystem from /mnt/rootfs..."
-    sudo umount "/mnt/rootfs"
+    sudo umount -lf "/mnt/rootfs"
     if [ $? -eq 0 ]; then
       log "Successfully unmounted /mnt/rootfs."
     else
@@ -65,18 +77,21 @@ function unmount_rootfs() {
     log "No filesystem is mounted at /mnt/rootfs."
   fi
 
-  if [ -n "$LOOPDEV" ]; then
-    log "Detaching loop device $LOOPDEV..."
-    sudo losetup -d "$LOOPDEV"
-    if [ $? -eq 0 ]; then
-      log "Successfully detached loop device $LOOPDEV."
+ LOOPS=$(sudo losetup -j ./rootfs.ext4 | awk -F: '{print $1}')
+    if [ -n "$LOOPS" ]; then
+      for loop in $LOOPS; do
+        log "Detaching loop device $loop..."
+        sudo losetup -d "$loop"
+        if [ $? -eq 0 ]; then
+          log "Successfully detached loop device $loop."
+        else
+          log_error "Failed to detach loop device $loop."
+          return 1
+        fi
+      done
     else
-      log_error "Failed to detach loop device $LOOPDEV."
-      return 1
+      log "No loop device associated with rootfs.ext4 to detach."
     fi
-  else
-    log "No loop device to detach."
-  fi
 
   log "Unmount and cleanup of root filesystem and loop device complete."
 }
@@ -90,5 +105,6 @@ function pause() {
     message="Press any key to continue..."
   fi
   echo "${message}"
+  # shellcheck disable=SC2162
   read -p "x"
 }

@@ -5,5 +5,4 @@
 
 # Ensure the script exits on unexpected errors
 set -e
-# TODO In the event we need this to "erase" the device.
-# This is probably unneeded.
+#sudo rm ./rootfs.ext4

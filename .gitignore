@@ -3944,3 +3944,6 @@ build/
 /starship-userland/pre-packaged/jdk-23.0.2/legal/java.xml/xalan.md
 /starship-userland/pre-packaged/jdk-23.0.2/legal/java.xml/xerces.md
 /starship-userland/pre-packaged/jdk-23.0.2/legal/java.desktop/xwd.md
+/.run_counter
+/rootfs.ext4
+/pre-packaged-binaries/repo/

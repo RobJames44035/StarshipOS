@@ -7,7 +7,7 @@
 #
 
 # Source the library file
-source ../../scripts/fs_library.sh
+source ../scripts/fs_library.sh
 #
 # Set versions and download URLs
 #
@@ -60,10 +60,11 @@ function jdk() {
   # Extract the tarball
   log "Extracting tarball"
   cd "./repo" || exit 1
-  sudo tar xvf "./openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
+  sudo tar xf "./openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
   cd "../"
   log "Copy to root filesystem."
   sudo cp -rfv "./repo/jdk-${JAVA_VERSION}" "/mnt/rootfs/jdk-${JAVA_VERSION}"
+pause "pre-packaged-binaries Hit [ENTER] to continue."
   sudo rm -rf "/mnt/rootfs/java"
   sudo mv "/mnt/rootfs/jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
   log "Java JDK installed."
@@ -172,12 +173,9 @@ function cleanup_litter() {
 # The `main` function orchestrates the process.
 #
 function main() {
-  source "../../scripts/fs_library.sh"
-  mount_rootfs "../buildroot/buildroot/output/images/rootfs.ext4" # Provide the disk image path dynamically when calling this function
+  mount_rootfs
   make_dirs
   copy_files
   cleanup_litter
-  unmount_rootfs
 }
-
 main

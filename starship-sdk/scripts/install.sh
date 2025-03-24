@@ -5,17 +5,17 @@
 # Licensed under GPL2, GPL3 and Apache 2
 #
 
-source "../scripts/fs_library.sh"
-
-function copy_files() {
-  sudo mkdir -p "/mnt/rootfs/java/lib"
-  sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
-}
-
-function main() {
-  log "Installing libstarshipclib.so"
-  mount_rootfs
-  copy_files
-  unmount_rootfs
-}
-main
+#source "../scripts/fs_library.sh"
+#
+#function copy_files() {
+#  sudo mkdir -p "/mnt/rootfs/java/lib"
+#  sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
+#}
+#
+#function main() {
+#  mount_rootfs
+#  pause "Take a breath and continue [ENTER]"
+#  log "Installing libstarshipclib.so"
+#  copy_files
+#}
+#main

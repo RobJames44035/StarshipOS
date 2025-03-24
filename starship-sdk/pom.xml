@@ -26,7 +26,7 @@
     </properties>
 
     <dependencies>
-        <!-- Add any required dependencies here -->
+        <!-- Required dependency -->
         <dependency>
             <groupId>com.github.hypfvieh</groupId>
             <artifactId>dbus-java</artifactId>
@@ -41,8 +41,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <executions>
-
-                    <!-- Clean Step -->
+                    <!-- Clean -->
                     <execution>
                         <id>clean</id>
                         <phase>clean</phase>
@@ -57,7 +56,36 @@
                             </arguments>
                         </configuration>
                     </execution>
-
+                    <!-- install -->
+                    <execution>
+                        <id>install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/install.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Generate sources.list -->
+                    <execution>
+                        <id>generate-sources-list</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>find src/main/java -name '*.java' > target/sources.list</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                     <!-- Generate JNI Header -->
                     <execution>
                         <id>generate-jni-header</id>
@@ -66,18 +94,17 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>javac</executable>
+                            <executable>${env.JAVA_HOME}/bin/javac</executable>
                             <arguments>
                                 <argument>-h</argument>
-                                <argument>${jni.generated.headers.dir}</argument> <!-- JNI headers -->
+                                <argument>${jni.generated.headers.dir}</argument> <!-- Ensure this points to target/generated-sources/jni -->
                                 <argument>-d</argument>
-                                <argument>${project.build.directory}/classes</argument> <!-- Class output -->
-                                <argument>${basedir}/src/main/java/org/starship/CLibJNI.java</argument> <!-- Source -->
+                                <argument>${project.build.directory}/classes</argument>
+                                <argument>@${project.build.directory}/sources.list</argument>
                             </arguments>
                         </configuration>
                     </execution>
-
-                    <!-- Compile C to Native Library -->
+                    <!-- Compile Native Library -->
                     <execution>
                         <id>compile-native-library</id>
                         <phase>package</phase>
@@ -91,10 +118,10 @@
                                 <argument>-fPIC</argument>
                                 <argument>-o</argument>
                                 <argument>${jni.output.library.dir}/libstarshipclib.so</argument>
-                                <argument>-I/java/include</argument> <!-- Use JAVA_HOME -->
-                                <argument>-I/java/include/linux</argument> <!-- Use platform-specific includes -->
-                                <argument>-I${jni.generated.headers.dir}</argument> <!-- Header files -->
-                                <argument>${jni.source.c.dir}/starshipclib.c</argument> <!-- C file -->
+                                <argument>-I${env.JAVA_HOME}/include</argument>
+                                <argument>-I${env.JAVA_HOME}/include/linux</argument>
+                                <argument>-I${jni.generated.headers.dir}</argument> <!-- Add this -->
+                                <argument>${jni.source.c.dir}/starshipclib.c</argument>
                             </arguments>
                         </configuration>
                     </execution>
