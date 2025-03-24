@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 source "../scripts/fs_library.sh"
 INIT_VERSION="1.0.0"
 
@@ -15,15 +14,16 @@ sudo cp -v "../starship-init/init/target/init-${INIT_VERSION}.jar" "/mnt/rootfs/
 
 log "Installing default-init.groovy to /mnt/rootfs/etc/starship/config.d/init.groovy"
 sudo cp -v "src/main/resources/default-init.groovy" "/mnt/rootfs/etc/starship/config.d/init.groovy"
+
+log "Install init C wrapper"
+sudo cp -v "../starship-init/init-c-wrapper/target/sbin-init" "/mnt/rootfs/sbin/init"
+
+log "Installing osgi-manager-1.0.0.jar"
+sudo cp -v "../starship-init/osgi-manager/target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar"
+
 if [ -e "/mnt/rootfs/linuxrc" ]; then
   sudo rm -v "/mnt/rootfs/linuxrc"
 fi
-
-log "Install init C wrapper"
-sudo cp -v "target/sbin-init" "/mnt/rootfs/sbin/init"
-
-log "Installing osgi-manager-1.0.0.jar"
-sudo cp -v "./starship-init/osgi-manager/target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar"
 
 pause "[ENTER] to finish install"
 umount_rootfs

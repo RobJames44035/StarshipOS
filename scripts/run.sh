@@ -93,11 +93,11 @@ fi
 
 # Build logic
 if [ "$MODE" = "starship" ]; then
-    echo "Building StarshipOS with default settings..."
-    ./mvnw -fail-fast clean install
+    echo "Building StarshipOS with StarshipOS INIT..."
+    ./mvnw clean install
 elif [ "$MODE" = "busybox" ]; then
-    echo "Building StarshipOS with BusyBox settings..."
-    ./mvnw -fail-fast -Dbusybox=true clean install
+    echo "Building StarshipOS with BusyBox INIT..."
+    ./mvnw -Dbusybox=true clean install
 fi
 
 # Ensure the build output exists
@@ -108,12 +108,10 @@ if [ ! -f "$KERNEL_IMAGE" ] || [ ! -f "$ROOT_FS_IMAGE" ]; then
 fi
 # Ensure prior mounts and loop devices are cleaned up
 echo "Performing pre-launch cleanup..."
-if ! ./umount_cleanup.sh; then
-  echo "Warning: Cleanup script encountered an issue. Proceeding anyway..."
-fi
 
 # Launch QEMU
 echo "Launching QEMU to test the image..."
+read -p "x"
 qemu-system-x86_64 -m 4096 -smp 2 -kernel "$KERNEL_IMAGE" \
     -drive file="$ROOT_FS_IMAGE",if=ide,format=raw \
     -netdev user,id=net0,hostfwd=tcp::5005-:5005 -device e1000,netdev=net0 \
