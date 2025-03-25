@@ -13,7 +13,7 @@
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -41,6 +41,7 @@
                             <arguments>
                                 <argument>-c</argument>
                                 <argument>scripts/install.sh</argument>
+                                <argument>${busybox}</argument>
                             </arguments>
                         </configuration>
                     </execution>

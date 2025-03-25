@@ -64,9 +64,10 @@ function jdk() {
   cd "../"
   log "Copy to root filesystem."
   sudo cp -rfv "./repo/jdk-${JAVA_VERSION}" "/mnt/rootfs/jdk-${JAVA_VERSION}"
-pause "pre-packaged-binaries Hit [ENTER] to continue."
   sudo rm -rf "/mnt/rootfs/java"
+pause "pre-packaged-binaries Hit [ENTER] to continue."
   sudo mv "/mnt/rootfs/jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
+pause "Install pre-packaged-binaries Hit: [ENTER] to continue."
   log "Java JDK installed."
 }
 
@@ -97,7 +98,7 @@ function graal() {
   sudo cp -rfv "./repo/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graalvm-${GRAAL_VERSION}"
   sudo rm -rf "/mnt/rootfs/graal"
   sudo mv "/mnt/rootfs/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graal"
-pause "Waiting for you to press [ENTER]."
+
   log "GraalVM installed."
 }
 
@@ -174,8 +175,10 @@ function cleanup_litter() {
 #
 function main() {
   mount_rootfs
+pause "Mounted /mnt/rootfs.ext4"
   make_dirs
   copy_files
   cleanup_litter
+  umount_rootfs
 }
 main

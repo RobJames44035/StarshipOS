@@ -21,52 +21,29 @@ function log_error() {
 }
 
 # Function to mount a root filesystem
-function mount_rootfs() {
-
-# Define variables
-disk_image="../rootfs.ext4"
-mount_dir="/mnt/rootfs"
-
-# Ensure the disk image exists
-if [ ! -f "$disk_image" ]; then
-  log_error "Disk image '$disk_image' does not exist. Exiting."
-  exit 1
-fi
-
-# Ensure the mount directory exists
-sudo mkdir -p "$mount_dir"
-
-# Log the operation being performed
-log "Locating free loop device for disk image at '$disk_image'."
-
-# Assign a loop device for the disk image
-LOOPDEV=$(sudo losetup -fP --show "$disk_image" 2>/dev/null)
-if [ $? -ne 0 ] || [ -z "$LOOPDEV" ]; then
-  log_error "Failed to set up loop device for '$disk_image'."
-  exit 1
-fi
-log "Loop device $LOOPDEV assigned to '$disk_image'."
-
-# Attempt to mount the disk image
-log "Mounting disk image '$disk_image' at '$mount_dir'."
-sudo mount -o loop "$disk_image" "$mount_dir" 2>/dev/null
-if [ $? -ne 0 ]; then
-  log_error "Failed to mount '$disk_image' to '$mount_dir'."
-  log "Cleaning up loop device $LOOPDEV."
-  sudo losetup -d "$LOOPDEV"
-  exit 1
-fi
-
-# Success message
-log "Disk image '$disk_image' mounted successfully at '$mount_dir' using loop device $LOOPDEV. Press [ENTER] to continue."
-}
-
-
-# Function to unmount a root filesystem
 function unmount_rootfs() {
+  # Debugging step to check if all required commands are available
+  log "DEBUG: Checking available commands..."
+  for cmd in mountpoint umount awk losetup sync; do
+    if ! command -v "$cmd" > /dev/null; then
+      log_error "$cmd command not found. Ensure it is installed and available in PATH."
+      return 127
+    fi
+  done
+
+  # Flush filesystem buffers to ensure all I/O operations are complete
+  log "Flushing filesystem buffers with sync..."
+  sync
+  if [ $? -eq 0 ]; then
+    log "Filesystem buffers successfully flushed."
+  else
+    log_error "Failed to flush filesystem buffers. Proceeding with caution."
+  fi
+
+  # Check if /mnt/rootfs is currently mounted
   if mountpoint -q "/mnt/rootfs"; then
     log "Unmounting root filesystem from /mnt/rootfs..."
-    sudo umount -lf "/mnt/rootfs"
+    sudo umount -lf "/mnt/rootfs" # Lazy force unmount
     if [ $? -eq 0 ]; then
       log "Successfully unmounted /mnt/rootfs."
     else
@@ -77,23 +54,88 @@ function unmount_rootfs() {
     log "No filesystem is mounted at /mnt/rootfs."
   fi
 
- LOOPS=$(sudo losetup -j ./rootfs.ext4 | awk -F: '{print $1}')
-    if [ -n "$LOOPS" ]; then
-      for loop in $LOOPS; do
-        log "Detaching loop device $loop..."
-        sudo losetup -d "$loop"
-        if [ $? -eq 0 ]; then
-          log "Successfully detached loop device $loop."
-        else
-          log_error "Failed to detach loop device $loop."
-          return 1
-        fi
-      done
-    else
-      log "No loop device associated with rootfs.ext4 to detach."
-    fi
+  # Pause briefly to ensure the unmount process finishes releasing resources
+  log "Waiting briefly for unmount operations to fully release resources..."
+  sleep 1
 
-  log "Unmount and cleanup of root filesystem and loop device complete."
+  # Attempt to find and detach loop devices associated with rootfs.ext4
+  log "Checking for loop devices associated with rootfs.ext4..."
+  LOOPS=$(sudo losetup -j ./rootfs.ext4 | awk -F: '{print $1}')
+  if [ -z "$LOOPS" ]; then
+    log "No loop device associated with rootfs.ext4 to detach. Likely already released."
+  else
+    for loop in $LOOPS; do
+      log "Detaching loop device $loop..."
+      sudo losetup -d "$loop"
+      if [ $? -eq 0 ]; then
+        log "Successfully detached loop device $loop."
+      else
+        log_error "Failed to detach loop device $loop."
+        return 1
+      fi
+    done
+  fi
+
+  # Final confirmation of successful cleanup
+  log "Unmount and cleanup of root filesystem and loop device completed successfully."
+}
+
+# Function to unmount a root filesystem
+function unmount_rootfs() {
+  # Debugging step to check if all required commands are available
+  log "DEBUG: Checking available commands..."
+  for cmd in mountpoint umount awk losetup sync; do
+    if ! command -v "$cmd" > /dev/null; then
+      log_error "$cmd command not found. Ensure it is installed and available in PATH."
+      return 127
+    fi
+  done
+
+  # Flush filesystem buffers to ensure all I/O operations are complete
+  log "Flushing filesystem buffers with sync..."
+  sync
+  if [ $? -eq 0 ]; then
+    log "Filesystem buffers successfully flushed."
+  else
+    log_error "Failed to flush filesystem buffers. Proceeding with caution."
+  fi
+
+  # Check if /mnt/rootfs is currently mounted
+  if mountpoint -q "/mnt/rootfs"; then
+    log "Unmounting root filesystem from /mnt/rootfs..."
+    sudo umount -lf "/mnt/rootfs" # Lazy force unmount
+    if [ $? -eq 0 ]; then
+      log "Successfully unmounted /mnt/rootfs."
+    else
+      log_error "Failed to unmount /mnt/rootfs."
+      return 1
+    fi
+  else
+    log "No filesystem is mounted at /mnt/rootfs."
+  fi
+
+  # Pause briefly to ensure the unmount process finishes releasing resources
+  log "Waiting briefly for unmount operations to fully release resources..."
+  sleep 1
+
+  # Detach the loop device explicitly using exported variable
+  if [ -n "$LOOP_DEVICE" ]; then
+    log "Detaching loop device $LOOP_DEVICE..."
+    sudo losetup -d "$LOOP_DEVICE"
+    if [ $? -eq 0 ]; then
+      log "Successfully detached loop device $LOOP_DEVICE."
+    else
+      log_error "Failed to detach loop device $LOOP_DEVICE."
+      return 1
+    fi
+  else
+    log "LOOP_DEVICE is not set. No loop device to detach."
+    return 1
+  fi
+
+  # Final confirmation of successful cleanup
+  sudo rm -rfv /mnt/rootfs
+  log "Unmount and cleanup of root filesystem and loop device completed successfully."
 }
 trap unmount_rootfs SIGINT EXIT
 
