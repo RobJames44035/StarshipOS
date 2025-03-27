@@ -8,9 +8,11 @@
         <outputRelativeToContentRoot value="true" />
         <module name="osgi-manager" />
         <module name="init" />
-        <module name="populate_rootfs" />
         <module name="starship-sdk" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="populate_rootfs" target="23" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -30,8 +30,7 @@
         <module>starship-userland</module>
 
         <!-- always last in this order -->
-        <module>pre-packaged-binaries</module>
-        <module>populate_rootfs</module>
+        <module>binaries</module>
     </modules>
 
     <dependencies>

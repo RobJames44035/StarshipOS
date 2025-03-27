@@ -3949,3 +3949,6 @@ build/
 /pre-packaged-binaries/repo/
 /pre-packaged-binaries/dependency-reduced-pom.xml
 /.idea/inspectionProfiles/Project_Default.xml
+/shellcheck_output.txt
+/binaries/dependency-reduced-pom.xml
+/binaries/repo/

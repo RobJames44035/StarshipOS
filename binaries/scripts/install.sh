@@ -11,6 +11,8 @@ source ../scripts/fs_library.sh
 #
 # Set versions and download URLs
 #
+INIT_VERSION="1.0.0"
+
 JAVA_VERSION="23.0.2"
 GRAAL_VERSION="jdk-23_linux-x64"
 FELIX_VERSION="7.0.5"
@@ -32,13 +34,20 @@ function make_dirs() {
   sudo mkdir -p "/mnt/rootfs/graal"
 }
 
-function etc-init() {
-  sudo rm -rfv "/mnt/rootfs/etc/init.d"
-  if [ -d "./init.d" ]; then
-    touch "./repo/init.tar.gz"
-    tar -czvf "./repo/init.tar.gz" -C "./init.d"
-  fi
-  sudo tar xvf "repo/init.tar.gz" -C /mnt/rootfs/etc
+function starship() {
+  pause
+log "Installing libstarshipclib.so to /mnt/rootfs/java/lib"
+sudo mkdir -p "/mnt/rootfs/java/lib"
+sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
+
+log "Installing init-${INIT_VERSION}.jar to /mnt/rootfs/var/lib/starship/init.jar"
+sudo cp -v "../starship-init/init/target/init-${INIT_VERSION}.jar" "/mnt/rootfs/var/lib/starship/init.jar"
+
+log "Installing default-init.groovy to /mnt/rootfs/etc/starship/config.d/init.groovy"
+sudo cp -v "src/main/resources/default-init.groovy" "/mnt/rootfs/etc/starship/config.d/init.groovy"
+
+log "Installing osgi-manager-1.0.0.jar"
+sudo cp -v "../starship-init/osgi-manager/target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar"
 }
 
 #
@@ -65,10 +74,8 @@ function jdk() {
   log "Copy to root filesystem."
   sudo cp -rfv "./repo/jdk-${JAVA_VERSION}" "/mnt/rootfs/jdk-${JAVA_VERSION}"
   sudo rm -rf "/mnt/rootfs/java"
-pause "pre-packaged-binaries Hit [ENTER] to continue."
   sudo mv "/mnt/rootfs/jdk-${JAVA_VERSION}" "/mnt/rootfs/java"
-pause "Install pre-packaged-binaries Hit: [ENTER] to continue."
-  log "Java JDK installed."
+  log "* Java JDK installed. *"
 }
 
 #
@@ -80,7 +87,6 @@ function graal() {
   log "# GraalVM ${GRAAL_VERSION}"
   log "#"
   sudo rm -rf "/mnt/rootfs/graal"
-
   # Check if the file already exists
   if [ ! -f "repo/graalvm-jdk-23_linux-x64_bin.tar.gz" ]; then
     log "Downloading GraalVM 23..."
@@ -95,9 +101,9 @@ function graal() {
   sudo tar xvf "./graalvm-${GRAAL_VERSION}_bin.tar.gz"
   cd "../"
   log "Copy to root filesystem."
-  sudo cp -rfv "./repo/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graalvm-${GRAAL_VERSION}"
+  sudo cp -rfv "./repo/graalvm-jdk-23.0.2+7.1" "/mnt/rootfs/graalvm-jdk-23.0.2+7.1"
   sudo rm -rf "/mnt/rootfs/graal"
-  sudo mv "/mnt/rootfs/graalvm-${GRAAL_VERSION}" "/mnt/rootfs/graal"
+  sudo mv "/mnt/rootfs/graalvm-jdk-23.0.2+7.1" "/mnt/rootfs/graal"
 
   log "GraalVM installed."
 }
@@ -110,6 +116,7 @@ function felix() {
   log "#"
   log "# Apache Felix v${FELIX_VERSION}"
   log "#"
+  pause
   sudo rm -rfv "/mnt/rootfs/opt/felix"
   # Check if the file already exists
   if [ ! -f "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" ]; then
@@ -119,7 +126,10 @@ function felix() {
     log "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip already exists. Skipping download."
   fi
 
-  sudo unzip -o "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" -d /mnt/rootfs/opt/felix
+  sudo unzip -o "./repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
+  sudo mv -rf "./felix-framework-7.0.5" "./repo"
+  sudo cp -rfv "./repo/felix-framework-7.0.5" "/mnt/rootfs/opt/felix-framework-7.0.5"
+  sudo mv "/mnt/rootfs/opt/felix-framework-7.0.5" "/mnt/rootfs/opt/felix"
   log "Felix framework installed."
 }
 
@@ -131,6 +141,7 @@ function activemq() {
   log "#"
   log "# Apache ActiveMQ v${ACTIVEMQ_VERSION}"
   log "#"
+  pause
   sudo rm -rfv "/mnt/rootfs/opt/activemq"
   # Check if the file already exists
   if [ ! -f "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" ]; then
@@ -141,7 +152,8 @@ function activemq() {
   fi
 
   # Extract the tarball
-  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" -C /mnt/rootfs/opt/activemq
+  sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
+
   log "ActiveMQ installed."
 }
 
@@ -152,9 +164,17 @@ function copy_files() {
   log "Copying necessary files..."
   jdk
 #  graal
-#  activemq
-#  felix
-#  etc-init
+pause
+  felix
+pause
+  activemq
+  starship
+if [ "$MODE" = "starship" ]; then
+
+log "Install init C wrapper"
+sudo cp -v "../starship-init/init-c-wrapper/target/sbin-init" "/mnt/rootfs/sbin/init"
+
+fi
 
 }
 
@@ -175,10 +195,9 @@ function cleanup_litter() {
 #
 function main() {
   mount_rootfs
-pause "Mounted /mnt/rootfs.ext4"
   make_dirs
   copy_files
   cleanup_litter
-  umount_rootfs
+  unmount_rootfs
 }
 main

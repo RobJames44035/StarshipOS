@@ -9,7 +9,7 @@ show_help() {
     echo "  --starship  Build StarshipOS with the default configuration."
     echo ""
     echo "Arguments:"
-    echo "  threshold   Optional. Set the maximum run count before rebuilding (default: 50)."
+    echo "  threshold   Optional. Set the maximum run count before rebuilding (default: 30)."
     echo ""
     echo "Flags:"
     echo "  --help      Show this help message and exit."
@@ -22,7 +22,7 @@ show_help() {
 }
 
 # User-defined variables
-DEFAULT_THRESHOLD=50
+DEFAULT_THRESHOLD=30
 THRESHOLD=$DEFAULT_THRESHOLD
 COUNTER_FILE=".run_counter"
 IMAGES_DIR="buildroot/buildroot/output/images"
@@ -30,7 +30,7 @@ KERNEL_IMAGE="$IMAGES_DIR/bzImage"
 ROOT_FS_IMAGE="./rootfs.ext4"
 
 # Parse arguments
-MODE=""
+export MODE=""
 if [ "$1" = "--help" ] || [ -z "$1" ]; then
     show_help
     exit 0
