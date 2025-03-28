@@ -31,23 +31,24 @@ function make_dirs() {
   log "Creating directories."
   mkdir -p "repo"
   sudo mkdir -p "/mnt/rootfs/java"
-  sudo mkdir -p "/mnt/rootfs/graal"
+#  sudo mkdir -p "/mnt/rootfs/graal"
 }
 
 function starship() {
-  pause
 log "Installing libstarshipclib.so to /mnt/rootfs/java/lib"
 sudo mkdir -p "/mnt/rootfs/java/lib"
-sudo cp -v "./target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib"
+sudo cp -v "../starship-sdk/target/lib/libstarshipclib.so" "/mnt/rootfs/java/lib" || exit
 
 log "Installing init-${INIT_VERSION}.jar to /mnt/rootfs/var/lib/starship/init.jar"
-sudo cp -v "../starship-init/init/target/init-${INIT_VERSION}.jar" "/mnt/rootfs/var/lib/starship/init.jar"
+sudo mkdir -p "/mnt/rootfs/var/lib/starship"
+sudo cp -v "../starship-init/init/target/init-${INIT_VERSION}.jar" "/mnt/rootfs/var/lib/starship/init.jar" || exit
 
 log "Installing default-init.groovy to /mnt/rootfs/etc/starship/config.d/init.groovy"
-sudo cp -v "src/main/resources/default-init.groovy" "/mnt/rootfs/etc/starship/config.d/init.groovy"
+sudo mkdir -p "/mnt/rootfs/etc/starship/config.d"
+sudo cp -v "../src/main/resources/default-init.groovy" "/mnt/rootfs/etc/starship/config.d/init.groovy" || exit
 
 log "Installing osgi-manager-1.0.0.jar"
-sudo cp -v "../starship-init/osgi-manager/target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar"
+sudo cp -v "../starship-init/osgi-manager/target/osgi-manager-1.0.0.jar" "/mnt/rootfs/var/lib/starship/osgi-manager.jar" || exit
 }
 
 #
@@ -116,7 +117,6 @@ function felix() {
   log "#"
   log "# Apache Felix v${FELIX_VERSION}"
   log "#"
-  pause
   sudo rm -rfv "/mnt/rootfs/opt/felix"
   # Check if the file already exists
   if [ ! -f "repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip" ]; then
@@ -127,7 +127,7 @@ function felix() {
   fi
 
   sudo unzip -o "./repo/org.apache.felix.main.distribution-${FELIX_VERSION}.zip"
-  sudo mv -rf "./felix-framework-7.0.5" "./repo"
+  sudo mv -f "./felix-framework-7.0.5" "./repo"
   sudo cp -rfv "./repo/felix-framework-7.0.5" "/mnt/rootfs/opt/felix-framework-7.0.5"
   sudo mv "/mnt/rootfs/opt/felix-framework-7.0.5" "/mnt/rootfs/opt/felix"
   log "Felix framework installed."
@@ -141,7 +141,6 @@ function activemq() {
   log "#"
   log "# Apache ActiveMQ v${ACTIVEMQ_VERSION}"
   log "#"
-  pause
   sudo rm -rfv "/mnt/rootfs/opt/activemq"
   # Check if the file already exists
   if [ ! -f "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz" ]; then
@@ -164,9 +163,7 @@ function copy_files() {
   log "Copying necessary files..."
   jdk
 #  graal
-pause
   felix
-pause
   activemq
   starship
 if [ "$MODE" = "starship" ]; then
