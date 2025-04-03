@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -x
 #
 # StarshipOS Copyright (c) 2025. R.A.James
 #
@@ -152,7 +153,8 @@ function activemq() {
 
   # Extract the tarball
   sudo tar xvf "repo/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz"
-
+  sudo mv -v "../binaries/apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/apache-activemq-${ACTIVEMQ_VERSION}" || exit
+  sudo mv -v "/mnt/rootfs/opt/apache-activemq-${ACTIVEMQ_VERSION}" "/mnt/rootfs/opt/activemq"
   log "ActiveMQ installed."
 }
 
@@ -166,13 +168,13 @@ function copy_files() {
   felix
   activemq
   starship
-if [ "$MODE" = "starship" ]; then
-
-log "Install init C wrapper"
-sudo cp -v "../starship-init/init-c-wrapper/target/sbin-init" "/mnt/rootfs/sbin/init"
-
+  echo "${MODE}"
+  pause
+if [ "${MODE}" = "starship" ]; then
+  log "Install init C wrapper"
+  sudo cp -v "../starship-init/init-c-wrapper/target/sbin-init" "/mnt/rootfs/sbin/init" || exit
+  sudo rm -v "/mnt/rootfs/linuxrc"
 fi
-
 }
 
 #

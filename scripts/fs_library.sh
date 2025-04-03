@@ -102,7 +102,9 @@ function unmount_rootfs() {
       log "Successfully detached loop device $LOOP_DEVICE."
     else
       log_error "Failed to detach loop device $LOOP_DEVICE."
-      return 1
+      pause "Would you care to reboot? [ENTER] to reboot. ^C to terminate."
+      sudo rm -rf "/mnt/rootfs"
+      sudo reboot
     fi
   else
     log "LOOP_DEVICE is not set. No loop device to detach."
@@ -110,10 +112,13 @@ function unmount_rootfs() {
   fi
 
   # Final confirmation of successful cleanup
-  sudo rm -rf "/mnt/rootfs"
+  if [ -d "/mnt/rootfs" ]; then
+    sudo rm -rf "/mnt/rootfs"
+  fi
   log "Unmount and cleanup of root filesystem and loop device completed successfully."
+  exit 0
 }
-trap unmount_rootfs SIGINT EXIT
+trap unmount_rootfs EXIT
 
 # Helper function to pause script execution for debugging or inspection
 # Accepts an optional message
