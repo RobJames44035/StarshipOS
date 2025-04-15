@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling." />
+    <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,12 +28,12 @@
     &quot;assignee&quot;: &quot;RobJames44035&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/RobJames44035/StarshipOS.git",
-    "accountId": "43f15a6e-2eaa-4ee9-8b4d-9bdc41bbb7bc"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/RobJames44035/StarshipOS.git&quot;,
+    &quot;accountId&quot;: &quot;43f15a6e-2eaa-4ee9-8b4d-9bdc41bbb7bc&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -48,30 +50,30 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.ModuleSelector.executor": "Run",
-    "Application.starship.os.tools.ModuleSelector.executor": "Run",
-    "Maven.starship-os_tools [compile].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/rajames/Documents/StarshipOS-master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.language",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Application.ModuleSelector.executor&quot;: &quot;Run&quot;,
+    &quot;Application.starship.os.tools.ModuleSelector.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.starship-os_tools [compile].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/rajames/Documents/StarshipOS-master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
+  &quot;keyToStringList&quot;: {
+    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: []
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/starship-os_tools" />
@@ -126,6 +128,7 @@
       <workItem from="1744559621938" duration="102000" />
       <workItem from="1744560255682" duration="8764000" />
       <workItem from="1744728328745" duration="1062000" />
+      <workItem from="1744731064240" duration="3949000" />
     </task>
     <task id="LOCAL-00001" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
       <option name="closed" value="true" />
