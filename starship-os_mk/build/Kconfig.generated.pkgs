@@ -1,0 +1,8 @@
+# Automatically Kconfig for provided packages
+#
+# Sun Apr 13 09:37:27 AM EDT 2025
+#
+config HAVE_BIDPC_ABC
+	bool
+	default y
+

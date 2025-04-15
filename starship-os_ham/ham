@@ -1,0 +1,2671 @@
+#! /usr/bin/env perl
+# SPDX-License-Identifier: BSD-2-Clause
+
+use strict;
+use warnings;
+
+BEGIN {
+  use File::Basename qw(dirname);
+  use Cwd qw(realpath);
+  if (defined realpath(__FILE__)) {
+    push @INC, dirname(realpath(__FILE__));
+  }
+}
+
+use Hammer::Process_queue;
+use Hammer::Subcommand;
+use Hammer::Project;
+use Hammer::Plugin;
+
+use XML::Parser;
+use File::Spec::Functions qw(catdir);
+use File::Spec;
+use File::Path qw(make_path remove_tree);
+use URI;
+use IO::Select;
+use Cwd;
+use JSON::PP;
+
+my $prog = 'ham';
+
+my $user_config = File::Spec->catdir($ENV{HOME}, ".hamconfig");
+my %config = ();
+my $touched_manifest = 0;
+my %manifest_project_names = ();
+
+# Stable i18n
+$ENV{LC_ALL} = 'C';
+
+# Forbid ssh to ask for password via STDIN, we do not support this.
+$ENV{SSH_ASKPASS_REQUIRE} = 'force';
+
+if (-t STDOUT) {
+  eval { require Term::ANSIColor };
+  if (!$@) {
+    import Term::ANSIColor qw(colored);
+  } else {
+    *colored = sub { return $_[0]; }
+  }
+} else {
+  *colored = sub { return $_[0]; }
+}
+
+if ($ARGV[0] eq "-C")
+  {
+    (my $C, my $path, @ARGV) = @ARGV;
+    chdir($path) or die "Could not enter directory '$path'\n";
+  }
+
+# add gerrit support per default
+Hammer::Plugin->load_plugin('Hammer::Changes::Gerrit');
+
+sub pager
+{
+  my $pag = $config{core}{pager};
+  $pag = $ENV{PAGER} unless $pag;
+  if (-t STDOUT and $pag) {
+    my $out;
+    my $less_opt = $ENV{LESS} ? '' : "LESS=FRX";
+    return $out if open $out, "| $less_opt $pag";
+  }
+  return *STDOUT;
+}
+
+sub max_conns
+{
+  my $o = shift;
+  return $o->{'max-connections'} if defined $o->{'max-connections'};
+  return $config{core}{'max-connections'} if defined $config{core}{'max-connections'};
+  return 8;
+}
+
+sub ham_init_error
+{
+  my $msg = shift;
+  print STDERR <<EOF;
+FATAL ERROR: $msg
+
+To delete the .ham directory and start anew with "ham init", run "ham purge" first.
+EOF
+
+  exit(128);
+}
+
+my $max_conns_option =
+  [ 'max-connections|max-conn=i',
+    q|set the maximum number of simultaneous connections used
+      for git fetches. The default is 8.
+      The default can also be set using [core] max-connections = <n>
+      in your '.hamconfig' file.|, { arg => '<max connections>' } ];
+
+sub filter_projects
+{
+  my ($projects, $argv) = @_;
+  $argv = \@ARGV unless defined $argv;
+
+  if (defined $argv->[0]) {
+    my %r = ();
+    my $inverse = 0;
+    my @args = @$argv;
+
+    if ($args[0] eq '!') {
+      shift @args;
+      $inverse = 1;
+      %r = %{$projects};
+    }
+
+    foreach my $n (@args) {
+      if (exists $projects->{$n}) {
+        if (not $inverse) {
+          $r{$n} = $projects->{$n};
+        } else {
+          delete $r{$n};
+        }
+        next;
+      }
+
+      # handle '.' magic, find out project is the best hitfor
+      # the current working directory
+      if ($n eq '.') {
+        my $cwd = getcwd;
+        my $hit_p = '';
+        my $hit;
+        foreach my $p (values %$projects) {
+          my $path = $p->abs_path;
+          if ($cwd =~ /^$path(\/+|$)/ and length $path > length $hit_p) {
+            $hit_p = $path;
+            $hit = $p;
+          }
+        }
+
+        if (defined $hit) {
+          if (not $inverse) {
+            $r{$hit->{name}} = $hit;
+          } else {
+            delete $r{$hit->{name}};
+          }
+        }
+      }
+    }
+    return \%r;
+  }
+  return $projects;
+}
+
+sub project_for_path
+{
+  my ($projects, $path) = @_;
+  my $rb = realpath(repo_base());
+  my $current_prj;
+  my @prj_rel;
+  foreach my $p (values %$projects) {
+    my $prj_base = realpath(File::Spec->catdir($rb, $p->{path}));
+    my $rel = File::Spec->abs2rel(realpath($path), $prj_base);
+    my @rel = File::Spec->splitdir($rel);
+    next unless @rel;
+    next if $rel[0] eq '..'; # different project
+    if (not $current_prj or scalar(@rel) < scalar(@prj_rel)) {
+      $current_prj = $p;
+      @prj_rel = @rel;
+    }
+  }
+  return ($current_prj, File::Spec->catdir(@prj_rel));
+}
+
+
+###### the main command (no command given) ############################
+my $commands = Hammer::Subcommand->new(
+  cmd  => sub { $_[2]->print_usage($_[1], pager); },
+  syn  => [
+    '%c',
+    [ 'C=s', 'working directory for ham command' ],
+  ],
+  desc => <<"EOF",
+Hammer is a tool to manage big projects that consist of
+multiple git repositories, which are loosely coupled.
+EOF
+);
+
+$commands->add(help => {
+  cmd => sub {
+    if (@ARGV) {
+      my ($ok, $cmd, $command, $sub) = $commands->find($prog);
+      if ($ok) {
+        $cmd->print_usage($command, pager);
+      } else {
+        print STDERR "error: unknown command $command $sub\n";
+        $cmd->print_usage($command, *STDERR);
+      }
+    }
+    $commands->print_usage($prog, pager);
+  },
+  syn => '%c',
+  desc => 'print help'
+});
+
+
+my $repo_dir;
+my $repo_base;
+my $repo_subdir = '.ham';
+
+# get (calculate) the absolute path to the .ham directory
+sub get_repo_dir
+{
+  my $try = shift;
+  return $repo_dir if defined $repo_dir;
+  my $cwd = getcwd;
+
+  my ($vol, $dirs, $file) = File::Spec->splitpath($cwd, no_file => 1);
+  my @dirs = File::Spec->splitdir($dirs);
+
+  while (1) {
+    my $d = File::Spec->catpath($vol, File::Spec->catdir(@dirs, $repo_subdir), '');
+    if (-d $d) {
+      $repo_dir = $d;
+      $repo_base = File::Spec->catpath($vol, File::Spec->catdir(@dirs), '');
+      return $repo_dir;
+    }
+
+    return undef if not @dirs and $try;
+    die "not in $prog repo directory (could not find $repo_subdir)\n" unless @dirs;
+    pop @dirs;
+  }
+}
+
+# get the root directory for this ham repo
+sub repo_base
+{
+  get_repo_dir(@_);
+  return $repo_base;
+}
+
+# prepend the given path with the .ham path
+sub ham_file
+{
+  return File::Spec->catfile(get_repo_dir(), @_);
+}
+
+# path to the manifest XML file
+sub repo_manifest() { ham_file('manifest.xml'); }
+sub local_manifest_index() { ham_file('local_manifests_index.xml'); }
+sub local_default_revision() { ham_file('default_revision.xml'); }
+# path to the local ham config file
+sub repo_config() { ham_file('config'); }
+
+my $info = Hammer::Plugin->errors;
+my $err  = Hammer::Plugin->infos;
+
+##########################################################################
+
+my @project_attrs = ('revision', 'remote');
+
+# apply default attributes in manifest XML
+sub apply_default
+{
+  my ($manifest, $r, $what) = @_;
+  $r->{$what} = $manifest->{default}->{$what} unless defined $r->{$what};
+}
+
+# create a pseudo project for a plain git (non-ham) repo.
+#
+# Uses the following config options:
+#   remote.<REMOTE>.ham = true
+#       to find the gerrit / ham remote.
+#
+#   ham.<REMOTE>.revision
+#       branch name to upload changes for (refs/for/<...>).
+#
+sub plain_git_project
+{
+  my $g = Git::Repository->new();
+  die "current directory is neither a ham nor a git repository" unless $g;
+
+  my @remotes = $g->run(config => '--bool', '--get-regexp', '^remote\.[^.]*\.ham$', 'true');
+  @remotes = grep { s/^remote\.([^.]*)\.ham\s+true$/$1/ } @remotes;
+  die "no remotes configured for ham found" unless @remotes;
+
+  my $remote_name = $remotes[0];
+  @remotes = $g->run(remote => '-v');
+  my @rf = grep { s/^$remote_name\s+(\S+)\s+\(fetch\)$/$1/ } @remotes;
+  die "no remote named '$remote_name' found in git repo" unless @rf;
+
+  my $remote_re = '^ham\.' . $remote_name . '\.';
+  my @remote_opts = $g->run(config => '--get-regexp', $remote_re);
+  my %remote_opts;
+
+  # read "remote.<rmname>" options from .hamconfig
+  while (my ($k, $v) = each %{$config{"remote." . $remote_name}}) {
+    $k =~ s/-/_/g;
+    $remote_opts{$k} = $v;
+  }
+
+  foreach my $o (@remote_opts) {
+    if ($o =~ /$remote_re(\S+)\s+(\S+)/) {
+      my ($o, $v) = ($1, $2);
+      $o =~ s/-/_/g;
+      $remote_opts{$o} = $v;
+    }
+  }
+  my $revision = $remote_opts{revision};
+  my $fetch = $rf[0];
+  $fetch =~ s|git\+ssh://|ssh://|;
+  $fetch = URI->new($fetch);
+  my $prjname = substr ($fetch->path, 1);
+  $prjname =~ s/(.*)\.git$/$1/;
+  my $svr = $fetch->scheme . '://' . $fetch->authority;
+
+  my $p = Hammer::Project->new({
+      name => $prjname,
+      path => '.',
+      remote => $remote_name,
+      _remote => { name => $remote_name, fetch => $svr, review => $svr, %remote_opts },
+      revision => $revision,
+    }, root => $g->work_tree, stderr => $err, stdout => $info);
+
+  print "plain git project: $p->{name}\n";
+  return { $p->{name} => $p };
+}
+
+# create a project for the manifest repository
+sub make_manifest_prj
+{
+  my ( %opts ) = @_;
+  my $p = {
+    name     => $opts{project},
+    path     => "$repo_subdir/manifests",
+    remote   => 'origin',
+    _remote  => {
+      name   => 'origin',
+      type   => $opts{type},
+      fetch  => $opts{url},
+      review => $opts{url},
+    },
+    url      => $opts{url},
+    revision => $opts{revision},
+    is_manifest => 1,
+    keep => 1,
+  };
+  my $r = $opts{root};
+  $r = repo_base() unless $r;
+  return Hammer::Project->new($p, root => $r, stderr => $err, stdout => $info);
+}
+
+# load the given JSON file
+# \param 1+ path components relative to the .ham directory
+# \return ARRAY ref, HASH ref, or scalar, undef on error
+sub read_ham_json_file
+{
+  if (open my $f, "<".ham_file(@_)) {
+    my $r = decode_json(<$f>);
+    close $f;
+    return $r;
+  }
+  return undef;
+}
+
+# write the given object as JSON to the given file
+# \param 1 ARRAY reference, HASH reference, or scalar.
+# \param 2+ path components relative to the .ham directory
+sub write_ham_json_file
+{
+  my $j = shift;
+  my $n = ham_file(@_);
+  open my $f, ">$n" or die "cannot open '$n'";
+  print $f encode_json($j), "\n";
+  close $f;
+}
+
+# get the list of downloaded projects
+# (usually during last sync)
+sub get_downloaded_projects
+{
+  my $p = read_ham_json_file('projects_list');
+  return $p if ref $p eq 'ARRAY';
+  return [];
+}
+
+# write the list of currently downloaded projects
+# within the working copy (written during sync)
+sub write_downloaded_projects
+{
+  my $projects = shift;
+  my $prjs = [];
+  foreach my $p (values %$projects) {
+    next if $p->{is_manifest};
+    next if $p->{keep};
+    push @$prjs, { name => $p->{name}, path => $p->{path} };
+  }
+  write_ham_json_file($prjs, 'projects_list');
+}
+
+# load the manifest infos from .ham/manifests_json and create a project
+sub manifest_prj
+{
+  if (-e ham_file('manifests_json'))
+    {
+      my $manifest_info = read_ham_json_file('manifests_json');
+
+      # Handle transition from url without project name to complete url. Since
+      # there are manifests_json containing urls without project name that also
+      # have no file_version, we need to update the url from the actual git
+      # repository once.
+      if(!defined($manifest_info->{file_version}))
+        {
+          # Read actual url from git repository
+          my $prj = make_manifest_prj(%$manifest_info);
+          my $remote_name = $prj->{_remote}->{name};
+          my $url = $prj->git->config("remote.$remote_name.url");
+
+          $manifest_info->{file_version} = 1;
+          $manifest_info->{url} = $url;
+
+          write_ham_json_file($manifest_info, 'manifests_json');
+        }
+
+      return make_manifest_prj(%$manifest_info);
+    }
+  elsif (-e ham_file("manifests_url"))
+    {
+      print STDERR "no manifests_json found, trying old format manifest_url\n";
+      # old manifest_url file conversion
+
+      open my $mf, "<".ham_file('manifests_url') or die "no manifest URL found";
+      my $manifest_url = <$mf>;
+      close $mf;
+      chomp($manifest_url);
+
+      my $manifest_info = { url => $manifest_url, project => 'manifest' };
+      write_ham_json_file($manifest_info, 'manifests_json');
+
+      # Rerun this function because there might be some format transition code
+      # necessary for the manifests_json
+      return manifest_prj();
+    }
+  else # No manifest project, e.g. init with --file
+    {
+      return undef;
+    }
+}
+
+
+sub preprocess_xml
+{
+  my $m = shift;
+  my %opts = @_;
+
+  sub gen_hash($$$)
+  {
+    my $in = shift;
+    my $key = shift;
+    my $node = shift;
+    $in = [ $in ] unless ref $in eq 'ARRAY';
+    $key = [ $key ] unless ref $key eq 'ARRAY';
+    my $out = {};
+    foreach my $e (@$in) {
+      my $n = undef;
+      foreach my $k (@$key) {
+        $n = $e->{$k};
+        if (defined $n) {
+          $out->{$n} = $e;
+          last;
+        }
+      }
+      if (not defined $n) {
+        print STDERR "error: missing '@$key' attribute in <$node ...> node\n";
+        next;
+      }
+    }
+    return $out;
+  }
+
+  while (my ($k, $v) = each %{$opts{KeyAttr}}) {
+    if (defined $m->{$k}) {
+      $m->{$k} = gen_hash($m->{$k}, $v, $k);
+    }
+  }
+}
+
+#use Data::Dumper;
+
+sub parse_xml_manifest
+{
+  my $file = shift;
+  my %data;
+
+  my $parser = XML::Parser->new(
+    Handlers => {
+      Start => sub {
+        my $parser = shift;
+        my $tagname = shift;
+        my %attributes = @_;
+
+        # Ignore root element
+        return unless $parser->context;
+
+        if (exists($data{$tagname}))
+          {
+            if (ref($data{$tagname}) eq "ARRAY")
+              {
+                push @{$data{$tagname}}, \%attributes;
+              }
+            else
+              {
+                $data{$tagname} = [
+                  $data{$tagname},
+                  \%attributes,
+                ];
+              }
+          }
+        else
+          {
+            $data{$tagname} = \%attributes;
+          }
+      },
+    },
+  );
+
+  $parser->parsefile($file);
+
+  return \%data;
+}
+
+sub load_xml_manifest
+{
+  my $file = shift;
+  my $manifest = parse_xml_manifest($file);
+
+  preprocess_xml($manifest, KeyAttr => {
+      project          => ["project_name", "name"],
+      'remove-project' => ["project_name", "name"],
+      'extend-project' => ["project_name", "name"],
+      remote           => "name",
+      'remove-remote'  => "name",
+      'extend-remote'  => "name" });
+  # print Dumper($manifest);
+  return $manifest;
+}
+
+sub override_manifest_node
+{
+  my ($file, $node, $m, $add) = @_;
+
+  foreach my $p (keys %{$add->{'remove-' . $node}}) {
+    delete $m->{$node}{$p};
+  }
+
+  while (my ($pn, $p) = each %{$add->{$node}}) {
+    if (defined $m->{$node}{$pn}) {
+      print STDERR "error: duplicate $node '$pn' defined in file $file\n";
+      next;
+    }
+    $m->{$node}{$pn} = $p;
+  }
+
+  while (my ($pn, $p) = each %{$add->{'extend-' . $node}}) {
+    if (not defined $m->{$node}{$pn}) {
+      print STDERR "error: $node '$pn' not found, cannot extend from file $file\n";
+      next;
+    }
+    while (my ($k, $v) = each %$p) {
+      $m->{$node}{$pn}{$k} = $v;
+    }
+  }
+}
+
+sub add_manifest
+{
+  my ($file, $m, $add) = @_;
+  # merge defaults
+  foreach my $def (qw(remote revision)) {
+    $m->{default}{$def} = $add->{default}{$def} if $add->{default}{$def};
+  }
+  foreach my $sec (qw(project remote)) {
+    override_manifest_node($file, $sec, $m, $add);
+  }
+  # print "==== After loading $file ====\n";
+  # print Dumper($m);
+}
+
+# load all projects, including the manifest
+sub load_projects
+{
+  my $ham_dir = get_repo_dir(1);
+  if (not $ham_dir) {
+    return plain_git_project();
+  }
+
+  my $manifest = load_xml_manifest(repo_manifest());
+
+  # read patchable (gerrit) manifest projects from local_manifest_index
+  my $lm_index = local_manifest_index();
+  if (-e $lm_index) {
+    my $f = File::Spec->catfile($lm_index);
+    my $local_manifest_index = load_xml_manifest($lm_index);
+    $_->{is_manifest} = 1 foreach values %{$local_manifest_index->{project}};
+    $manifest_project_names{$_} = 1 foreach keys %{$local_manifest_index->{project}};
+
+    # Projects in local manifest index without remote set, still need their
+    # fetch url handled like non-manifest repositories. Mark thos projects here,
+    # handle later.
+    foreach my $prj (values %{$local_manifest_index->{project}}) {
+      $prj->{_old_style_lm} = 1 unless exists $prj->{remote};
+    }
+
+    add_manifest($f, $manifest, $local_manifest_index);
+  }
+
+  my $local_manifests_dir = catdir($ham_dir, "local_manifests");
+  if (-d $local_manifests_dir) {
+    opendir(my $lm, $local_manifests_dir)
+      or die "cannot open local manifest directory '$local_manifests_dir': $!";
+    foreach my $d (sort (readdir($lm))) {
+      next if not $d =~ /\.xml$/i;
+      my $f = File::Spec->catfile($local_manifests_dir, $d);
+      next if not -f $f;
+      my $add = load_xml_manifest($f);
+      add_manifest($f, $manifest, $add);
+    }
+    closedir $lm;
+  }
+
+  my $local_default_revision = local_default_revision();
+  if (-f $local_default_revision) {
+    my $add = load_xml_manifest($local_default_revision);
+    add_manifest($local_default_revision, $manifest, $add);
+  }
+
+  while (my ($n, $r) = each %{$manifest->{remote}}) {
+    # read "remote.$n" options form .hamconfig
+    while (my ($k, $v) = each %{$config{"remote." . $n}}) {
+      $k =~ s/-/_/g;
+      $r->{$k} = $v unless defined $r->{$k};
+    }
+  }
+
+  my $projects = $manifest->{project};
+  foreach my $r (values %$projects) {
+    foreach my $attr (@project_attrs) {
+      apply_default($manifest, $r, $attr);
+    }
+
+    $r->{_remote} = { %{$manifest->{remote}->{$r->{remote}}} };
+    $r = Hammer::Project->new($r, root => repo_base(), stderr => $err, stdout => $info);
+  }
+
+  my $manifest_prj = manifest_prj();
+  my $manifest_url;
+  if (defined $manifest_prj) {
+    $manifest_url = URI->new($manifest_prj->{url} . '/');
+    $projects->{$manifest_prj->{name}} = $manifest_prj;
+    $manifest_project_names{$manifest_prj->{name}} = 1;
+  } else {
+    $manifest_url = URI->new("file:///");
+  }
+
+  foreach my $p (values %$projects) {
+    # Manifest repositories have real remote urls in _remote. They don't need
+    # adjustments.
+    # Exception: Older local manifest repositories have no specific remote set
+    # in the local_manifests_index.xml and still need to be adjusted like normal
+    # projects.
+    next if $p->{is_manifest} && !$p->{_old_style_lm};
+
+    # Non-manifest repositories need their remote adjusted, they may be
+    # specified relative to the main manifest repository and they need their
+    # project name appended.
+    my $r = $p->{_remote};
+    $r->{fetch} = URI->new_abs($r->{fetch} . "/" . $p->{name}, $manifest_url)->as_string;
+    $r->{fetch} =~ s|^(.*)/$|$1|;
+    if (defined $r->{review}) {
+      $r->{review} = URI->new_abs($r->{review} . "/" . $p->{name}, $manifest_url)->as_string;
+      $r->{review} =~ s|^(.*)/$|$1|;
+    }
+  }
+
+
+  return $projects;
+}
+
+sub project_for_rel_path
+{
+  my ($projects, $path) = @_;
+  foreach my $p (values %$projects) {
+    return $p if $p->{path} eq $path;
+  }
+  return undef;
+}
+
+sub cleanup_stale_projects
+{
+  my ($projects, $opts) = @_;
+  my $stale_p = get_downloaded_projects();
+  my %all_prjs = ( %$projects );
+  foreach my $sp (sort { $b->{path} cmp $a->{path} } @$stale_p) {
+    my $n = $sp->{name};
+    my $p = $projects->{$n};
+    if ((not $p) and $opts->{cleanup}) {
+      my $x = Hammer::Project->new($sp, root => repo_base(), stderr => $err, stdout => $info);
+      print_errors(exit => 1) unless $x->store_to_attic($opts->{upstream});
+      next;
+    }
+
+    if (not $p) {
+      my $same_path_prj = project_for_rel_path($projects, $sp->{path});
+      if (defined $same_path_prj) {
+        push @$info, "rename project: $sp->{name} @ $sp->{path} to $same_path_prj->{name}";
+      } else {
+        $all_prjs{$n} = $sp;
+        push @$info, "leave stale project behind: ".$n." @ ".$sp->{path}.
+                     " (consider using --cleanup option)";
+      }
+    } elsif ($sp->{path} ne $p->{path}) {
+      push @$info, $n.": moved to new location: ".$sp->{path}." -> ".$p->{path};
+      $p->migrate_from($sp->{path})
+        or die "error: could not migrate project: ".$n;
+      $all_prjs{$n} = $p;
+    }
+  }
+
+  print_errors(exit => 1);
+  write_downloaded_projects(\%all_prjs);
+}
+
+##########################################################################
+
+sub foreach_prj_r
+{
+  my ($func, $projects) = @_;
+  foreach my $r (@$projects) {
+    local $_ = $r;
+    my $res = $func->($r);
+    return $res if $res;
+  }
+  0;
+}
+
+sub print_errors
+{
+  my %opts = @_;
+  foreach my $i (@$info) {
+    print "$i\n";
+  }
+
+  @$info = ();
+
+  my $errpfx = defined $opts{no_prefix} ? '' : 'error: ';
+  foreach my $e (@$err) {
+    print STDERR colored("$errpfx$e", 'red') . "\n";
+  }
+
+  if ($opts{err_msg} and @$err) {
+    print STDERR colored("$opts{err_msg}", 'red') . "\n";
+  }
+
+  if ($opts{exit} and @$err) {
+    exit($opts{exit});
+  }
+
+  if ($opts{err_val} and @$err) {
+    @$err = ();
+    return $opts{err_val};
+  }
+  @$err = ();
+
+  return 0;
+}
+
+sub sorted_and_filtered_projects
+{
+  my ($prjs) = @_;
+  $prjs = \@ARGV unless defined $prjs;
+  my $projects = filter_projects(load_projects(), $prjs);
+  return [ sort { $a->{name} cmp $b->{name} } values %$projects ];
+}
+
+sub foreach_prj(&@)
+{
+  my ($func, $prjs) = @_;
+  $prjs = \@ARGV unless defined $prjs;
+
+  my $res = foreach_prj_r($func, sorted_and_filtered_projects($prjs));
+  print_errors();
+  return $res;
+}
+
+####### list projects #################################
+$commands->add(list => {
+  cmd  => sub { foreach_prj { print "$_->{name} $_->{path}\n"; 0; }; },
+  syn  => '%c',
+  desc => "list all projects managed by $prog"
+});
+
+
+###### initialize managed directory ####################
+
+sub place_commit_msg_hook
+{
+  my $d = get_repo_dir();
+  make_path("$d/hooks") unless -d "$d/hooks";
+  open my $cm, ">$d/hooks/commit-msg"
+    or die "fatal: could not open $d/hooks/commit-msg for writing: $!\n";
+
+  print $cm gerrit_commit_msg_hook();
+  close $cm;
+  chmod 0755, "$d/hooks/commit-msg";
+}
+
+
+###### init #############################################
+$commands->add(init => {
+  cmd => \&cmd_init,
+  syn => [
+    '%c %o',
+    [ 'url|u=s',    'URL of the manifest repository',    { arg => '<manifest url>' } ],
+    [ 'gerrit-url|g=s', 'URL of the gerrit server used for the manifest', { arg => '<gerrit url>' } ],
+    [ 'project|p=s',    'name of the manifest project (at the gerrit server)', { arg => '<project name>' } ],
+    [ 'branch|br|b=s',    'branch in the manifest repository. The branch will also be used as default revision', { arg => '<branch name>' } ],
+    [ 'revision|r=s', 'commit hash to be used in the manifest repository. Not compatible with --branch', { arg => '<commit hash>' } ],
+    [ 'type=s', 'Set the type of the manifest repository management system (default gerrit)', { arg => '<repo type>' } ],
+    [ 'file|f|m=s', 'set the name of the manifest file. If neither --url nor --gerrit-url is given this parameter will be treated as a local path.', { arg => '<manifest>' } ],
+    [ 'default-revision=s', 'use this branch as default revision instead of the value from --branch (or the default branch of the manifest repository in case --branch is not specified)', { arg => '<default revision>' } ],
+    [ 'local-manifest|l=s@',
+      qq|Set up local manifest entry (can be repeated for
+        multiple entries). A local manifest descriptor consists of
+        comma-separated entries for giturl (or projectname), filename,
+        symlinkname, and a git branch name, where branch defaults to
+        manifest branch, symlink defaults to an enumerated variant of
+        filename, and filename defaults to default.xml.|,
+      { arg => '<url>[,<filename>[,<symlink>[,<branch>]]]' } ],
+    $max_conns_option
+  ],
+  desc => "initialize $prog meta project in the current directory"
+});
+
+sub translate_remote_to_url
+{
+  my ($remote) = @_;
+
+  # Detected a scheme, must be a proper url
+  # See https://www.rfc-editor.org/rfc/rfc3986
+  if ($remote =~ m#^[a-z][a-z0-9+.-]*://#i)
+    {
+      return $remote;
+    }
+  ## SCP-style paths
+  # (user@)host:path/to/repo
+  elsif ($remote =~ m#^([^/:]+):(.+)$#)
+    {
+      my ($host,$path) = ($1,$2);
+      $path =~ s#^/##;
+      return "ssh://$host/$path";
+    }
+  else
+    {
+      return $remote;
+    }
+}
+
+sub split_manifest_url
+{
+  my $opt = shift;
+
+  my $manifest_info = {
+    revision => $opt->{revision} // $opt->{branch},
+    type     => $opt->{type},
+  };
+
+  if (defined $opt->{url}) {
+    ($manifest_info->{project} = $opt->{url}) =~ s|^.*/||g;
+    $manifest_info->{url} = translate_remote_to_url($opt->{url});
+  } elsif (defined $opt->{'gerrit-url'} and defined $opt->{project}) {
+    $manifest_info->{project} = $opt->{project};
+    $manifest_info->{url} = translate_remote_to_url($opt->{'gerrit-url'}) . "/" . $opt->{project};
+  }
+
+  return $manifest_info;
+}
+
+sub init_local_manifests
+{
+  my ($opts) = @_;
+
+  my $error = 0;
+
+  my @lm_projects;
+
+  my %name_counters;
+  my $i = 1;
+  my %local_manifest_repo_lookup;
+  my @symlinks;
+  for my $opt (@{$opts->{'local-manifest'}})
+    {
+      my ($raw_url, $file, $symlink, $branch) = split(',', $opt);
+
+      my $name = $raw_url;
+
+      my $url = $raw_url;
+      if ($url !~ m|://| && $opts->{'gerrit-url'})
+        {
+          $url = $opts->{'gerrit-url'} . "/" . $url;
+        }
+      else
+        {
+          $name =~ s,^.+/,,;
+        }
+
+      while ($name_counters{$name}++)
+        {
+          $name .= "-" . $name_counters{$name};
+        }
+
+      $file     ||= 'default.xml';
+      $symlink  ||= sprintf('%04d-%s', $i, $file);
+
+      my $path = ".ham/local_manifests_repos/" . $name;
+      my $revision = (defined($branch) && $branch ne "") ? $branch : $opts->{'branch'};
+
+      if (!defined($revision))
+        {
+          ham_init_error "Local manifest value '$opt' is missing a branch or revision.";
+        }
+
+      my $prj;
+
+      if (exists $local_manifest_repo_lookup{$url . "\0" . $revision})
+        {
+          $prj = $local_manifest_repo_lookup{$url . "\0" . $revision};
+          $path = $prj->{path};
+        }
+      else
+        {
+          $prj = Hammer::Project->new({
+            name => $name,
+            path => $path,
+            remote => "remote-$name",
+            _remote => {
+              name => "remote-$name",
+              fetch => $url,
+              review => $url,
+            },
+            url => $url,
+            revision => $revision,
+            fixed_revision => 1,
+            is_manifest => 1,
+            keep => 1,
+          }, root => realpath('.'), stderr => $err, stdout => $info);
+
+          push @lm_projects, $prj;
+
+          $local_manifest_repo_lookup{$url . "\0" . $revision} = $prj;
+        }
+
+      push @symlinks, {
+        project => $prj,
+        file => $file,
+        symlink => $symlink,
+      };
+
+      $i++;
+    }
+
+  return unless @lm_projects;
+
+  make_path(".ham/local_manifests_repos");
+
+  my $q = Hammer::Process_queue->new(max => max_conns($opts));
+
+  for my $project (@lm_projects)
+    {
+      $q->queue(sub { $project->sync(); });
+    }
+
+  $q->work();
+
+  for my $project (@lm_projects)
+    {
+      $project->prepare();
+      $q->queue(sub { $project->fetch(); });
+    }
+  $q->work();
+
+  my @local_manifest_index_entries;
+  for my $project (@lm_projects)
+    {
+      if ($project->checkout($project->{revision}) != 0)
+        {
+          print STDERR "Warning: Branch $project->{revision} is not present in repository $project->{name}.\n";
+          push @local_manifest_index_entries,
+            qq|  <!-- Missing branch $project->{revision} in project $project->{name} -->\n|;
+          $error = 1;
+          next;
+        }
+
+      push @local_manifest_index_entries,
+        qq|<remote name="$project->{_remote}->{name}" fetch="$project->{_remote}->{fetch}" review="$project->{_remote}->{review}" />|;
+
+      my $_revision;
+      $_revision = qq|revision="$project->{revision}"| if $project->{fixed_revision};
+
+      push @local_manifest_index_entries,
+        qq|<project name="$project->{name}" path="$project->{path}" remote="$project->{remote}" $_revision/>|;
+    }
+
+  open my $LMI, '>', local_manifest_index()
+    or die "cannot open " . local_manifest_index() . ": $!";
+  print $LMI <<EOF;
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <!-- list of patchable (i.e., gerrit) projects -->
+  <!-- AUTOMATICALLY GENERATED. Edit at your own risk -->
+EOF
+  print $LMI "  $_\n" foreach (@local_manifest_index_entries);
+  print $LMI '</manifest>';
+  close($LMI);
+  exit 1 if $error;
+
+  make_path(".ham/local_manifests");
+
+  for my $symlink (@symlinks)
+    {
+      symlink("../../" . $symlink->{project}{path} . "/" . $symlink->{file},
+              ".ham/local_manifests/" . $symlink->{symlink});
+
+      if ( ! -e $symlink->{project}{path} . "/" . $symlink->{file} )
+        {
+          print STDERR "WARNING: Local manifest project $symlink->{project}{url} (Revision $symlink->{project}{revision}) is missing file $symlink->{file}\n";
+          $error = 1;
+        }
+
+    }
+
+  exit 1 if $error;
+}
+
+
+sub cmd_init
+{
+  my ($opt, $command, $cmd) = @_;
+  my $repo_dat_src = $opt->{file};
+  my $repodir = get_repo_dir(1);
+
+  if (defined($opt->{branch}) && defined($opt->{revision}))
+    {
+      print STDERR "ERROR: --branch and --revision are mutually exclusive\n";
+      return 1;
+    }
+
+  my $manifest_info = split_manifest_url($opt);
+
+  if (defined $repodir and -f File::Spec->catdir($repodir, 'manifests_json')) {
+    # remove old url file
+    my $manifests_url_file = File::Spec->catdir($repodir, 'manifests_url');
+    unlink $manifests_url_file if -f $manifests_url_file;
+
+    my $i = read_ham_json_file('manifests_json');
+
+    ham_init_error 'Incomplete .ham directory detected. This is often caused by an error during "ham init".'
+      unless defined($i);
+
+    if ((defined $manifest_info->{url} and $manifest_info->{url} ne $i->{url})
+        or (defined $manifest_info->{project} and $manifest_info->{project} ne $i->{project})) {
+
+      ham_init_error ".ham directory already initialized for different URL $i->{url}";
+    }
+
+    print STDERR "warning: .ham directory already initialized\n";
+
+    # no new revision, don't do anything
+    if (not defined $manifest_info->{revision}) {
+      return 0;
+    }
+
+    # set or update to new revision
+    if (not defined $i->{revision}) {
+      print STDERR "warning: set manifest branch to ".
+                   "'$manifest_info->{revision}'\n";
+      $i->{revision} = $manifest_info->{revision};
+      write_ham_json_file($i, 'manifests_json');
+    } elsif ($i->{revision} ne $manifest_info->{revision}) {
+      print STDERR "warning: updating manifest branch from ".
+                   "'$i->{revision}' to '$manifest_info->{revision}'\n";
+      $i->{revision} = $manifest_info->{revision};
+      write_ham_json_file($i, 'manifests_json');
+    }
+    return 0;
+  }
+
+  if (defined $repodir and -f File::Spec->catdir($repodir, 'manifests_url')) {
+    open my $mf, "<".get_repo_dir().'/manifests_url' or die "cannot open manifest_url file: $!";
+    my $manifest_url = <$mf>;
+    close $mf;
+    chomp $manifest_url;
+    my $i = split_manifest_url({ url => $manifest_url, branch => $opt->{branch} });
+    ham_init_error "Present .ham directory has no URL."
+      if not defined $manifest_info->{url};
+
+    ham_init_error ".ham directory already initialized for different URL $manifest_url"
+      if ($manifest_info->{url} ne $i->{url}
+          or $manifest_info->{project} ne $i->{project});
+
+    print STDERR "warning: .ham directory already initialized\n";
+    return 0;
+  }
+
+
+  if (defined $repodir) {
+    ham_init_error "Incomplete .ham directory detected."
+  }
+
+  $repo_dir = $repo_subdir;
+  place_commit_msg_hook();
+
+  if (defined $manifest_info->{url}
+      and defined $manifest_info->{project}) {
+
+    # try to download a manifest repo
+    $repo_dat_src = 'default.xml' unless defined $repo_dat_src;
+
+    my $manifest = make_manifest_prj(%$manifest_info, root     => realpath('.'));
+    my $q = Hammer::Process_queue->new(max => max_conns($opt));
+    $q->queue(sub { $manifest->sync; });
+    $q->work;
+    print_errors(exit => 128);
+    print STDERR "Preparing manifest\n";
+    $manifest->prepare();
+    print_errors(exit => 128);
+    symlink("manifests/$repo_dat_src", "$repo_subdir/manifest.xml");
+
+    open my $u, ">$repo_subdir/manifests_json";
+    print $u encode_json($manifest_info), "\n";
+    close $u;
+
+    $opt->{branch} ||= $manifest->git->rev_parse('--abbrev-ref', 'HEAD')
+      unless defined $opt->{revision};
+
+    init_local_manifests($opt);
+
+  } else {
+    # use a local file as manifest and copy it
+    my $repo_dat = repo_manifest();
+    die "You need to specify a manifest XML file\n" if not defined $repo_dat_src;
+    die "$repo_dat_src is not a readable file\n" if not (-f $repo_dat_src and -r $repo_dat_src);
+    mkdir($repo_subdir);
+    open my $rd, ">$repo_dat" or die "error: cannot open $repo_dat: $!\n";
+    open my $rs, "<$repo_dat_src" or die "error: cannot open $repo_dat_src: $!\n";
+    while (<$rs>) { print $rd $_; }
+    close $rs;
+    close $rd;
+  }
+
+  my $default_revision = $opt->{'default-revision'} || $opt->{'branch'};
+  if ($default_revision)
+    {
+      print "Setting up default revision: $default_revision\n";
+      open(my $fh, ">", local_default_revision());
+      print $fh <<EOF;
+<?xml version="1.0"?>
+<manifest>
+  <default revision="$default_revision" />
+</manifest>
+EOF
+      close($fh);
+    }
+
+  return 0;
+}
+
+
+###### sync ###########################################
+$commands->add(sync => {
+  cmd  => \&cmd_sync,
+  syn  => [
+    '%c [<project>...]',
+    [ 'rebase',   q|rebase the current branch onto the
+                    corresponding branch in the projects remote| ],
+    [ 'upstream', q|checkout the upstream revisions as defined in
+                    the manifest| ],
+    [ 'cleanup',  q|cleanup moved and stale projects. Using this option
+                    will move projects no longer in the manifest into an
+                    'attic' directory. NOTE: these repos may be restored
+                    on a later sync automatically.| ],
+    [ 'reference=s', q|Use given directory base path of another local project
+                       repository as a reference to save disk and network
+                       bandwidth.
+                       ATTENTION: This creates symbolic references into the
+                       given ham repository, using 'git gc' or removing the
+                       referenced repositories or parts of it might render
+                       the local repositories unusable.| ],
+    [ 'force-local-update', q|Force update of local projects although
+                              updates indicate no changes.| ],
+    [ 'exclude-manifest', q|Do not sync manifest repositories.| ],
+    [ 'ignore-untracked', q|Do not skip working copy update because of
+                            untracked files. DEPRECATED: It's the default now.| ],
+    [ 'no-ignore-untracked', q|Skip working copy update if untracked files are
+                               present.| ],
+    $max_conns_option
+  ],
+  desc => 'checkout/update all projects'
+});
+
+sub cmd_sync
+{
+  my ($opts, $command, $cmd) = @_;
+
+  # --ignore-untracked is deprecated, because now the default is to ignore
+  # untracked files. --no-ignore-untracked can be used to disable this
+  # behaviour.
+  $opts->{'ignore-untracked'} = !$opts->{'no-ignore-untracked'};
+
+  my $q = Hammer::Process_queue->new(max => max_conns($opts));
+
+  # update manifest repo and local manifest repos first
+  unless ($opts->{'exclude-manifest'}) {
+    my $projects_tmp = load_projects();
+    $projects_tmp = filter_projects($projects_tmp, \@ARGV);
+    $projects_tmp = [ sort { $a->{name} cmp $b->{name} } values %$projects_tmp ];
+
+    my @manifest_repos;
+    for my $prj (@$projects_tmp) {
+        next unless $prj->{is_manifest};
+        push @manifest_repos, $prj;
+        $q->queue(sub { $prj->sync($opts); });
+    }
+
+    $q->work;
+
+    $_->prepare($opts) foreach @manifest_repos;
+  }
+
+  place_commit_msg_hook();
+
+  # Either reload projects, after manifest updates. Or for the first time if
+  # manifests were excluded.
+  my $projects = load_projects();
+  cleanup_stale_projects($projects, $opts);
+  $projects = filter_projects($projects, \@ARGV);
+  $projects = [ sort { $a->{name} cmp $b->{name} } values %$projects ];
+
+  foreach my $r (@$projects) {
+    # Manifest repos were already updated further up
+    next if $r->{is_manifest};
+
+    $q->queue(sub { $r->sync($opts); });
+  }
+  $q->work;
+
+  print_errors(exit => 128);
+
+  my $proj_with_updates = 0;
+  if ($opts->{'force-local-update'} or $opts->{upstream}) {
+    $proj_with_updates = -1;
+  } else {
+    foreach (@$projects) {
+      $proj_with_updates++ if $_->{remote_has_updates};
+    }
+  }
+
+  if ($proj_with_updates != 0) {
+    print STDERR "Preparing ",
+                 $proj_with_updates == -1 ?  "all" : $proj_with_updates,
+                 " projects:\n";
+
+    foreach (@$projects) {
+      next if $opts->{'exclude-manifest'} && $_->{is_manifest};
+      next unless $_->{remote_has_updates} || $proj_with_updates == -1;
+      $_->prepare($opts);
+    }
+    print_errors(exit => 128);
+  } else {
+    print STDERR "No updates available.\n";
+  }
+
+  return 0;
+}
+
+
+###### status #########################################
+$commands->add(status => {
+  syn  => [
+    '%c %o [<project>...]',
+    [ 'short|s',     'generate output in git short mode' ],
+    [ 'branch|b',    'show branch information event in short mode' ],
+    [ 'porcelain', q|generate output in short mode and with
+                     branch infos and without any colors| ],
+    [ 'only-different', q|show only projects that have a divergent branch
+                          status| ],
+    [ 'only-dirty',     q|show only projects with a dirty working tree| ],
+    [ 'only-behind',    q|show only projects that are behind upstream| ],
+    [ 'only-ahead',     q|show only projects that have commits ahead of
+                          upstream| ]
+  ],
+  desc => 'show the status of all projects',
+  cmd  => sub {
+    my ($opts, $command, $cmd) = @_;
+
+    if ($opts->{porcelain}) {
+      foreach_prj { $_->print_status; 0;}
+      return 0;
+    }
+
+    select pager;
+    my $branch_info = 1;
+    my $short = $opts->{short};
+    $branch_info = $opts->{branch} if $short;
+
+    foreach_prj {
+      my $p = $_;
+      my $s = $p->status;
+      return 0 unless $s and $branch_info and ($s->is_different or $s->is_dirty);
+      return 0 if $opts->{'only-different'} and not $s->is_different;
+      return 0 if $opts->{'only-dirty'} and not $s->is_dirty;
+      return 0 if $opts->{'only-ahead'} and not $s->is_ahead;
+      return 0 if $opts->{'only-behind'} and not $s->is_behind;
+
+      print colored("project: $p->{name}: ".$p->abs_path, 'bold'), "\n";
+      if ($branch_info) {
+        print "    $s->[0]\n";
+      }
+      if ($short) {
+        print "    $_\n" foreach $s->files;
+      } else {
+        sub show
+        {
+          my ($msg, $color, @i) = @_;
+          if (@i) {
+            print "\n$msg:\n";
+            print "\t".colored($_, $color)."\n" foreach @i;
+          }
+        }
+
+        show("Files with merge conflicts", 'red', $s->pretty_conflicts($p->{path}));
+        show("Changes staged for commit", 'green', $s->pretty_index($p->{path}));
+        show("Changes not staged for commit", 'red', $s->pretty_changed($p->{path}));
+        show("Untracked files", 'red', $s->pretty_untracked($p->{path}));
+        print "\n";
+      }
+      return 0;
+    };
+
+    return 0;
+  }
+});
+
+
+###### forall #######################################
+$commands->add(forall => {
+  cmd => \&cmd_forall,
+  syn => [
+    '%c [<project>...] %o -- <cmd> [<arg>...]',
+    { pre_args => 1 },
+    [ 'abort-on-errors|e' , 'Abort if a command exits with an exitcode other than zero' ],
+    [ 'p',                  'print project name before each execution of <cmd>' ],
+    [ 'vars|i',           qq|replace special '{...}' tokens within the arguments. Variables are:\r
+                             {UPSTREAM}: The upstream revision.\r
+                             {REMOTE}:   The name of the remote as defined in the manifest.\r
+                             {FETCHURL}: The URL used for the remote repository.\r
+                             {GITHEAD}:  Substitute the SHA1 of the current git HEAD.\r
+                             {PRJNAME}:  The project name as used on the server.\r
+                             {PRJPATH}:  The project path as defined in the manifest.| ],
+    [ 'include-manifest|m', 'Also include the manifest project'],
+  ],
+  desc => 'run <cmd> for all projects'
+});
+
+sub cmd_forall
+{
+  my ($opt, $cmd, $subs) = @_;
+  my $print_prj = $opt->{p};
+
+  if (not @ARGV) {
+    $subs->print_usage($cmd);
+  }
+
+  my $cwd = getcwd;
+
+  my $res = foreach_prj {
+    my $r = $_;
+    return 0 if not $opt->{'include-manifest'} and $r->{is_manifest};
+
+    print colored("$r->{name}: $r->{path}\n", 'bold') if $print_prj;
+
+    if (! -d $r->abs_path)
+      {
+        print colored("$r->{name}: directory does not exist\n", "red");
+        return 1 if $opt->{'abort-on-errors'};
+        return 0;
+      }
+
+    chdir $r->abs_path;
+    my @argv = @ARGV;
+    if ($opt->{vars}) {
+      my $upstream = "refs/remotes/$r->{_remote}->{name}/$r->{revision}";
+      my $remote_name = $r->{_remote}->{name};
+      s,\{UPSTREAM\},$upstream,g foreach @argv;
+      s,\{REMOTE\},$remote_name,g foreach @argv;
+      s,\{FETCHURL\},$r->get_fetch_url(),ge foreach @argv;
+      s,\{PRJNAME\},$r->{name},g foreach @argv;
+      s,\{PRJPATH\},$r->{path},g foreach @argv;
+      s,\{GITHEAD\},$r->git_head(),ge foreach @argv;
+    }
+    my $res = system(@argv);
+    return $res >> 8 if $res and $opt->{'abort-on-errors'};
+    return 0;
+  } $opt->{__PREARGS};
+
+  chdir $cwd;
+  return $res;
+}
+
+
+####### checkout ################################
+$commands->add(checkout => {
+  cmd  => \&cmd_checkout,
+  syn  => [
+    '%c <branch> [<project>...]',
+    [ 'abort-on-errors|e', 'Abort on any error, otherwise all projects will be iterated' ],
+    [ 'detach',            'Create datached heads' ],
+    [ 'b=s',               'Create a new branch named <new_branch> and start it at <branch>', { arg => '<new_branch>' } ],
+    [ 'include-manifest|m', 'Also include the manifest project'],
+    [ 'delete-branch-before-checkout', q|Delete a local branch of the same name
+                                         before checking out that branch to
+                                         ensure a clean upstream state.| ],
+    [ 'sync:s',            q|Run ham sync when manifest projects were changed.
+                             Optionally it allows to specify comma-separated
+                             arguments which will become options to ham sync, e.g.,
+                             --sync=cleanup,force-local-update
+                             will call ham sync --cleanup --force-local-update.| ],
+  ],
+  desc => 'checkout <branch> in all projects'
+});
+
+sub cmd_checkout
+{
+  my ($opts, $command, $cmd) = @_;
+  my $branch = shift @ARGV;
+  $cmd->print_usage($command) unless defined $branch;
+  my $abt = $opts->{'abort-on-errors'};
+  my @args = ();
+  push @args, '--detach' if defined $opts->{detach};
+  push @args, '-b', $opts->{b} if defined $opts->{b};
+  push @args, $branch;
+  my $manifest_changed = 0;
+  my $res = foreach_prj {
+    my $p = $_;
+    if ($p->{is_manifest}) {
+      return 0 if not $opts->{'include-manifest'};
+      $manifest_changed = 1;
+    }
+
+    if ($opts->{'delete-branch-before-checkout'}) {
+      my $x = $p->git($p->{_stderr})->run('branch', '-D', $branch, { quiet => 1, fatal => [-128 ]});
+    }
+
+    my $r = $p->checkout(@args);
+    return $r if $r and $abt;
+    return 0;
+  };
+
+  return $res if $res;
+  return download_id_sync($manifest_changed, $opts);
+}
+
+
+###### start a new topic branch ##################
+$commands->add(start => {
+  cmd => \&cmd_start,
+  syn => [
+    '%c %o <branch name> [<projects>...]',
+    [ 'base|t=s', 'starting point for the new branch', { arg => '<start-point>' } ],
+  ],
+  desc => 'start a new topic branch <branch> in all projects'
+});
+
+sub cmd_start
+{
+  my $opt = shift;
+  my $branch = shift @ARGV;
+
+  $_[2]->print_usage($_[1]) unless defined $branch;
+  my $base = $opt->{base};
+  my @args = ('--track', '-b', $branch);
+  push @args, $base if defined $base and $base ne '';
+
+  return foreach_prj { $_->checkout(@args); 0;};
+}
+
+
+###### info ####################################
+$commands->add(info => {
+  cmd  => \&cmd_info,
+  syn  => '%c [<project>...]',
+  desc => 'show infos for each project'
+});
+
+sub cmd_info
+{
+  select pager;
+  my $missing = 0;
+  foreach_prj {
+    my $p = $_;
+    my $g = $p->git;
+
+    if (! defined($g) ) {
+      print "$p->{name}: ".colored("missing", "red")."\n";
+      $missing = 1;
+      return 0;
+    }
+
+    my $head = $g->rev_parse('--abbrev-ref', 'HEAD');
+    print colored("$p->{name}: in $p->{path}\n", 'bold');
+    my $remote_branch = $p->{revision};
+    $remote_branch = "<unknown branch>" unless defined $remote_branch;
+    print "  remote: $p->{remote} @ branch ".colored($remote_branch, 'yellow')."\n";
+    print "  local revision: ".colored($head, 'yellow')."\n";
+    my $s = $p->status;
+    my $dirty = $s->is_dirty;
+    print "  status: ".$s->branch_status."\n" if $s->is_different;
+    print colored("          contains untracked files\n", 'red') if $s->untracked;
+    print colored("          contains uncommited changes in the index\n", 'green') if $s->index;
+    print colored("          contains modifications in the working copy\n", 'red') if $s->changed;
+    print colored("          has merge conflicts\n", 'bold', 'red') if $s->conflicts;
+    print "\n";
+    0;
+  };
+
+  return $missing ? 1 : 0;
+}
+
+
+###### remote #######################################
+$commands->add(
+  remote => {
+    cmd => sub { $_[2]->print_usage($_[1]); 0; },
+    syn => '%c',
+    desc => 'manage remotes for all projects'
+  }
+);
+
+###### remote add ####################################
+sub cmd_remote_xxx
+{
+  my ($what, $x, $command, $cmd) = @_;
+  my $name = shift @ARGV;
+  $cmd->print_usage($command) unless defined $name;
+  my $url = shift @ARGV;
+  $cmd->print_usage($command) unless defined $url;
+  $url .= '/' unless substr($url, -1, 1) eq '/';
+  $url = URI->new($url);
+  foreach_prj {
+    my $r = $_;
+    my $rurl = URI->new_abs($r->{name}, $url);
+    #print $url, " => ", $rurl, "\n";
+    $r->git->run(remote => $what, $name, $rurl->as_string);
+    0;
+  };
+  return 0;
+}
+
+$commands->sub->{remote}->add(
+  add => {
+    syn  => '%c <remote-name> <url> [<project>...]',
+    desc => 'add a repository remote for to each git repo using <url> as prefix',
+    cmd  => sub { cmd_remote_xxx('add', @_) }
+  }
+);
+
+$commands->sub->{remote}->add(
+  'set-url' => {
+    syn  => '%c <remote-name> <url> [<project>...]',
+    desc => 'set the url for each git repo using <url> as prefix',
+    cmd  => sub { cmd_remote_xxx('set-url', @_) }
+  }
+);
+
+
+sub approve_dependent_changes
+{
+  my ($prj, $commits) = @_;
+  print STDERR "project $prj->{name} ($prj->{path}) has more than one change,\n".
+               "this will produce the following dependent changes:\n\n";
+  my @log = $prj->bare_git->run('log', '--color=always', '--oneline', "$$commits[$#$commits]~1..$$commits[0]");
+
+  print STDERR "$_\n" foreach (@log);
+  print STDERR "\ndo you want to upload these changes at once? [y/N]: ";
+  my $answer = <STDIN>;
+  chomp $answer;
+  return $answer eq 'y' || $answer eq 'Y' || $answer eq 'yes';
+}
+
+###### upload ####################################################
+$commands->add(upload => {
+  cmd => \&cmd_upload,
+  syn => [
+    '%c %o [<project>...]',
+    { config => [ 'no_ignore_case' ] },
+    [ 'draft|d',         'submit as draft' ],
+    [ 't',               'Use branch name as topic' ],
+    [ 'topic=s',         'Set <topic> as topic', { arg => '<topic>' } ],
+    [ 'hashtag=s@',      q|Add hashtags. This option takes a comma separated list
+                           of hashtags and may be supplied multiple times|, { arg => '<hashtag>' } ],
+    [ 're|reviewers=s@', q|Add reviewers. This option takes a comma separated
+                           list of reviewers and may be supplied more than once|, { arg => '<reviewer>' } ],
+    [ 'cc=s@',           q|Add email addresses for CC. This option takes a comma
+                           separated list of email addresses and may be supplied
+                           multiple times|,                                       { arg => '<cc-email>' } ],
+    [ 'br=s',            'Upload <local branch> for review',                      { arg => '<local-branch>' } ],
+    [ 'dest|destination|D=s', 'Upload commit for destination branch',             { arg => '<branch>' } ],
+    [ 'dry-run|n',       'Do a dry run, just print the git commands that would be issued' ],
+    [ 'relax|R',         'Do not abort because of missing change IDs' ],
+    [ 'notify=s',        q|Control to whom email notifications are sent:
+                           NONE, OWNER, OWNER_REVIEWERS or ALL (default)|, { arg => '<receiver>' } ],
+  ],
+  desc => 'upload changes for review'
+});
+
+sub cmd_upload
+{
+  my $opts = shift;
+  $opts->{br} = 'HEAD' unless defined $opts->{br};
+
+  my $projects = sorted_and_filtered_projects(\@ARGV);
+
+  my @warn;
+  my @good_projects;
+
+  foreach my $prj (@$projects) {
+    my ($upload, $src_br, $dst_br)
+      = $prj->check_for_upload(\@warn, $opts->{br}, $opts->{dest},
+                               \&approve_dependent_changes, $opts->{relax});
+
+    push @good_projects, [ $prj, $src_br, $dst_br ] if $upload;
+  }
+
+  if (@$err) {
+    print_errors();
+    print STDERR "Aborting\n";
+    return 1;
+  }
+
+  if (@warn) {
+    foreach my $w (@warn) {
+      print "warning: $w\n";
+    }
+  }
+
+  if (not @good_projects) {
+    print "nothing to do for this upload\n";
+    return 0;
+  }
+
+  # everything is checked, so start upload
+  print "upload changes to ".scalar(@good_projects)." project(s):";
+  foreach my $prj (@good_projects) {
+    print " $prj->[0]->{name}";
+  }
+  print "\n";
+
+  foreach my $p (@good_projects) {
+    my ($prj, $src_br, $dst_br) = @$p;
+    my $cs = Hammer::Plugin->change_source($prj);
+    $cs->upload($prj, $dst_br, $src_br, $opts) if defined $cs;
+  }
+  print_errors(exit => 128);
+
+  return 0;
+}
+
+
+##############################################################
+sub fetch_and_co_changes
+{
+  my ($opts, $changes) =  @_;
+
+  my $q = Hammer::Process_queue->new(max => max_conns($opts));
+  foreach my $c (values %$changes) {
+    my $prj = $c->{prj};
+    my $remote_name = $prj->{_remote}{name};
+    $q->queue(sub { $prj->fetch($remote_name, $c->{src_ref}); });
+  }
+
+  $q->work;
+
+  print_errors(exit => 128);
+
+  my $action;
+  my @log;
+
+  if (defined $opts->{pull} || defined $opts->{rebase}) {
+    $action = sub {
+      my $git = $_[0]->git;
+      $git->run("checkout", "--detach") if $opts->{detach};
+      my $head = $git->rev_parse('--abbrev-ref', 'HEAD');
+      my $op = 'merge' if defined $opts->{pull};
+      $op = 'rebase' if defined $opts->{rebase};
+      my $r = $git->$op($info, 'FETCH_HEAD');
+      if ($r == 0) {
+        push @log, [ $_[0], "${op}d %{desc} into $head" ];
+      } else {
+        push @log, [ $_[0], "$op failed, aborting" ];
+        $git->$op($info, '--abort');
+        push @$err, $_[0]->{name} . ": $op failed: aborting!";
+        print_errors(exit => 128);
+      }
+    };
+  } elsif (defined $opts->{'cherry-pick'}) {
+    $action = sub {
+      my $git = $_[0]->git;
+      $git->run("checkout", "--detach") if $opts->{detach};
+      my $head = $git->rev_parse('--abbrev-ref', 'HEAD');
+      push @$info, $git->run('cherry-pick', 'FETCH_HEAD');
+      push @log, [ $_[0], "cherry picked %{desc} onto $head" ];
+    };
+  } else {
+    $action = sub {
+      my $git = $_[0]->git;
+      $_[0]->checkout('--detach', '-q', 'FETCH_HEAD');
+      push @log, [ $_[0], "checked out %{desc} as detached HEAD" ];
+    };
+  }
+
+  foreach my $c (values %$changes) {
+    $action->($c->{prj});
+  }
+
+  my $res = print_errors(err_val => 128);
+
+  print "changes:\n";
+  foreach my $log (sort { $a->[0]->{name} cmp $b->[0]->{name} } @log) {
+    my $prj = $log->[0];
+    my $msg = $log->[1];
+    my $remote_name = $prj->{_remote}->{name};
+    my $c = $changes->{$prj->{name}};
+    my $desc = $c->{desc};
+
+    $msg =~ s,%\{desc\},$desc,g;
+
+    print "  $prj->{name} [$remote_name]: $msg\n";
+  }
+
+  return $res;
+}
+
+
+###### download ####################################
+$commands->add(download => {
+  syn => [
+    '%c %o <project> <change-nr>[/<patchset>]',
+    [ 'cherry-pick|cp|c',  q|Cherry pick the change onto the current branch
+                             instead of checking out the change| ],
+    [ 'pull|p',            q|Pull (merge) the change into the current branch|],
+    [ 'rebase',            q|Rebase the current branch onto the change|],
+    [ 'detach|d',          q|create a detached head in even for pull or cherry-pick|],
+    [ 'remote|r=s',        q|Use <remote> as git remote to fetch the change,
+                             instead of using the remote configured in the manifest.|,
+                           { arg => '<remote>' } ],
+    $max_conns_option
+  ],
+  desc => q|Download a change for the given project into your local working copy|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    my ($prjn, $change) = @ARGV;
+    $cmd->usage_error($command, 'error: missing prject name') unless defined $prjn;
+    my $prj = filter_projects(load_projects(), [ $prjn ])->{$prjn};
+    $cmd->usage_error($command, "error: unknown project $prjn") unless defined $prj;
+    $cmd->usage_error($command, "error: missing change number") unless defined $change;
+    my $patchset = 1;
+    if ($change =~ /^([0-9]+)(?:\/([0-9]+))?$/) {
+      $change = $1;
+      $patchset = $2 if defined $2;
+    } else {
+      $cmd->usage_error($command, "error: invalid change/patchset format '$change'");
+    }
+
+    return fetch_and_co_changes($opts, {
+      $prjn => {
+        project  => $prj->{name},
+        prj      => $prj,
+        src_ref  => sprintf("refs/changes/%02d/%d/%d", ($change % 100), $change, $patchset),
+        desc     => "change $change/$patchset",
+        chg      => {}
+      }
+    });
+  }
+});
+
+sub query_changes
+{
+  my ( $prjs, $opts, $recursion, @change_ids ) = @_;
+  my $branch = $opts->{branch};
+  my $verbose = $opts->{verbose};
+  my %queries = ();
+  foreach my $p (values %$prjs) {
+    foreach my $chid (@change_ids) {
+      my $cs = Hammer::Plugin->change_source($p);
+      %queries = (%queries, $cs->changes($p, $chid)) if defined $cs;
+    }
+  }
+
+  if (not %queries) {
+    print_errors();
+    print STDERR "error: no matching project found\n";
+    exit (1);
+  }
+
+  my @changes = ();
+
+  while (my ($query, $ex) = each %queries) {
+    print STDOUT "query: $query\n" if $verbose;
+    push @changes, $ex->($prjs);
+  }
+
+  print_errors(exit => 128);
+
+  if (not @changes) {
+    return {} if $recursion;
+    print STDERR "no changes for id ".join(' ',@change_ids)." found\n";
+    return undef;
+  }
+
+  my @used_changes = grep { exists $prjs->{$_->{project}} } @changes;
+
+  # FIXME: need to have a version to use the revision defined in the manifest
+  # as branch name for each project
+  if (defined $branch && $branch eq 'CURRENT') {
+    @used_changes = grep { $_->{branch} eq $prjs->{$_->{project}}{current_head} } @used_changes;
+  } elsif (defined $branch && $branch eq 'MANIFEST') {
+    @used_changes = grep { $_->{branch} eq $prjs->{$_->{project}}{revision} } @used_changes;
+  } elsif (defined $branch) {
+    @used_changes = grep { $_->{branch} eq $branch } @used_changes;
+  }
+
+  if (not @used_changes) {
+    return {} if $recursion;
+    print STDERR "no matching projects for id ".join(' ',@change_ids)." found\n";
+    print STDERR "given projects: ".join(' ', sort keys %$prjs)."\n";
+    print STDERR "prjs w/ change: ".join(' ', sort map { $_->{project} } @changes)."\n";
+    return undef;
+  }
+
+  print "found change(s) ".join(' ', map { "$_->{id}: $_->{project}" } @used_changes)."\n";
+
+  my %get_change = ();
+  foreach my $c (@used_changes) {
+    my $pn = $c->{project};
+    my $id = $c->{id};
+    if (defined $get_change{$pn}{$id}) {
+      push @$err, "$pn: $id is ambiguous";
+    } else {
+      $get_change{$pn}{$id} = $c;
+    }
+  }
+
+  print_errors(exit => 128);
+  return \%get_change;
+}
+
+sub contains_manifest
+{
+  my $prjs = shift;
+  foreach my $p (values %$prjs) {
+    return $p if defined $p->{is_manifest};
+  }
+  return undef;
+}
+
+sub fetch_all_changes
+{
+  my ($changes, %opts) = @_;
+  while (1) {
+    my %changes_to_fetch = ();
+    while (my ($pn, $c) = each %$changes) {
+      my ($id) = (keys %$c);
+      next if not defined $id;
+      my $chg = $c->{$id};
+      $changes_to_fetch{$pn} = $chg;
+      delete $c->{$id};
+    }
+
+    return 0 if not %changes_to_fetch;
+
+    my $r = fetch_and_co_changes(\%opts, \%changes_to_fetch);
+
+    return $r if $r;
+
+    if (not defined $opts{pull} and not defined $opts{'cherry-pick'}) {
+      $opts{pull} = 1;
+    }
+  }
+  return 0;
+}
+
+# ham sync if manifests changed during download-id --sync
+sub download_id_sync
+{
+  my ($touched_manifest, $opts) = @_;
+
+  if ($touched_manifest and defined $opts->{'sync'}) {
+    my %sync_options = map { $_ => 1 } split(',', $opts->{'sync'});
+    print STDOUT "Changed manifest: trigger ham sync ".
+                 join(' ', map { "--$_" } keys %sync_options)."\n";
+    return cmd_sync(\%sync_options, 'ham sync', undef);
+  }
+
+  return 0;
+}
+
+sub print_download_trace
+{
+  my $t = shift;
+
+  foreach my $op (@$t) {
+    my $p = $op->{prj};
+    my $o = 'checkout';
+    $o = 'cherry-pick' if $op->{opts}{'cherry-pick'};
+    $o = 'merge' if $op->{opts}{pull};
+    print "log: " . $p->{name} . ": " . $p->{path} . ": " . $p->get_fetch_url() .": $o $op->{rev}\n";
+  }
+}
+
+###### download-id ####################################
+$commands->add('download-id' => {
+  syn => [
+    '%c %o <change-id> [<project>...]',
+    [ 'cherry-pick|cp|c',  q|Cherry pick the change onto the current branch
+                             instead of checking out the change| ],
+    [ 'pull|p',            q|Pull (merge) the change into the current branch|],
+    [ 'rebase',            q|Rebase the current branch onto the change|],
+    [ 'recursive-pull|r',  q|use merge for all the recursively required changes|],
+    [ 'detach|d',          q|create a detached head in even for pull or cherry-pick|],
+    [ 'branch|b=s',        q|Get the change for the specified branch, usually
+                             any matching change will be downloaded as long as
+                             there is no ambiguity.|, { arg => '<branch>' } ],
+    [ 'dry-run|n',         q|do not checkout anything| ],
+    [ 'verbose|v',         q|enable verbose mode| ],
+    [ 'print-footers',     q|Print commit message footers for the downloaded changes| ],
+    [ 'sync:s',            q|Run ham sync when manifest projects were changed.
+                             Optionally it allows to specify comma-separated
+                             arguments which will become options to ham sync, e.g.,
+                             --sync=cleanup,force-local-update
+                             will call ham sync --cleanup --force-local-update.| ],
+    $max_conns_option
+ ],
+  desc => q|Download all changes for all projects with the given change ID (Change-Id)
+            to your local working copy|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    my $change_id = shift @ARGV;
+    $cmd->usage_error($command, "error: missing change id") unless defined $change_id;
+
+    my $all_prjs = filter_projects(load_projects());
+    my %new_change_ids = ( $change_id => 1 );
+    my %done_change_ids = ();
+    my $recurse = 0;
+
+    foreach my $p (values %$all_prjs) {
+      my $head = $p->git->rev_parse('--abbrev-ref', 'HEAD');
+      $p->{current_head} = $head;
+    }
+
+    my @trace;
+
+    while (1) {
+      my $changes =
+        query_changes($all_prjs, $opts, $recurse, keys %new_change_ids);
+
+      return 1 unless defined $changes;
+      unless (%$changes) {
+        print_download_trace(\@trace);
+        return download_id_sync($touched_manifest, $opts);
+      }
+
+      return 0 if $opts->{'dry-run'};
+
+      my $r = fetch_all_changes($changes, %$opts);
+      return $r if $r;
+
+      foreach my $id (keys %new_change_ids) {
+        $done_change_ids{$id} = 1;
+      }
+
+      %new_change_ids = ();
+
+      $touched_manifest = 1 if grep { $manifest_project_names{$_} } keys %$changes;
+
+      foreach my $prj_name (keys %$changes) {
+        my $p = $all_prjs->{$prj_name};
+        next unless $p->{revision};
+        my @revs = $p->git->run('rev-list', '--max-count', '100', '--sparse',
+                                'FETCH_HEAD', '--not', '--remotes=*/'.$p->{revision},
+                                '--');
+        chomp (@revs);
+
+        if (scalar @revs && defined $revs[0] && (not $recurse)) {
+          $touched_manifest = 1 if $manifest_project_names{$prj_name};
+          push @trace, {prj => $p, prj_name => $prj_name, opts => { %$opts }, rev => $revs[0]};
+          print "downloaded change HEAD: $prj_name: $revs[0]\n";
+          if ($opts->{'print-footers'}) {
+            my $cmd = $p->git->command('cat-file', '-p', $revs[0]);
+            my @msg = $cmd->final_output;
+            my @f;
+            while (my $l = pop @msg) {
+              next if $l =~ /^\s*$/;
+              last unless $l =~ /^[a-z][a-z_-]*:\s*.*$/i;
+              unshift @f, $l;
+            }
+            if (@f) {
+              print "$_\n" foreach (@f);
+            }
+          }
+        }
+
+        if (scalar @revs && defined $revs[0] && $recurse) {
+          push @trace, {prj => $p, prj_name => $prj_name, opts => { %$opts }, rev => $revs[0]};
+          print "merged dependency change HEAD: $prj_name: $revs[0]\n";
+        }
+
+        my $cmd = $p->git->command('cat-file', '--batch', { input => join("\n", @revs)."\n" });
+        foreach my $chid (grep { s/^(?:Change-Id|Requires-Change-Id):\s+(\S+)/$1/ } $cmd->final_output) {
+          $new_change_ids{$chid} = 1 if not defined $done_change_ids{$chid};
+        }
+      }
+
+      if (%new_change_ids) {
+        if (not $opts->{'recursive-pull'}) {
+          print "skip downloading additional required changes from other projects\n";
+          print_download_trace(\@trace);
+          return download_id_sync($touched_manifest, $opts);
+        }
+        $all_prjs = filter_projects($all_prjs, [ '!', (keys %$changes) ]);
+        $recurse = 1;
+        $opts->{pull} = 1;
+        delete $opts->{'cherry-pick'};
+        print "\ndownload more required changes\n";
+      } else {
+        print_errors(exit => 128);
+        print_download_trace(\@trace);
+        return download_id_sync($touched_manifest, $opts);
+      }
+    }
+
+    return download_id_sync($touched_manifest, $opts);
+  }
+});
+
+
+###### diff ####################################
+$commands->add(diff => {
+  syn => [
+    '%c %o [<commit>][..|...| ][<commit>] -- [<project>...]',
+    { extra_args => 1, config => [ 'pass_through' ] },
+  ],
+  desc => qq|Create a diff including all given projects.\r
+             the <commit> parameters are equvalent to the parameters for git diff.
+             However, there is the special commit {UPSTREAM} that corresponds to the
+             revision that is specified in the manifest file.|,
+
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    my @args = @ARGV;
+    select pager;
+    foreach_prj {
+        my $prj = $_;
+        my $git = $prj->git;
+        #print "$prj->{name}\n";
+
+        my $upstream = "refs/remotes/$prj->{_remote}->{name}/$prj->{revision}";
+        my @a = @ARGV;
+        s,\{UPSTREAM\},$upstream,g foreach @a;
+
+        $git->run('diff',
+                  '--src-prefix='.File::Spec->catdir('a', $prj->{path}).'/',
+                  '--dst-prefix='.File::Spec->catdir('b', $prj->{path}).'/',
+                  @a, '--', sub { print "$_\n";} );
+        return 0;
+    } $opts->{__EXTRA_ARGS};
+  }
+});
+
+###### rev-list ####################################
+$commands->add('rev-list' => {
+  syn => [
+    '%c %o <revisions>... -- [<project>...]',
+    { extra_args => 1, config => [ 'pass_through' ] },
+  ],
+  desc => qq|Print a git rev-list for each project.\r
+             The rev-list for each project is printed on a single line
+             with the following layout:\r
+             <project name>: SP <rev> SP ...|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    foreach_prj {
+      my $prj = $_;
+      my $git = $prj->git;
+      #print "$prj->{name}\n";
+
+      my $upstream = "refs/remotes/$prj->{_remote}->{name}/$prj->{revision}";
+      my @a = @ARGV;
+      s,\{UPSTREAM\},$upstream,g foreach @a;
+
+      my @revs = $git->run('rev-list', @a, '--');
+      print "$prj->{name}: ".join(' ', @revs)."\n" if @revs;
+      return 0;
+    } $opts->{__EXTRA_ARGS};
+  }
+});
+
+###### log ####################################
+$commands->add('log' => {
+  syn => [
+    '%c %o [<revision>...] -- [<project>...]',
+    { extra_args => 1, config => [ 'pass_through' ] },
+  ],
+  desc => qq|Print a git log for each project.|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    select pager;
+    foreach_prj {
+      my $prj = $_;
+      my $git = $prj->git;
+
+      my $upstream = "refs/remotes/$prj->{_remote}->{name}/$prj->{revision}";
+      my @a = @ARGV;
+      s,\{UPSTREAM\},$upstream,g foreach @a;
+
+      my $first = 1;
+      my @revs = $git->run('log', '--color=always', @a, '--', sub {
+          if ($first) {
+            $first = 0;
+            print colored("$prj->{name}: $prj->{path}", 'bold'), "\n";
+          }
+          print "  $_\n";
+        }, {fatal => [-128 ]});
+
+      print "\n" unless $first;
+
+      return 0;
+    } $opts->{__EXTRA_ARGS};
+  }
+});
+
+###### commit ####################################
+sub get_160bit_rnd
+{
+  my $rnd;
+  open my $rnd_file, "</dev/urandom";
+  read $rnd_file, $rnd, 20;
+  close $rnd_file;
+  return (unpack('H*', $rnd))[0];
+}
+
+sub split_message
+{
+  my @msg = @_;
+
+  my $attachment;
+  my $footer;
+
+  my $footer_comment = 0;
+  my $blank_lines = 0;
+  my $p = \@msg;
+
+  local $_;
+
+  for (my $l = 0; $l < scalar(@msg); $l++) {
+    local $_ = $msg[$l];
+    #put comments into the current part
+    if (/^#/) {
+      $l -= $blank_lines - 1;
+      splice(@msg, $l, $blank_lines - 1) if $blank_lines > 1;
+      $blank_lines = 0;
+      $footer = $l if not $footer;
+      $footer_comment = 0;
+      next;
+    }
+
+    # put all text starting from a diff line into the last part of the message
+    if (m|^diff --git a/|) {
+      if ($blank_lines) {
+        $l -= $blank_lines - 1;
+        splice(@msg, $l, $blank_lines - 1) if $blank_lines > 1;
+        $blank_lines = 0;
+      }
+      $attachment = $l;
+      last;
+    }
+
+    if (/^$/ and not $footer_comment) {
+      $blank_lines++;
+      next;
+    }
+
+    $footer_comment = 1 if /^\[[a-zA-Z0-9-]+:/ and defined $footer;
+    $footer_comment = 2 if /]$/ and $footer_comment == 1;
+
+    if ($blank_lines) {
+      $l -= $blank_lines - 1;
+      splice(@msg, $l, $blank_lines - 1) if $blank_lines > 1;
+      $blank_lines = 0;
+      $footer = $l if not $footer;
+      $footer_comment = 0;
+    }
+
+    if (not $footer_comment and (!/^\[?[a-zA-Z0-9-]+:/ or m|^[a-zA-Z0-9-]+://|)) {
+      $footer = undef;
+    }
+  }
+
+  splice(@msg, -$blank_lines) if $blank_lines;
+
+  $attachment = $#msg + 1 unless defined $attachment;
+  $footer = $attachment unless defined $footer;
+
+  return (
+    [ @msg[0..$footer-1] ],
+    [ @msg[$footer..$attachment-1] ],
+    [ @msg[$attachment..$#msg] ]
+  );
+}
+
+sub add_change_id
+{
+  return @_ if grep(/^Change-Id:/, @_);
+  my ($m, $f, $a) = split_message(@_);
+
+  return (@$m, '', "Change-Id: I".get_160bit_rnd(), '', @$f, @$a);
+}
+
+
+$commands->add('commit' => {
+  syn => [
+    '%c %o [<project>...]',
+    [ 'message|msg|m=s',    'The commit message', { arg => '<msg>' } ],
+    [ 'file|F=s',           'File containing the commit message', { arg => '<msg-file>' } ]
+  ],
+  desc => qq|Create a single commit across multiple projects. The commit
+             will get the same commit message and more importantly the same
+             change ID.|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+
+    my @index;
+    my @changes;
+    my @untracked;
+    my @conflicts;
+    my @commit_prj;
+
+    foreach_prj {
+      my $prj = $_;
+      my $s = $prj->status;
+      die "Project $prj->{path} inconsistent, please fix" if not defined $s;
+      return 0 if not $s->is_dirty;
+      my @i = $s->pretty_index($prj->{path});
+      push @index, @i;
+      push @commit_prj, $prj if @i;
+      push @changes, $s->pretty_changed($prj->{path});
+      push @untracked, $s->pretty_untracked($prj->{path});
+      push @conflicts, $s->pretty_conflicts($prj->{path});
+      return 0;
+    } \@ARGV;
+
+    if (not @commit_prj) {
+      if (@changes) {
+        print "\nChanges not staged for commit:\n";
+        print "\t".colored($_, 'red')."\n" foreach @changes;
+      }
+
+      if (@untracked) {
+        print "\nUntracked files:\n";
+        print "\t".colored($_, 'red')."\n" foreach @untracked;
+      }
+      print "\nno changes to commit\n";
+      return 0;
+    }
+
+    if (@conflicts) {
+      print "\nFiles with merge conflicts:\n";
+      print "\t".colored($_, 'red')."\n" foreach @conflicts;
+      return 100;
+    }
+
+    my @msg;
+    my $edit = 1;
+    if (defined $opts->{message}) {
+      my $m = $opts->{message};
+      $m =~ s,\\n,\n,g;
+      $m =~ s,\\t,\t,g;
+      @msg = split /^/, $m;
+      chomp @msg;
+      $edit = 0;
+    } elsif (defined $opts->{file}) {
+      open my $f, "<$opts->{file}" or die "fatal: cannot open message file $opts->{file}: $!";
+      @msg = <$f>;
+      close $f;
+      chomp @msg;
+      $edit = 0;
+    } else {
+      push @msg, '';
+      push @msg, q|# Please enter the commit message for your changes. Lines starting'|,
+                 q|# with '#' will be ignored, and an empty message aborts the commit.|;
+
+      push @msg, '#', '# Projects with commits:';
+      push @msg, map { "#\t$_->{name}:   $_->{path}" } @commit_prj;
+
+
+      if (@index) {
+        push @msg, '#', "# Changes to be commited:";
+        push @msg, map { "#\t$_" } @index;
+      }
+
+      if (@changes) {
+        push @msg, '#', "# Changes not staged for commit:";
+        push @msg, map { "#\t$_" } @changes;
+      }
+
+      if (@untracked) {
+        push @msg, '#', "# Untracked files:";
+        push @msg, (map { "#\t$_" } @untracked);
+      }
+      push @msg, '#';
+    }
+
+    my $file = File::Spec->catdir(get_repo_dir(), 'COMMIT_EDITMSG');
+    my @m = add_change_id(@msg);
+    open my $commit_msg, "+>$file" or die "fatal: cannot open message file $file: $!";
+    print $commit_msg "$_\n" foreach @m;
+    close $commit_msg;
+
+    if ($edit) {
+      my $ed = $ENV{EDITOR};
+      if (not $ed or $ed eq '') {
+        print STDERR "fatal: no editor for commit message: please set EDITOR= in your environemt";
+        return 128;
+      }
+      system("$ed $file");
+    }
+
+    my $empty = 1;
+    open $commit_msg, "<$file" or die "fatal: cannot open message file $file: $!";
+    @m = ();
+    while (<$commit_msg>) {
+      next if /^#/;
+      push @m, $_;
+      next if /^\s*$/;
+      next if /^Change-Id:/;
+      $empty = 0;
+    }
+    close $commit_msg;
+
+    if ($empty) {
+      print STDERR "Aborting commit due to empty commit message.\n";
+      return 100;
+    }
+
+    open  $commit_msg, "+>$file" or die "fatal: cannot open message file $file: $!";
+    print $commit_msg "$_" foreach @m;
+    close $commit_msg;
+
+    foreach my $p (@commit_prj) {
+      print "committing in: $p->{path}\n";
+      print $p->git->run(commit => '-F', $file), "\n";
+    }
+  }
+});
+
+###### add ####################################
+$commands->add('add' => {
+  syn => [
+    '%c %o [<project>...]',
+  ],
+  desc => qq|Add files to the git index of individual projects.|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+    my @files = @ARGV;
+    my $all_projects = load_projects();
+    my %projects;
+    foreach my $file (@files) {
+      if (not -e $file) {
+        push @$err, "file $file does not exist";
+        next;
+      }
+
+      my ($p, $path) = project_for_path($all_projects, $file);
+      if (not $p) {
+        push @$err, "no matching project found for file: $file";
+        next;
+      }
+
+      $projects{$p->{name}} = [] unless $projects{$p->{name}};
+      push @{$projects{$p->{name}}}, $path;
+    }
+
+    print_errors(exit => 128);
+    while (my ($n, $files) = each %projects) {
+      my $p = $all_projects->{$n};
+      die "fatal: internal error: project $n not in our list" unless defined $p;
+      $p->git->run('add', '--', @$files);
+    }
+
+    return 0;
+  }
+});
+
+###### purge ##################################
+$commands->add('purge' => {
+  syn => [
+    '%c %o',
+  ],
+  desc => qq|Remove .ham directory (DANGEROUS)|,
+  cmd => sub {
+    my ($opts, $command, $cmd) = @_;
+
+    my $repodir = get_repo_dir();
+
+    print STDERR <<EOF;
+BE CAREFUL: This command removes the .ham directory and therefore
+deletes any information ham saved about any current git repositories
+managed by ham. This cannot be undone!
+
+Are you sure you want to remove the .ham directory?
+EOF
+    print STDERR 'Please type "YES!" if you are sure: ';
+
+    my $answer = <STDIN>;
+    chomp $answer;
+
+    if ($answer eq "YES!")
+      {
+        remove_tree($repodir, { error => \my $err });
+
+        if ($err && @$err)
+          {
+            foreach my $e (@$err)
+              {
+                my ($file, $msg) = %$e;
+
+                print STDERR "Error: " . ($file ne '' ? "File $file: " : "") . "$msg\n";
+              }
+          }
+        else
+          {
+            print "Removed .ham directory.\n";
+          }
+      }
+    else
+      {
+        print "Aborted.\n";
+      }
+  },
+});
+
+
+if (-r $user_config) {
+  my @cfg = qx{git config --file $user_config --list};
+  foreach (@cfg) {
+    if (/^([^=]+)\.([^.]+)=(.*)$/) {
+      $config{$1}{$2} = $3;
+    }
+  }
+
+  while (my ($alias, $t) = each %{$config{alias}}) {
+    $commands->alias($alias, $t);
+  }
+
+  if (defined $config{core}{plugins}) {
+    foreach my $pl (split(/\s+/, $config{core}{plugins})) {
+      Hammer::Plugin->load_plugin($pl);
+    }
+  }
+}
+
+## the main program #####################################
+exit($commands->run($prog));
+
+
+### git commit-msg hook for adding Change IDs #############################
+sub gerrit_commit_msg_hook()
+{
+return <<'EOF';
+#!/bin/sh
+# From Gerrit Code Review 2.8.1
+#
+# Part of Gerrit Code Review (http://code.google.com/p/gerrit/)
+#
+# Copyright (C) 2009 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+unset GREP_OPTIONS
+
+CHANGE_ID_AFTER="Bug|Issue"
+MSG="$1"
+
+# Check for, and add if missing, a unique Change-Id
+#
+add_ChangeId() {
+	clean_message=`sed -e '
+		/^diff --git a\/.*/{
+			s///
+			q
+		}
+		/^Signed-off-by:/d
+		/^#/d
+	' "$MSG" | git stripspace`
+	if test -z "$clean_message"
+	then
+		return
+	fi
+
+	if test "false" = "`git config --bool --get gerrit.createChangeId`"
+	then
+		return
+	fi
+
+	# Does Change-Id: already exist? if so, exit (no change).
+	if grep -i '^Change-Id:' "$MSG" >/dev/null
+	then
+		return
+	fi
+
+	id=`_gen_ChangeId`
+	T="$MSG.tmp.$$"
+	AWK=awk
+	if [ -x /usr/xpg4/bin/awk ]; then
+		# Solaris AWK is just too broken
+		AWK=/usr/xpg4/bin/awk
+	fi
+
+	# How this works:
+	# - parse the commit message as (textLine+ blankLine*)*
+	# - assume textLine+ to be a footer until proven otherwise
+	# - exception: the first block is not footer (as it is the title)
+	# - read textLine+ into a variable
+	# - then count blankLines
+	# - once the next textLine appears, print textLine+ blankLine* as these
+	#   aren't footer
+	# - in END, the last textLine+ block is available for footer parsing
+	$AWK '
+	BEGIN {
+		# while we start with the assumption that textLine+
+		# is a footer, the first block is not.
+		isFooter = 0
+		footerComment = 0
+		blankLines = 0
+	}
+
+	# Skip lines starting with "#" without any spaces before it.
+	/^#/ { next }
+
+	# Skip the line starting with the diff command and everything after it,
+	# up to the end of the file, assuming it is only patch data.
+	# If more than one line before the diff was empty, strip all but one.
+	/^diff --git a/ {
+		blankLines = 0
+		while (getline) { }
+		next
+	}
+
+	# Count blank lines outside footer comments
+	/^$/ && (footerComment == 0) {
+		blankLines++
+		next
+	}
+
+	# Catch footer comment
+	/^\[[a-zA-Z0-9-]+:/ && (isFooter == 1) {
+		footerComment = 1
+	}
+
+	/]$/ && (footerComment == 1) {
+		footerComment = 2
+	}
+
+	# We have a non-blank line after blank lines. Handle this.
+	(blankLines > 0) {
+		print lines
+		for (i = 0; i < blankLines; i++) {
+			print ""
+		}
+
+		lines = ""
+		blankLines = 0
+		isFooter = 1
+		footerComment = 0
+	}
+
+	# Detect that the current block is not the footer
+	(footerComment == 0) && (!/^\[?[a-zA-Z0-9-]+:/ || /^[a-zA-Z0-9-]+:\/\//) {
+		isFooter = 0
+	}
+
+	{
+		# We need this information about the current last comment line
+		if (footerComment == 2) {
+			footerComment = 0
+		}
+		if (lines != "") {
+			lines = lines "\n";
+		}
+		lines = lines $0
+	}
+
+	# Footer handling:
+	# If the last block is considered a footer, splice in the Change-Id at the
+	# right place.
+	# Look for the right place to inject Change-Id by considering
+	# CHANGE_ID_AFTER. Keys listed in it (case insensitive) come first,
+	# then Change-Id, then everything else (eg. Signed-off-by:).
+	#
+	# Otherwise just print the last block, a new line and the Change-Id as a
+	# block of its own.
+	END {
+		unprinted = 1
+		if (isFooter == 0) {
+			print lines "\n"
+			lines = ""
+		}
+		changeIdAfter = "^(" tolower("'"$CHANGE_ID_AFTER"'") "):"
+		numlines = split(lines, footer, "\n")
+		for (line = 1; line <= numlines; line++) {
+			if (unprinted && match(tolower(footer[line]), changeIdAfter) != 1) {
+				unprinted = 0
+				print "Change-Id: I'"$id"'"
+			}
+			print footer[line]
+		}
+		if (unprinted) {
+			print "Change-Id: I'"$id"'"
+		}
+	}' "$MSG" > "$T" && mv "$T" "$MSG" || rm -f "$T"
+}
+_gen_ChangeIdInput() {
+	echo "tree `git write-tree`"
+	if parent=`git rev-parse "HEAD^0" 2>/dev/null`
+	then
+		echo "parent $parent"
+	fi
+	echo "author `git var GIT_AUTHOR_IDENT`"
+	echo "committer `git var GIT_COMMITTER_IDENT`"
+	echo
+	printf '%s' "$clean_message"
+}
+_gen_ChangeId() {
+	_gen_ChangeIdInput |
+	git hash-object -t commit --stdin
+}
+
+
+add_ChangeId
+
+EOF
+}

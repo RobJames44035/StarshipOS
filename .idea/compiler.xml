@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="starship-os_tools" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="starship-os_acpica" target="1.8" />
+      <module name="starship-os_ada" target="1.8" />
+      <module name="starship-os_ahci-driver" target="1.8" />
+      <module name="starship-os_atkins" target="1.8" />
+      <module name="starship-os_bootstrap" target="1.8" />
+      <module name="starship-os_cons" target="1.8" />
+      <module name="starship-os_demo-l4re-micro-hypervisor" target="1.8" />
+      <module name="starship-os_drivers-frst" target="1.8" />
+      <module name="starship-os_emmc-driver" target="1.8" />
+      <module name="starship-os_fiasco" target="1.8" />
+      <module name="starship-os_gnu-efi" target="1.8" />
+      <module name="starship-os_ham" target="1.8" />
+      <module name="starship-os_io" target="1.8" />
+      <module name="starship-os_l4_virtio-net-switch" target="1.8" />
+      <module name="starship-os_l4re-core" target="1.8" />
+      <module name="starship-os_l4virtio" target="1.8" />
+      <module name="starship-os_libblock-device" target="1.8" />
+      <module name="starship-os_libfdt" target="1.8" />
+      <module name="starship-os_libvcpu" target="1.8" />
+      <module name="starship-os_manifest" target="1.8" />
+      <module name="starship-os_mk" target="1.8" />
+      <module name="starship-os_readline" target="1.8" />
+      <module name="starship-os_rtc" target="1.8" />
+      <module name="starship-os_tinit" target="1.8" />
+      <module name="starship-os_tvmm" target="1.8" />
+      <module name="starship-os_uvmm" target="1.8" />
+      <module name="starship-os_virtio-net" target="1.8" />
+      <module name="starship-os_zlib" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

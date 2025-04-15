@@ -1,0 +1,282 @@
+# vi:set ft=kconfig:
+# This file is auto-generated.
+config PLATFORM_TYPE_armada37xx
+	bool "Marvell Armada 37xx"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_armada38x
+	bool "Marvell Armada 38x"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_arm_fvp_base
+	bool "ARM AEM FVP Base"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_arm_fvp_base_r
+	bool "ARM AEM FVP BaseR (ARMv8R)"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_arm_mps3_an536
+	bool "ARM MPS3 AN536 (ARMv8R)"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_arm_sbsa
+	bool "ARM SBSA compliant platform"
+	depends on BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_arm_virt
+	bool "QEMU ARM Virtual Platform"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_baikal_t
+	bool "Baikal-T"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_beagleboard
+	bool "Beagleboard"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_boston
+	bool "Boston"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_ci20
+	bool "Creator Ci20"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_ci40
+	bool "Creator Ci40"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_cubieboard2
+	bool "CubieBoard 2"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_exynos4
+	bool "Samsung Exynos4"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_exynos5
+	bool "Samsung Exynos5"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_hifive_unmatched
+	bool "HiFive Unmatched"
+	depends on BUILD_ARCH_riscv
+
+config PLATFORM_TYPE_imx21
+	bool "Freescale i.MX21"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx28
+	bool "Freescale i.MX28"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx35
+	bool "Freescale i.MX35"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx51
+	bool "Freescale i.MX51"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx6
+	bool "Freescale i.MX6"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx6ul
+	bool "NXP i.MX6UL"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx7
+	bool "NXP i.MX7"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_imx8m
+	bool "NXP i.MX8M"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_imx8mp
+	bool "NXP i.MX8MP"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_imx8q
+	bool "NXP i.MX8Q"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_imx8x
+	bool "NXP i.MX8X"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_imx95
+	bool "NXP i.MX95"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_integrator
+	bool "ARM Integrator"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_kirkwood
+	bool "Marvell Kirkwood"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_leon3
+	bool "Sparc Leon3"
+	depends on BUILD_ARCH_sparc
+
+config PLATFORM_TYPE_ls1012afrdm
+	bool "NXP LS1012A-FRDM"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_ls1021atwr
+	bool "NXP TWR-LS1021A"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_ls1046
+	bool "NXP LS1046"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_lx2160
+	bool "NXP LX2160"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_malta
+	bool "Malta"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_migv
+	bool "HENSOLDT Cyber MiG-V"
+	depends on BUILD_ARCH_riscv
+
+config PLATFORM_TYPE_mpc5200
+	bool "MPC5200"
+	depends on BUILD_ARCH_ppc32
+
+config PLATFORM_TYPE_msm8226
+	bool "Qualcomm MSM8226"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_msm8909
+	bool "Qualcomm MSM8909"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_msm8916
+	bool "Qualcomm MSM8916"
+	depends on BUILD_ARCH_arm64 || BUILD_ARCH_arm
+
+config PLATFORM_TYPE_msm8939
+	bool "Qualcomm MSM8939"
+	depends on BUILD_ARCH_arm64 || BUILD_ARCH_arm
+
+config PLATFORM_TYPE_msm8974
+	bool "Qualcomm MSM8974"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_omap3_am33xx
+	bool "TI OMAP AM33xx"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_omap3evm
+	bool "TI OMAP3EVM"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_omap5
+	bool "OMAP5 EVM"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_pandaboard
+	bool "Pandaboard"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_parallella
+	bool "Parallella Board"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_pc
+	bool "PC"
+	depends on BUILD_ARCH_x86 || BUILD_ARCH_amd64
+
+config PLATFORM_TYPE_pfsoc
+	bool "Microchip PolarFire SoC"
+	depends on BUILD_ARCH_riscv
+
+config PLATFORM_TYPE_rcar3
+	bool "Renesas R-Car Gen3"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_rcar4
+	bool "Renesas R-Car Gen4"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_rcar4_r52
+	bool "Renesas R-Car Gen4 Realtime Core (R52)"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_riscv_virt
+	bool "QEMU RISC-V Virtual Platform"
+	depends on BUILD_ARCH_riscv
+
+config PLATFORM_TYPE_rpi
+	bool "Raspberry Pi"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_rv
+	bool "ARM Realview (Generic)"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_rv_pbx
+	bool "ARM Realview PBX"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_rv_vexpress_a15
+	bool "ARM Versatile Express A15"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_rv_vexpress
+	bool "ARM Versatile Express"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_s32g
+	bool "NXP S32G"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_s32z
+	bool "NXP S32Z2/S32E2"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_sead3
+	bool "Sead3"
+	depends on BUILD_ARCH_mips
+
+config PLATFORM_TYPE_sifive_u
+	bool "QEMU SiFive Unleashed"
+	depends on BUILD_ARCH_riscv
+
+config PLATFORM_TYPE_sm8150
+	bool "Qualcomm SM8150"
+	depends on BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_sr6p7g7
+	bool "ST SR6P7G7"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_tegra2
+	bool "Nvidia Tegra 2"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_tegra3
+	bool "Nvidia Tegra 3"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_ti_am
+	bool "TI-AM6xx"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+
+config PLATFORM_TYPE_zedboard
+	bool "Xilinx Zynq Zedboard"
+	depends on BUILD_ARCH_arm
+
+config PLATFORM_TYPE_zynqmp
+	bool "Xilinx Zynq UltraSCALE+ MPSoC"
+	depends on BUILD_ARCH_arm || BUILD_ARCH_arm64
+

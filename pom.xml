@@ -1,0 +1,125 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.starshipos</groupId>
+    <artifactId>starship-os</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <name>StarshipOS</name>
+
+    <modules>
+        <module>starship-os_uvmm</module>
+        <module>starship-os_mk</module>
+        <module>starship-os_l4re-core</module>
+        <module>starship-os_l4_virtio-net-switch</module>
+        <module>starship-os_io</module>
+        <module>starship-os_fiasco</module>
+        <module>starship-os_emmc-driver</module>
+        <module>starship-os_bootstrap</module>
+        <module>starship-os_atkins</module>
+        <module>starship-os_demo-l4re-micro-hypervisor</module>
+        <module>starship-os_ada</module>
+        <module>starship-os_manifest</module>
+        <module>starship-os_zlib</module>
+        <module>starship-os_rtc</module>
+        <module>starship-os_cons</module>
+        <module>starship-os_l4virtio</module>
+        <module>starship-os_ham</module>
+        <module>starship-os_virtio-net</module>
+        <module>starship-os_tvmm</module>
+        <module>starship-os_tinit</module>
+        <module>starship-os_libblock-device</module>
+        <module>starship-os_acpica</module>
+        <module>starship-os_gnu-efi</module>
+        <module>starship-os_drivers-frst</module>
+        <module>starship-os_ahci-driver</module>
+        <module>starship-os_libfdt</module>
+        <module>starship-os_libvcpu</module>
+        <module>starship-os_readline</module>
+        <module>starship-os_tools</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <!--  clean  -->
+                    <execution>
+                        <id>clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/clean.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- compile -->
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/compile.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- package -->
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/package.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- install -->
+                    <execution>
+                        <id>install</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bash</executable>
+                            <arguments>
+                                <argument>-c</argument>
+                                <argument>scripts/install.sh</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

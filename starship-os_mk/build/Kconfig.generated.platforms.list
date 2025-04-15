@@ -1,0 +1,92 @@
+[arm]           armada37xx -- Marvell Armada 37xx
+[arm64]           armada37xx -- Marvell Armada 37xx
+[arm]            armada38x -- Marvell Armada 38x
+[arm]         arm_fvp_base -- ARM AEM FVP Base
+[arm64]         arm_fvp_base -- ARM AEM FVP Base
+[arm]       arm_fvp_base_r -- ARM AEM FVP BaseR (ARMv8R)
+[arm64]       arm_fvp_base_r -- ARM AEM FVP BaseR (ARMv8R)
+[arm]       arm_mps3_an536 -- ARM MPS3 AN536 (ARMv8R)
+[arm64]             arm_sbsa -- ARM SBSA compliant platform
+[arm]             arm_virt -- QEMU ARM Virtual Platform
+[arm64]             arm_virt -- QEMU ARM Virtual Platform
+[mips]             baikal_t -- Baikal-T
+[arm]          beagleboard -- Beagleboard
+[mips]               boston -- Boston
+[mips]                 ci20 -- Creator Ci20
+[mips]                 ci40 -- Creator Ci40
+[arm]          cubieboard2 -- CubieBoard 2
+[arm]              exynos4 -- Samsung Exynos4
+[arm]              exynos5 -- Samsung Exynos5
+[riscv]     hifive_unmatched -- HiFive Unmatched
+[arm]                imx21 -- Freescale i.MX21
+[arm]                imx28 -- Freescale i.MX28
+[arm]                imx35 -- Freescale i.MX35
+[arm]                imx51 -- Freescale i.MX51
+[arm]                 imx6 -- Freescale i.MX6
+[arm]               imx6ul -- NXP i.MX6UL
+[arm]                 imx7 -- NXP i.MX7
+[arm]                imx8m -- NXP i.MX8M
+[arm64]                imx8m -- NXP i.MX8M
+[arm]               imx8mp -- NXP i.MX8MP
+[arm64]               imx8mp -- NXP i.MX8MP
+[arm]                imx8q -- NXP i.MX8Q
+[arm64]                imx8q -- NXP i.MX8Q
+[arm]                imx8x -- NXP i.MX8X
+[arm64]                imx8x -- NXP i.MX8X
+[arm]                imx95 -- NXP i.MX95
+[arm64]                imx95 -- NXP i.MX95
+[arm]           integrator -- ARM Integrator
+[arm]             kirkwood -- Marvell Kirkwood
+[sparc]                leon3 -- Sparc Leon3
+[arm]          ls1012afrdm -- NXP LS1012A-FRDM
+[arm64]          ls1012afrdm -- NXP LS1012A-FRDM
+[arm]           ls1021atwr -- NXP TWR-LS1021A
+[arm]               ls1046 -- NXP LS1046
+[arm64]               ls1046 -- NXP LS1046
+[arm]               lx2160 -- NXP LX2160
+[arm64]               lx2160 -- NXP LX2160
+[mips]                malta -- Malta
+[riscv]                 migv -- HENSOLDT Cyber MiG-V
+[ppc32]              mpc5200 -- MPC5200
+[arm]              msm8226 -- Qualcomm MSM8226
+[arm]              msm8909 -- Qualcomm MSM8909
+[arm64]              msm8916 -- Qualcomm MSM8916
+[arm]              msm8916 -- Qualcomm MSM8916
+[arm64]              msm8939 -- Qualcomm MSM8939
+[arm]              msm8939 -- Qualcomm MSM8939
+[arm]              msm8974 -- Qualcomm MSM8974
+[arm]         omap3_am33xx -- TI OMAP AM33xx
+[arm]             omap3evm -- TI OMAP3EVM
+[arm]                omap5 -- OMAP5 EVM
+[arm]           pandaboard -- Pandaboard
+[arm]           parallella -- Parallella Board
+[x86]                   pc -- PC
+[amd64]                   pc -- PC
+[riscv]                pfsoc -- Microchip PolarFire SoC
+[arm]                rcar3 -- Renesas R-Car Gen3
+[arm64]                rcar3 -- Renesas R-Car Gen3
+[arm]                rcar4 -- Renesas R-Car Gen4
+[arm64]                rcar4 -- Renesas R-Car Gen4
+[arm]            rcar4_r52 -- Renesas R-Car Gen4 Realtime Core (R52)
+[riscv]           riscv_virt -- QEMU RISC-V Virtual Platform
+[arm]                  rpi -- Raspberry Pi
+[arm64]                  rpi -- Raspberry Pi
+[arm]                   rv -- ARM Realview (Generic)
+[arm]               rv_pbx -- ARM Realview PBX
+[arm]      rv_vexpress_a15 -- ARM Versatile Express A15
+[arm64]      rv_vexpress_a15 -- ARM Versatile Express A15
+[arm]          rv_vexpress -- ARM Versatile Express
+[arm]                 s32g -- NXP S32G
+[arm64]                 s32g -- NXP S32G
+[arm]                 s32z -- NXP S32Z2/S32E2
+[mips]                sead3 -- Sead3
+[riscv]             sifive_u -- QEMU SiFive Unleashed
+[arm64]               sm8150 -- Qualcomm SM8150
+[arm]              sr6p7g7 -- ST SR6P7G7
+[arm]               tegra2 -- Nvidia Tegra 2
+[arm]               tegra3 -- Nvidia Tegra 3
+[arm]                ti_am -- TI-AM6xx
+[arm64]                ti_am -- TI-AM6xx
+[arm]             zedboard -- Xilinx Zynq Zedboard
+[arm]               zynqmp -- Xilinx Zynq UltraSCALE+ MPSoC
+[arm64]               zynqmp -- Xilinx Zynq UltraSCALE+ MPSoC

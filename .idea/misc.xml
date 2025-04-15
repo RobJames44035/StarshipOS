@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/starship-os_acpica/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_ada/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_ahci-driver/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_atkins/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_bootstrap/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_cons/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_demo-l4re-micro-hypervisor/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_drivers-frst/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_emmc-driver/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_fiasco/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_gnu-efi/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_ham/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_io/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_l4_virtio-net-switch/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_l4re-core/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_l4virtio/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_libblock-device/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_libfdt/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_libvcpu/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_manifest/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_mk/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_readline/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_rtc/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_tinit/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_tvmm/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_uvmm/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_virtio-net/pom.xml" />
+        <option value="$PROJECT_DIR$/starship-os_zlib/pom.xml" />
+      </set>
+    </option>
+  </component>
+</project>

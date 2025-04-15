@@ -1,0 +1,72 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# L4Re Configuration
+#
+CONFIG_DROPS_INSTDIR=/path/to/l4re
+CONFIG_BITS=64
+CONFIG_BID_STRIP_BINARIES=y
+CONFIG_PLATFORM_TYPE_pc=y
+CONFIG_BUILD_ARCH=amd64
+CONFIG_BUILD_ARCH_amd64=y
+CONFIG_INT_CPP_NAME_SWITCH=y
+CONFIG_CPU=gen
+CONFIG_BID_BUILD_TESTS_SHARED=y
+CONFIG_BID_GCC_ENABLE_STACK_PROTECTOR=y
+CONFIG_MMU=y
+CONFIG_BID_PIE_VOLUNTARY=y
+CONFIG_INT_LD_NAME_SWITCH=y
+CONFIG_DROPS_STDDIR=/path/to/l4re
+CONFIG_BID_COLORED_PHASES=y
+CONFIG_BID_GCC_STACK_PROTECTOR=y
+CONFIG_BID_BUILD_TESTS=y
+CONFIG_MAKECONFS_ADD=
+CONFIG_LEX=flex
+CONFIG_BID_PIE=y
+CONFIG_YACC=yacc
+CONFIG_PLATFORM_TYPE=pc
+CONFIG_BUILD_ABI_l4f=y
+CONFIG_BUILD_ABI=l4f
+CONFIG_ARCH_ENABLE_STACK_PROTECTOR=y
+CONFIG_HAVE_BIDPC_ABC=y
+CONFIG_BID_DEBUG_INFO=y
+BUILD_SYSTEMS=amd64_gen-plain amd64_gen-l4f
+BID_COMPILER_TYPE=gcc
+BID_LD_TYPE=gnu
+CONDITIONAL_WARNINGS_FULL=-Wfloat-conversion -Wfloat-equal -Wlogical-op
+CONDITIONAL_WARNINGS_MEDIUM=-Wmissing-prototypes
+DIAGNOSTICS_SARIF=
+DIAGNOSTICS_JSON=-fdiagnostics-format=json
+DIAGNOSTICS_COLOR=-fdiagnostics-color=always
+GCCDIR=/usr/lib/gcc/x86_64-linux-gnu/14
+GCCFORTRANAVAIL=
+GCC_HAS_ATOMICS=y
+GCCINCFIXEDPATH=
+GCCLIBCAVAIL=y
+GCCLIB_EH_HOST=
+GCCLIB_HOST=
+GCCMAJORVERSION=14
+GCCMINORVERSION=2
+GCCNOSTACKPROTOPT=-fno-stack-protector
+GCCPATCHLEVEL=0
+GCCPREFIXOPT=-fmacro-prefix-map=/home/rajames/IdeaProjects/StarshipOS/starship-os_mk/= -fmacro-prefix-map=/home/rajames/IdeaProjects/StarshipOS/starship-os_mk/build/=
+GCCSTACKPROTALLOPT=-fstack-protector-all
+GCCSTACKPROTOPT=-fstack-protector
+GCCSYSLIBDIRS=-L/usr/lib/gcc/x86_64-linux-gnu/14/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/14/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/lib/../lib/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/14/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../lib/ -L/lib/x86_64-linux-gnu/14/ -L/lib/x86_64-linux-gnu/ -L/lib/../lib/ -L/usr/lib/x86_64-linux-gnu/14/ -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/../lib/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../../x86_64-linux-gnu/lib/ -L/usr/lib/gcc/x86_64-linux-gnu/14/../../../ -L/lib/ -L/usr/lib/
+GCCVERSION=14
+GCCWNOC99DESIGNATOR=
+GCCWNONOEXCEPTTYPE=-Wno-noexcept-type
+GCCWNOPSABI=-Wno-psabi
+GCCWNOUNUSEDPRIVATEFIELD=
+GCCWNOUNTERMINATEDSTRINGINITIALIZATION=
+GNATVERSION=
+HOST_GNATVERSION=
+LDNOWARNRWX=--no-warn-rwx-segments
+LDVERSION=243
+CLANGVISNEWDELETEHIDDEN=
+GCCNOFPU_amd64=-mno-mmx -mno-3dnow -mno-sse -mno-sse2 -mno-sse3 -mno-sse4 -mno-sse4a -mno-avx -mno-avx2
+LD_GENDEP_PREFIX=LD_PRELOAD=libgendep.so LD_LIBRARY_PATH=/home/rajames/IdeaProjects/StarshipOS/starship-os_mk/build/tool/gendep/64:/home/rajames/IdeaProjects/StarshipOS/starship-os_mk/build/tool/gendep/32:/home/rajames/IdeaProjects/StarshipOS/starship-os_mk/build/tool/gendep
+HOST_SYSTEM=linux
+INT_CPP_NAME=cc1
+INT_CXX_NAME=cc1plus
+INT_LD_NAME=x86_64-linux-gnu-ld
+LD_EMULATION=elf_x86_64

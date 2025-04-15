@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling.">
+      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml.bak" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;RobJames44035&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/RobJames44035/StarshipOS.git&quot;,
+    &quot;accountId&quot;: &quot;fca03837-d1fb-4dde-a556-0ce1745b04bb&quot;
+  }
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2vef9YViZXqvEWPCatMulZ02a62" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+    <option name="showVisibilityIcons" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.ModuleSelector.executor": "Run",
+    "Application.starship.os.tools.ModuleSelector.executor": "Run",
+    "Maven.starship-os_tools [compile].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/rajames/IdeaProjects/StarshipOS/starship-os_tools",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "configurable.group.language",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/starship-os_tools" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/scripts" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/starship-os_zlib" />
+      <recent name="$PROJECT_DIR$/starship-os_virtio-net" />
+      <recent name="$PROJECT_DIR$/starship-os_uvmm" />
+      <recent name="$PROJECT_DIR$/starship-os_tvmm" />
+      <recent name="$PROJECT_DIR$/starship-os_tinit" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="starship-os" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="starship-os" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="" />
+      <created>1744510309435</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1744510309435</updated>
+      <workItem from="1744510311283" duration="202000" />
+      <workItem from="1744510547033" duration="1059000" />
+      <workItem from="1744512382707" duration="590000" />
+      <workItem from="1744550736223" duration="109000" />
+      <workItem from="1744550870957" duration="3201000" />
+      <workItem from="1744557908888" duration="80000" />
+      <workItem from="1744558007359" duration="1136000" />
+      <workItem from="1744559235735" duration="249000" />
+      <workItem from="1744559621938" duration="102000" />
+      <workItem from="1744560255682" duration="8764000" />
+    </task>
+    <task id="LOCAL-00001" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
+      <option name="closed" value="true" />
+      <created>1744551130192</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744551130192</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
+      <option name="closed" value="true" />
+      <created>1744555372547</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1744555372547</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
+      <option name="closed" value="true" />
+      <created>1744555460377</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1744555460377</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Remove .idea configuration files from version control&#10;&#10;The `.idea` folder contains IDE-specific configuration files, which are not relevant to the project's source code and can vary between developers. Removing these files helps avoid unnecessary conflicts and keeps the repository clean.">
+      <option name="closed" value="true" />
+      <created>1744558145037</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1744558145037</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add Maven project structure for StarshipOS modules&#10;&#10;Initialize a multi-module Maven project for StarshipOS with individual `pom.xml` files for each module and a parent POM file. This configuration streamlines build management and establishes the project's modular structure. Additionally, update `.idea` files for improved IDE configuration and version control handling.">
+      <option name="closed" value="true" />
+      <created>1744561070998</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1744561070998</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add Maven project structure for StarshipOS modules&#10;&#10;Initialize a multi-module Maven project for StarshipOS with individual `pom.xml` files for each module and a parent POM file. This configuration streamlines build management and establishes the project's modular structure. Additionally, update `.idea` files for improved IDE configuration and version control handling.">
+      <option name="closed" value="true" />
+      <created>1744561096590</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744561096590</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Update workspace.xml and local tasks for project setup&#10;&#10;Streamline `.idea` workspace configuration by removing outdated module references and updating local tasks. These changes improve IDE settings, enhance project organization, and support the new multi-module Maven project structure.">
+      <option name="closed" value="true" />
+      <created>1744584871338</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1744584871339</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling.">
+      <option name="closed" value="true" />
+      <created>1744591965754</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1744591965754</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling.">
+      <option name="closed" value="true" />
+      <created>1744592171502</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1744592171502</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+    <MESSAGE value="Initial Commit" />
+    <MESSAGE value="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management." />
+    <MESSAGE value="Remove .idea configuration files from version control&#10;&#10;The `.idea` folder contains IDE-specific configuration files, which are not relevant to the project's source code and can vary between developers. Removing these files helps avoid unnecessary conflicts and keeps the repository clean." />
+    <MESSAGE value="Add Maven project structure for StarshipOS modules&#10;&#10;Initialize a multi-module Maven project for StarshipOS with individual `pom.xml` files for each module and a parent POM file. This configuration streamlines build management and establishes the project's modular structure. Additionally, update `.idea` files for improved IDE configuration and version control handling." />
+    <MESSAGE value="Update workspace.xml and local tasks for project setup&#10;&#10;Streamline `.idea` workspace configuration by removing outdated module references and updating local tasks. These changes improve IDE settings, enhance project organization, and support the new multi-module Maven project structure." />
+    <MESSAGE value="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling." />
+    <option name="NON_MODAL_COMMIT_POSTPONE_SLOW_CHECKS" value="false" />
+  </component>
+</project>

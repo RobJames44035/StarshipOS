@@ -1,0 +1,5 @@
+#!/bin/sh
+set -euo pipefail
+
+figlet "StarshipOS_io"
+echo "Executing compile.sh"

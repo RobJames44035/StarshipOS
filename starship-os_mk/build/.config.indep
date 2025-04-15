@@ -1,0 +1,5 @@
+# Automatically generated. Don't edit
+
+CONFIG_BID_COLORED_PHASES=y
+CONFIG_INT_CPP_NAME_SWITCH=y
+CONFIG_INT_LD_NAME_SWITCH=y
