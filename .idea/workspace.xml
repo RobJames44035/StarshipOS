@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation.">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,38 +52,41 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Application.ModuleSelector.executor": "Run",
-    "Application.starship.os.tools.ModuleSelector.executor": "Run",
-    "Maven.starship-os_tools [compile].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/rajames/Documents/StarshipOS-master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "configurable.group.language",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Application.ModuleSelector.executor&quot;: &quot;Run&quot;,
+    &quot;Application.starship.os.tools.ModuleSelector.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.starship-os_tools [compile].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;/home/rajames/.local/share/JetBrains/IntelliJIdea2025.1/Shell Script/shellcheck&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/rajames/IdeaProjects/StarshipOS/starship-os_zlib&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
+  &quot;keyToStringList&quot;: {
+    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: []
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/starship-os_tools" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/scripts" />
+      <recent name="$PROJECT_DIR$/starship-os_zlib" />
+      <recent name="$PROJECT_DIR$/starship-os_virtio-net" />
+      <recent name="$PROJECT_DIR$/starship-os_uvmm" />
+      <recent name="$PROJECT_DIR$/starship-os_tvmm" />
+      <recent name="$PROJECT_DIR$/starship-os_tinit" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/starship-os_zlib" />
@@ -94,7 +99,7 @@
   <component name="RunManager">
     <configuration name="ModuleSelector" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="ModuleSelector" />
-      <module name="starship-os_tools" />
+      <module name="tools" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -147,6 +152,8 @@
       <workItem from="1744762206650" duration="2429000" />
       <workItem from="1744801770304" duration="5000" />
       <workItem from="1744921664892" duration="126000" />
+      <workItem from="1744925356518" duration="5745000" />
+      <workItem from="1744931400551" duration="1038000" />
     </task>
     <task id="LOCAL-00001" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
       <option name="closed" value="true" />
@@ -236,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744744054446</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation.">
+      <option name="closed" value="true" />
+      <created>1744929568738</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1744929568738</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

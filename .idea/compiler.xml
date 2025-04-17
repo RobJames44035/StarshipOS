@@ -6,38 +6,38 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="starship-os_tools" />
+        <module name="starship-os_gnu-efi" />
+        <module name="starship-os_tinit" />
+        <module name="starship-os_io" />
+        <module name="starship-os_cons" />
+        <module name="tools" />
+        <module name="starship-os_demo-l4re-micro-hypervisor" />
+        <module name="starship-os_drivers-frst" />
+        <module name="starship-os_emmc-driver" />
+        <module name="starship-os_atkins" />
+        <module name="starship-os_libvcpu" />
+        <module name="starship-os_readline" />
+        <module name="starship-os_l4_virtio-net-switch" />
+        <module name="starship-os_bootstrap" />
+        <module name="starship-os_acpica" />
+        <module name="starship-os_virtio-net" />
+        <module name="starship-os_l4re-core" />
+        <module name="starship-os_tvmm" />
+        <module name="starship-os_fiasco" />
+        <module name="starship-os_zlib" />
+        <module name="starship-os_libblock-device" />
+        <module name="starship-os_l4virtio" />
+        <module name="starship-os_ahci-driver" />
+        <module name="starship-os_rtc" />
+        <module name="starship-os_libfdt" />
+        <module name="starship-os_ada" />
+        <module name="starship-os_mk" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="starship-os_acpica" target="1.8" />
-      <module name="starship-os_ada" target="1.8" />
-      <module name="starship-os_ahci-driver" target="1.8" />
-      <module name="starship-os_atkins" target="1.8" />
-      <module name="starship-os_bootstrap" target="1.8" />
-      <module name="starship-os_cons" target="1.8" />
-      <module name="starship-os_demo-l4re-micro-hypervisor" target="1.8" />
-      <module name="starship-os_drivers-frst" target="1.8" />
-      <module name="starship-os_emmc-driver" target="1.8" />
-      <module name="starship-os_fiasco" target="1.8" />
-      <module name="starship-os_gnu-efi" target="1.8" />
-      <module name="starship-os_ham" target="1.8" />
-      <module name="starship-os_io" target="1.8" />
-      <module name="starship-os_l4_virtio-net-switch" target="1.8" />
-      <module name="starship-os_l4re-core" target="1.8" />
-      <module name="starship-os_l4virtio" target="1.8" />
-      <module name="starship-os_libblock-device" target="1.8" />
-      <module name="starship-os_libfdt" target="1.8" />
-      <module name="starship-os_libvcpu" target="1.8" />
-      <module name="starship-os_manifest" target="1.8" />
-      <module name="starship-os_mk" target="1.8" />
-      <module name="starship-os_readline" target="1.8" />
-      <module name="starship-os_rtc" target="1.8" />
-      <module name="starship-os_tinit" target="1.8" />
-      <module name="starship-os_tvmm" target="1.8" />
-      <module name="starship-os_uvmm" target="1.8" />
-      <module name="starship-os_virtio-net" target="1.8" />
-      <module name="starship-os_zlib" target="1.8" />
+      <module name="starship-os_ham" target="1.5" />
+      <module name="starship-os_manifest" target="1.5" />
+      <module name="starship-os_uvmm" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
