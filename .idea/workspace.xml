@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling.">
+    <list default="true" id="9d903ad5-9b5d-4fd7-b8a7-ea05616ebfee" name="Changes" comment="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,30 +50,33 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Application.ModuleSelector.executor&quot;: &quot;Run&quot;,
-    &quot;Application.starship.os.tools.ModuleSelector.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.starship-os_tools [compile].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/rajames/Documents/StarshipOS-master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.language&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Application.ModuleSelector.executor": "Run",
+    "Application.starship.os.tools.ModuleSelector.executor": "Run",
+    "Maven.starship-os_tools [compile].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/rajames/Documents/StarshipOS-master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "configurable.group.language",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: []
+  "keyToStringList": {
+    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/starship-os_tools" />
@@ -89,6 +92,13 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration name="ModuleSelector" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ModuleSelector" />
+      <module name="starship-os_tools" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="starship-os" />
       <method v="2">
@@ -100,6 +110,11 @@
       <option name="filePath" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.ModuleSelector" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -128,7 +143,10 @@
       <workItem from="1744559621938" duration="102000" />
       <workItem from="1744560255682" duration="8764000" />
       <workItem from="1744728328745" duration="1062000" />
-      <workItem from="1744731064240" duration="3949000" />
+      <workItem from="1744731064240" duration="4722000" />
+      <workItem from="1744762206650" duration="2429000" />
+      <workItem from="1744801770304" duration="5000" />
+      <workItem from="1744921664892" duration="126000" />
     </task>
     <task id="LOCAL-00001" summary="Update IDE configuration files for project setup&#10;&#10;Removed outdated module references and added GitToolBox and Maven settings. These changes improve project configuration and enable better commit message validation and build management.">
       <option name="closed" value="true" />
@@ -202,7 +220,23 @@
       <option name="project" value="LOCAL" />
       <updated>1744592171502</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Add tools module and update project configuration&#10;&#10;Added the `starship-os_tools` module featuring scripts and a JavaFX-based `ModuleSelector`. Updated project dependencies, build properties, and IDE configurations to better support a multi-module structure. These enhancements improve project setup, management, and overall developer experience.">
+      <option name="closed" value="true" />
+      <created>1744744001354</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1744744001354</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation.">
+      <option name="closed" value="true" />
+      <created>1744744054446</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1744744054446</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -243,7 +277,9 @@
     <MESSAGE value="Add Maven project structure for StarshipOS modules&#10;&#10;Initialize a multi-module Maven project for StarshipOS with individual `pom.xml` files for each module and a parent POM file. This configuration streamlines build management and establishes the project's modular structure. Additionally, update `.idea` files for improved IDE configuration and version control handling." />
     <MESSAGE value="Update workspace.xml and local tasks for project setup&#10;&#10;Streamline `.idea` workspace configuration by removing outdated module references and updating local tasks. These changes improve IDE settings, enhance project organization, and support the new multi-module Maven project structure." />
     <MESSAGE value="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add tools module and enhance project configuration&#10;&#10;Introduced `starship-os_tools` module with scripts and JavaFX-based `ModuleSelector` application. Updated `pom.xml` with build properties, plugins, and dependencies; adjusted `.idea` configuration for multi-module setup and improved IDE integration. These changes streamline project management and module handling." />
+    <MESSAGE value="Add tools module and update project configuration&#10;&#10;Added the `starship-os_tools` module featuring scripts and a JavaFX-based `ModuleSelector`. Updated project dependencies, build properties, and IDE configurations to better support a multi-module structure. These enhancements improve project setup, management, and overall developer experience." />
+    <MESSAGE value="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GitToolBox project settings file&#10;&#10;This adds the `.idea/git_toolbox_prj.xml` file to configure project-specific settings for GitToolBox. It enables overrides for commit message validation and issue key validation." />
     <option name="NON_MODAL_COMMIT_POSTPONE_SLOW_CHECKS" value="false" />
   </component>
 </project>
