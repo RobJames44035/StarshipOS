@@ -1,4 +1,0 @@
-provides: libclang_rt-builtins-pure
-requires: libc-headers ldscripts
-source-pkg: libclang_rt
-maintainer: georg.kotheimer@kernkonzept.com

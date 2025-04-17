@@ -1,4 +1,0 @@
-provides: libgcc_eh-pure
-requires: libc-headers ldscripts libgcc_eh-headers
-source-pkg: libgcc
-maintainer: georg.kotheimer@kernkonzept.com

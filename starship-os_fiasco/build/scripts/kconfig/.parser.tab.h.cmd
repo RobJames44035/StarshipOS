@@ -1,1 +1,0 @@
-savedcmd_scripts/kconfig/parser.tab.h := bison -o scripts/kconfig/parser.tab.c --defines=scripts/kconfig/parser.tab.h -t -l /home/rajames/IdeaProjects/StarshipOS/starship-os_fiasco/tool/kconfig/scripts/kconfig/parser.y

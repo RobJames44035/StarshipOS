@@ -19,35 +19,35 @@
     <name>StarshipOS</name>
 
     <modules>
-        <module>starship-os_uvmm</module>
-        <module>starship-os_mk</module>
-        <module>starship-os_l4re-core</module>
-        <module>starship-os_l4_virtio-net-switch</module>
-        <module>starship-os_io</module>
-        <module>starship-os_fiasco</module>
-        <module>starship-os_emmc-driver</module>
-        <module>starship-os_bootstrap</module>
-        <module>starship-os_atkins</module>
-        <module>starship-os_demo-l4re-micro-hypervisor</module>
-        <module>starship-os_ada</module>
-        <module>starship-os_manifest</module>
-        <module>starship-os_zlib</module>
-        <module>starship-os_rtc</module>
-        <module>starship-os_cons</module>
-        <module>starship-os_l4virtio</module>
-        <module>starship-os_ham</module>
-        <module>starship-os_virtio-net</module>
-        <module>starship-os_tvmm</module>
-        <module>starship-os_tinit</module>
-        <module>starship-os_libblock-device</module>
-        <module>starship-os_acpica</module>
-        <module>starship-os_gnu-efi</module>
-        <module>starship-os_drivers-frst</module>
-        <module>starship-os_ahci-driver</module>
-        <module>starship-os_libfdt</module>
-        <module>starship-os_libvcpu</module>
-        <module>starship-os_readline</module>
-        <module>starship-os_tools</module>
+        <module>bootstrap</module>
+        <module>fiasco</module>
+<!--        <module>uvmm</module>-->
+        <module>l4re-core</module>
+        <module>mk</module>
+        <module>virtio-net-switch</module>
+        <module>io</module>
+        <module>emmc-driver</module>
+        <module>atkins</module>
+        <module>demo-l4re-micro-hypervisor</module>
+        <module>ada</module>
+<!--        <module>manifest</module>-->
+        <module>zlib</module>
+        <module>os_rtc</module>
+        <module>cons</module>
+        <module>l4virtio</module>
+<!--        <module>ham</module>-->
+        <module>virtio-net</module>
+        <module>tvmm</module>
+        <module>tinit</module>
+        <module>libblock-device</module>
+        <module>acpica</module>
+        <module>gnu-efi</module>
+        <module>drivers-frst</module>
+        <module>ahci-driver</module>
+        <module>libfdt</module>
+        <module>libvcpu</module>
+        <module>readline</module>
+        <module>tools</module>
     </modules>
 
     <build>

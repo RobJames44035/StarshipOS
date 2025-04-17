@@ -1,4 +1,0 @@
-provides: compiler-rt
-requires: libgcc libgcc_eh libatomic[arch(riscv)]
-          libclang_rt-builtins libunwind_llvm
-maintainer: georg.kotheimer@kernkonzept.com
